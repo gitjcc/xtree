@@ -60,8 +60,6 @@
         onCancel: function (item,dom,childrenItem) {}
     };
 
-
-
     var tree=function(opt){
         this._init(opt);
         return this;
@@ -70,12 +68,9 @@
          *     'start':this.start,
          *     'end':this.end
          * };  //todo  这样会导致 this 没有 别的方法 到底 还是不能正常使用
+         *  //todo    return  一个对象，包含start、end等给外部调用的函数。其他函数
          */
-
-
-
     };
-
 
     /**
      *
@@ -84,7 +79,6 @@
      * @var data  做tree的data
      * @var html tree的html
      */
-
 
     tree.prototype={
         _is_open:false,  //是否open

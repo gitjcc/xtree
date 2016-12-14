@@ -27,10 +27,73 @@
 
 ;(function ($) {
 
+    //闭包中的变量和函数
+    var defOpt = {
+        dom:'',  //jqueryDom
+        is_trigger:true,  //是否需要触发? 否则直接显示
+        has_search:false,
+        only_child:true,//是否结果只要 child
+        node_merge:true,//结果只显示最上层  比如   中国被选中  四川,成都则不会显示  否则 每个被勾选的节点都显示
+        zIndex:1,
+        choose:false,  //哪些是选中的？优先级高于data  {nodeId:[1,2,3],id:[1,2,3]}
+        //node_first:false,//是否需要节点排在前面  否则按照data的顺序
+        is_multi:true,//是否多选
+        expand:false, //是否展开，false、true、num  //todo expand
+        rootId:0,//todo  如何去掉这个参数
+        width:null,
+        maxHeight:null,
+        data:[],//{id:1,name:'xx',nodeId:'0',is_node:true,is_check:false},
+        onInit: function () {},
+        onOpen: function () {}, //触发时
+        onBeforeOpen: function () {},
+        onClose: function (has_chg) {
+            //has_chg  是否发生变化
+        },
+        onCheck: function (item,dom,childrenItem) {
+            //item 点击的item
+            //dom 点击的dom
+            //childrenItem  所有影响的子节点
+        },
+        onCancel: function (item,dom,childrenItem) {}
+    };
+    function makeLayer(){
+        var html='<div></div>';
+
+        return $(html).css({
+            'margin-left':'13px'
+        });
+    }
+    function makeExpand(){
+        // var html='<span data-icon="expand">＋</span>';
+        var html='<i class="iconfont icon-jia1"></i>';
+
+        return $(html).css({
+            'font-size':'14px',
+            'font-weight':'bold',
+            'vertical-align':'base-line',
+            'padding-right':'0px',
+            'cursor':'pointer'
+        })[0].outerHTML;
+    }
+    function toShrink(dom){
+        dom.removeClass('icon-jia1');
+        dom.addClass('icon-jian1');
+    }
+    function toExpand(dom){
+        dom.removeClass('icon-jian1');
+        dom.addClass('icon-jia1');
+    }
+    function checkData(data){
+        for(var i in data){
+            return typeof data[i] =='object';
+        }
+        return false;
+    }
+
+
     window.xTreeNext=function(opt){
         return new tree(opt);
     };
-
 
     var tree=function(opt){
         console.log(this);
@@ -57,46 +120,14 @@
          */
     };
 
-
     /**
-     *
      * @var opt  用户传进来的option
      * @var dom 打开tree的载体jquery dom
      * @var data  做tree的data
      * @var html tree的html
      */
 
-
     tree.prototype=(function(){
-        var defOpt = {
-            dom:'',  //jqueryDom
-            is_trigger:true,  //是否需要触发? 否则直接显示
-            has_search:false,
-            only_child:true,//是否结果只要 child
-            node_merge:true,//结果只显示最上层  比如   中国被选中  四川,成都则不会显示  否则 每个被勾选的节点都显示
-            zIndex:1,
-            choose:false,  //哪些是选中的？优先级高于data  {nodeId:[1,2,3],id:[1,2,3]}
-            //node_first:false,//是否需要节点排在前面  否则按照data的顺序
-            is_multi:true,//是否多选
-            expand:false, //是否展开，false、true、num  //todo expand
-            rootId:0,//todo  如何去掉这个参数
-            width:null,
-            maxHeight:null,
-            data:[],//{id:1,name:'xx',nodeId:'0',is_node:true,is_check:false},
-            onInit: function () {},
-            onOpen: function () {}, //触发时
-            onBeforeOpen: function () {},
-            onClose: function (has_chg) {
-                //has_chg  是否发生变化
-            },
-            onCheck: function (item,dom,childrenItem) {
-                //item 点击的item
-                //dom 点击的dom
-                //childrenItem  所有影响的子节点
-            },
-            onCancel: function (item,dom,childrenItem) {}
-        };
-
         // 初始化
         function _init(opt){
             this.opt = $.extend(true,{},defOpt,opt);
@@ -698,6 +729,8 @@
 
             return $html;
         }
+
+
         return {
             _is_open:false,  //是否open
             _originId:{nodeId:[],id:[]},   //上次打开时候选中了哪一些id
@@ -738,41 +771,4 @@
         };
     })();
 
-    function makeLayer(){
-        var html='<div></div>';
-
-        return $(html).css({
-            'margin-left':'13px'
-        });
-    }
-
-    function makeExpand(){
-        // var html='<span data-icon="expand">＋</span>';
-        var html='<i class="iconfont icon-jia1"></i>';
-
-        return $(html).css({
-            'font-size':'14px',
-            'font-weight':'bold',
-            'vertical-align':'base-line',
-            'padding-right':'0px',
-            'cursor':'pointer'
-        })[0].outerHTML;
-    }
-
-    function toShrink(dom){
-        dom.removeClass('icon-jia1');
-        dom.addClass('icon-jian1');
-    }
-
-    function toExpand(dom){
-        dom.removeClass('icon-jian1');
-        dom.addClass('icon-jia1');
-    }
-
-    function checkData(data){
-        for(var i in data){
-            return typeof data[i] =='object';
-        }
-        return false;
-    }
 })($);
