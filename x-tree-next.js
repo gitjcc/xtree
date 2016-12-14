@@ -27,53 +27,34 @@
 
 ;(function ($) {
 
-    window.xTree=function(opt){
+    window.xTreeNext=function(opt){
         return new tree(opt);
     };
 
-    var defOpt = {
-        dom:'',  //jqueryDom
-        is_trigger:true,  //是否需要触发? 否则直接显示
-        has_search:false,
-        only_child:true,//是否结果只要 child  
-        node_merge:true,//结果只显示最上层  比如   中国被选中  四川,成都则不会显示  否则 每个被勾选的节点都显示
-        zIndex:1,
-        choose:false,  //哪些是选中的？优先级高于data  {nodeId:[1,2,3],id:[1,2,3]}
-        //node_first:false,//是否需要节点排在前面  否则按照data的顺序
-        is_multi:true,//是否多选
-        expand:false, //是否展开，false、true、num  //todo expand
-        rootId:0,//todo  如何去掉这个参数
-        width:null,
-        maxHeight:null,
-        data:[],//{id:1,name:'xx',nodeId:'0',is_node:true,is_check:false},
-        onInit: function () {},
-        onOpen: function () {}, //触发时
-        onBeforeOpen: function () {},
-        onClose: function (has_chg) {
-            //has_chg  是否发生变化
-        },
-        onCheck: function (item,dom,childrenItem) {
-            //item 点击的item
-            //dom 点击的dom
-            //childrenItem  所有影响的子节点
-        },
-        onCancel: function (item,dom,childrenItem) {}
-    };
-
-
 
     var tree=function(opt){
+        console.log(this);
+        console.log(this._init);
         this._init(opt);
-        return this;
+        return {
+            start:this.start,
+            end:this.end,
+            getName:this.getName,
+            getId:this.getId,
+            cancelItem:this.cancelItem,
+            cancelAll:this.cancelAll,
+            checkItem:this.checkItem,
+            checkAll:this.checkAll,
+            getItem:this.getItem,
+            search:this.search
+        };
+        // return this;
         /**
          * return {
          *     'start':this.start,
          *     'end':this.end
          * };  //todo  这样会导致 this 没有 别的方法 到底 还是不能正常使用
          */
-
-
-
     };
 
 
@@ -86,33 +67,51 @@
      */
 
 
-    tree.prototype={
-        _is_open:false,  //是否open
-        _originId:{nodeId:[],id:[]},   //上次打开时候选中了哪一些id
-        _searchTimer:'',   //搜索框的定时器
-        _is_first:true,  //是不是第一次打开
-        _init:function(opt){
+    tree.prototype=(function(){
+        var defOpt = {
+            dom:'',  //jqueryDom
+            is_trigger:true,  //是否需要触发? 否则直接显示
+            has_search:false,
+            only_child:true,//是否结果只要 child
+            node_merge:true,//结果只显示最上层  比如   中国被选中  四川,成都则不会显示  否则 每个被勾选的节点都显示
+            zIndex:1,
+            choose:false,  //哪些是选中的？优先级高于data  {nodeId:[1,2,3],id:[1,2,3]}
+            //node_first:false,//是否需要节点排在前面  否则按照data的顺序
+            is_multi:true,//是否多选
+            expand:false, //是否展开，false、true、num  //todo expand
+            rootId:0,//todo  如何去掉这个参数
+            width:null,
+            maxHeight:null,
+            data:[],//{id:1,name:'xx',nodeId:'0',is_node:true,is_check:false},
+            onInit: function () {},
+            onOpen: function () {}, //触发时
+            onBeforeOpen: function () {},
+            onClose: function (has_chg) {
+                //has_chg  是否发生变化
+            },
+            onCheck: function (item,dom,childrenItem) {
+                //item 点击的item
+                //dom 点击的dom
+                //childrenItem  所有影响的子节点
+            },
+            onCancel: function (item,dom,childrenItem) {}
+        };
 
+        // 初始化
+        function _init(opt){
             this.opt = $.extend(true,{},defOpt,opt);
             this.dom = this.opt.dom;
             this.data = this.opt.data;
             this.html = this._makePanel();
-
 
             var res = checkData(this.data);
             if(!res){
                 return false;
             }
 
-
-
             this.opt.onInit();
-
             this._is_open=false;
-
             var that=this;
-
-
             if(this.opt.choose) {
                 var choose=this.opt.choose;
                 $.each(choose.nodeId,function (i,n){
@@ -148,13 +147,14 @@
                     that.end();
                 });
             }
-        },
+        }
+
 
         /**
          *      方法
          *
          */
-        start:function(){
+        function start(){
             this.opt.onBeforeOpen();
             this._showPanel();
             this._showData();
@@ -164,8 +164,8 @@
             this.html.find('.x-tree-search').focus();
             this.opt.onOpen();
             return this;
-        },
-        end:function(){
+        }
+        function end (){
             if(this._is_open){
                 this.html.hide();
                 this.dom.val(this.getName());
@@ -176,10 +176,8 @@
                 this.opt.onClose(JSON.stringify(ids) !== JSON.stringify(this._originId));
                 this._originId=ids;
             }
-        },
-
-
-        getName:function(){
+        }
+        function getName(){
             var text=[];
             var data=this.data;
             if(this.opt.only_child){
@@ -214,8 +212,8 @@
             }
 
             return text.join();
-        },
-        getId:function(){
+        }
+        function getId(){
             var id=[];
             var nodeId=[];
             var data=this.data;
@@ -272,8 +270,8 @@
                 id={'id':id,'nodeId':nodeId};
             }
             return id;
-        },
-        cancelItem:function (id,type){
+        }
+        function cancelItem(id,type){
             var item={};
             var dom=this.html.find('input[data-isNode="'+parseInt(type)+'"][data-id="'+id+'"]').prop('checked',false);
             $.each(this.data,function(i,n){
@@ -285,15 +283,15 @@
 
             this._chgItem(item,dom);
 
-        },
-        cancelAll:function (){
+        }
+        function cancelAll(){
             $.each(this.data,function(index,item){
                 item.is_check = false;
             });
             this.html.find('input').prop("checked",false);
             this.opt.onCancel();
-        },
-        checkItem:function (id,type){
+        }
+        function checkItem(id,type){
             var item={};
             var dom=this.html.find('input[data-isNode="'+parseInt(type)+'"][data-i="'+id+'"]').prop('checked',true);
             $.each(this.data,function(i,n){
@@ -305,8 +303,8 @@
 
             this._chgItem(item,dom);
 
-        },
-        checkAll: function () {
+        }
+        function checkAll() {
             if(this.opt.is_multi){
                 $.each(this.data,function(index,item){
                     item.is_check = true;
@@ -314,8 +312,8 @@
                 this.html.find('input').prop("checked",true);
                 this.opt.onCheck();
             }
-        },
-        getItem:function(){
+        }
+        function getItem(){
             var arr=[];
             var data=this.data;
             if(this.opt.only_child) {
@@ -359,8 +357,8 @@
 
             }
             return arr;
-        },
-        search:function(val){
+        }
+        function search(val){
             this._removeLayer(this.opt.rootId);
 
             if(val===''){
@@ -373,14 +371,13 @@
                     }
                 }
             }
-        },
+        }
 
 
         /**
          *      视图方法
          */
-
-        _showPanel:function(){
+        function _showPanel(){
             if(this.opt.is_trigger){
                 this.html.css({
                     top:this.dom.position().top+this.dom.outerHeight(),
@@ -398,44 +395,44 @@
                 this.dom.append(this.html);
             }
 
-        },
-        _showData:function(){
+        }
+        function _showData(){
             if( this._is_first ){
                 this._showLayer(this.opt.rootId);
             }else{
                 this.html.show();
             }
 
-        },
-        //_expand:function(){
-        //    var obj = this;
-        //    if(obj.opt.expand === true){
-        //        $.each(obj.data,function(index,item){
-        //            if(item.is_node){
-        //                obj.html.find('div[node-id="'+item.id+'"] span[data-icon="expand"]').click();
-        //            }
-        //        });
-        //    }else if(obj.opt.expand){
-        //        var expandId = obj.opt.rootId;
-        //        for (var i = 0; i < obj.opt.expand; i++) {
-        //            expandId = obj._expandLevel(expandId);
-        //        }
-        //    }
-        //},
-        //_expandLevel:function(id){
-        //    var obj = this;
-        //    var expandId = [];
-        //    $.each(id,function(index,item){
-        //        $.each(obj.data,function(index2,item2){
-        //            if(item2.nodeId===item){
-        //                expandId.push(item2.id);
-        //                obj.html.find('div[node-id="'+item2.id+'"] span[data-icon="expand"]').click();
-        //            }
-        //        });
-        //    });
-        //    return expandId;
-        //},
-        _showLayer:function(layerId){
+        }
+        function _expand(){
+            var obj = this;
+            if(obj.opt.expand === true){
+                $.each(obj.data,function(index,item){
+                    if(item.is_node){
+                        obj.html.find('div[node-id="'+item.id+'"] span[data-icon="expand"]').click();
+                    }
+                });
+            }else if(obj.opt.expand){
+                var expandId = obj.opt.rootId;
+                for (var i = 0; i < obj.opt.expand; i++) {
+                    expandId = obj._expandLevel(expandId);
+                }
+            }
+        }
+        function _expandLevel(id){
+            var obj = this;
+            var expandId = [];
+            $.each(id,function(index,item){
+                $.each(obj.data,function(index2,item2){
+                    if(item2.nodeId===item){
+                        expandId.push(item2.id);
+                        obj.html.find('div[node-id="'+item2.id+'"] span[data-icon="expand"]').click();
+                    }
+                });
+            });
+            return expandId;
+        }
+        function _showLayer(layerId){
             var showData=this._getLayerData(layerId);
             var itemDiv=makeLayer();
 
@@ -454,19 +451,17 @@
             for(var i in showData){
                 itemDiv.append(this._makeItem(showData[i]));
             }
-        },
-        _removeLayer:function(layerId){
+        }
+        function _removeLayer(layerId){
             this.html.find('div[node-id="'+layerId+'"]>div').remove();
             toExpand(this.html.find('div[node-id="'+layerId+'"] i'));
-        },
-
-
+        }
 
 
         /**
          *      数据方法
          */
-        _getLayerData:function (parent){
+        function _getLayerData(parent){
             var res=[];
             for(var i in this.data){
                 if(this.data[i].nodeId==parent){
@@ -480,9 +475,8 @@
                 }
             }
             return res;
-        },
-
-        _chgItem:function(item,dom){
+        }
+        function _chgItem(item,dom){
 
             if(this.opt.is_multi){
                 if(item.is_node){
@@ -513,8 +507,8 @@
             }
 
 
-        },
-        _getChild:function (node,cont) {
+        }
+        function _getChild(node,cont) {
             if(node.is_node){
                 var that=this;
                 $.each(that.data,function(i,n){
@@ -527,8 +521,8 @@
                 })
             }
 
-        },
-        _cancelParentNode:function(id){
+        }
+        function _cancelParentNode(id){
             var obj=this;
             $.each(obj.data,function(i,n){
                 if(n.id ==id && n.is_node && n.is_check){
@@ -537,8 +531,8 @@
                     obj._cancelParentNode(n.nodeId);
                 }
             })
-        },
-        _checkParentNode:function(id){
+        }
+        function _checkParentNode(id){
             var obj=this;
             var allChildrenChecked = true;
             $.each(obj.data,function(i,n){
@@ -553,8 +547,8 @@
                     obj._checkParentNode(n.nodeId);
                 }
             });
-        },
-        _chgAllChildren:function(nodeid,bol){
+        }
+        function _chgAllChildren(nodeid,bol){
             var obj=this;
             $.each($.extend(true,[], this.data),function(i,n){   //这句话 看起来 好像 不用 extend
                 if(n.nodeId == nodeid){
@@ -564,17 +558,13 @@
                     }
                 }
             });
-        },
-
+        }
 
 
         /**
          * 构造html内部方法
          */
-
-
-
-        _makePanel:function(){
+        function _makePanel(){
             var html='<div></div>';
 
             if(this.opt.has_search){
@@ -605,8 +595,8 @@
 
 
             return $(html).css(css);
-        },
-        _makeSearch:function(html){
+        }
+        function _makeSearch(html){
             var search='<input class="x-tree-search" type="text" placeholder="搜索"/></div>';
             search=$(search).css({
                 'border':'none',
@@ -626,8 +616,8 @@
 
             return  $(html).append(search);
 
-        },
-        _makeNode: function (item) {
+        }
+        function _makeNode(item) {
             var $html;
             if(this.opt.is_multi){
                 $html = $('<div node-id="'+item.id+'">'+makeExpand()+'<label><input type="checkbox" data-isNode="1" data-id="'+item.id+'" '+(item.is_check?'checked':'')+' data-name="'+item.name+'"/><span>'+item.name+'</span></label></div>');
@@ -662,8 +652,8 @@
             });
 
             return $html;
-        },
-        _makeChild:function(item){
+        }
+        function _makeChild(item){
             var $html;
             if(this.opt.is_multi){
                 $html = $('<div><span></span><label><input type="checkbox" data-id="'+item.id+'" data-isNode="0" data-name="'+item.name+'" '+(item.is_check?'checked':'') +'/>'+item.name+'</label></div>');
@@ -683,8 +673,8 @@
                 'vertical-align':'middle'
             });
             return $html;
-        },
-        _makeItem:function(item){
+        }
+        function _makeItem(item){
             var $html;
             if(item.is_node){
                 $html= this._makeNode(item);
@@ -708,12 +698,45 @@
 
             return $html;
         }
+        return {
+            _is_open:false,  //是否open
+            _originId:{nodeId:[],id:[]},   //上次打开时候选中了哪一些id
+            _searchTimer:'',   //搜索框的定时器
+            _is_first:true,  //是不是第一次打开
+            _init:_init,
 
+            start:start,
+            end:end,
+            getName:getName,
+            getId:getId,
+            cancelItem:cancelItem,
+            cancelAll:cancelAll,
+            checkItem:checkItem,
+            checkAll:checkAll,
+            getItem:getItem,
+            search:search,
 
-    };
+            _showPanel:_showPanel,
+            _showData:_showData,
+            _expand:_expand,
+            _expandLevel:_expandLevel,
+            _showLayer:_showLayer,
+            _removeLayer:_removeLayer,
 
+            _getLayerData:_getLayerData,
+            _chgItem:_chgItem,
+            _getChild:_getChild,
+            _cancelParentNode:_cancelParentNode,
+            _checkParentNode:_checkParentNode,
+            _chgAllChildren:_chgAllChildren,
 
-
+            _makePanel:_makePanel,
+            _makeSearch:_makeSearch,
+            _makeNode: _makeNode,
+            _makeChild:_makeChild,
+            _makeItem:_makeItem
+        };
+    })();
 
     function makeLayer(){
         var html='<div></div>';
@@ -746,19 +769,10 @@
         dom.addClass('icon-jia1');
     }
 
-
     function checkData(data){
-        //todo for循环有问题
         for(var i in data){
             return typeof data[i] =='object';
         }
         return false;
     }
-
-
-
 })($);
-
-
-
-
