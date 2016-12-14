@@ -28,9 +28,11 @@
 ;(function ($) {
 
     window.xTree=function(opt){
-        return new tree(opt);
+        return new Tree(opt);
     };
 
+    //todo 是否允许用户自定义opt的默认值
+    //todo 是否需要用户提供isnode？数据
     var defOpt = {
         dom:'',  //jqueryDom
         is_trigger:true,  //是否需要触发? 否则直接显示
@@ -60,7 +62,7 @@
         onCancel: function (item,dom,childrenItem) {}
     };
 
-    var tree=function(opt){
+    var Tree=function(opt){
         this._init(opt);
         return this;
         /**
@@ -68,7 +70,7 @@
          *     'start':this.start,
          *     'end':this.end
          * };  //todo  这样会导致 this 没有 别的方法 到底 还是不能正常使用
-         *  //todo    return  一个对象，包含start、end等给外部调用的函数。其他函数
+         *  //todo  是否可以return 一个对象，包含start、end 等给外部调用的函数。其他函数放在闭包中，由暴露函数调用。
          */
     };
 
@@ -742,7 +744,7 @@
 
 
     function checkData(data){
-        //todo for循环有问题
+        //todo 这个for循环是否有问题？
         for(var i in data){
             return typeof data[i] =='object';
         }
