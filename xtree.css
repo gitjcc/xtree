@@ -1,13 +1,14 @@
 body {
-    padding: 0 20px;
-    background: #0066AA
+    padding: 20px;
+    background: #5CD
 }
 
 .tree-wrap {
     display: inline-block;
-    width: 300px;
-    height: 300px;
+    width: 360px;
+    height: 555px;
     padding: 5px;
-    border: 1px solid #06c;
+    border: 1px solid #02B;
     vertical-align: bottom;
+    background: #fff;
 }
