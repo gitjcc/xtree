@@ -82,7 +82,7 @@
      * @var html tree的html
      */
 
-    tree.prototype={
+    Tree.prototype={
         _is_open:false,  //是否open
         _originId:{nodeId:[],id:[]},   //上次打开时候选中了哪一些id
         _searchTimer:'',   //搜索框的定时器
@@ -143,6 +143,8 @@
                 $(document).on('click.xTree', function () {
                     that.end();
                 });
+            }else{
+                that.start();
             }
         },
 
