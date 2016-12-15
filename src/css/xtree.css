@@ -1,0 +1,34 @@
+body {
+    padding: 20px;
+    background: #5CD
+}
+
+.tree-wrap {
+    display: inline-block;
+    width: 360px;
+    height: 555px;
+    padding: 5px;
+    border: 1px solid #02B;
+    vertical-align: bottom;
+    background: #fff;
+}
+
+.icon-expand{
+    width: 16px;
+    height: 16px;
+    background:#397;
+}
+
+.icon-expand:before {
+    content: "\e615";
+}
+
+.icon-shrink{
+    width: 16px;
+    height: 16px;
+    background:#895;
+}
+
+.icon-shrink:before {
+    content: "\e614";
+}

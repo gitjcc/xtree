@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>xtree.js</title>
-    <link rel="stylesheet" href="xtree.css">
+    <link rel="stylesheet" href="src/css/xtree.css">
 </head>
 <body>
-<script type="text/javascript" src="jquery-3.1.1.min.js"></script>
-<script type="text/javascript" src="xtree.js"></script>
+<script type="text/javascript" src="src/lib/jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="src/js/xtree.js"></script>
 
 
 <div class="tree-wrap">
@@ -51,7 +51,7 @@
             console.log(testTree1.getId());
         },
         onCheck: function (item, dom, childrenItem) {
-            console.log('check');
+            console.log('check: ', this );
 //            console.log(this);
 //            console.log(this.getId());
 //            console.log(testTree1);

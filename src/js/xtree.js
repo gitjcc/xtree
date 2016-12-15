@@ -433,47 +433,42 @@
         //    });
         //    return expandId;
         //},
-        _showLayer:function(layerId){
-            var showData=this._getLayerData(layerId);
-            var itemDiv=makeLayer();
-
-
+        _showLayer: function (layerId) {
+            var showData = this._getLayerData(layerId);
+            var itemDiv = makeLayer();
             //这里 0节点的结构 和 子节点的结构 没有处理好    以后尽量让node-id 和  itemdiv 分开
-            if(layerId === this.opt.rootId){
-                itemDiv=$(itemDiv).attr('node-id',this.opt.rootId);
+            if (layerId === this.opt.rootId) {
+                itemDiv = $(itemDiv).attr('node-id', this.opt.rootId);
                 this.html.append(itemDiv);
                 //itemDiv.parent().attr('node-id',0);
 
-            }else{
-                toShrink(this.html.find('div[node-id="'+layerId+'"] i'));
-                this.html.find('div[node-id="'+layerId+'"]').append(itemDiv);
+            } else {
+                toShrink(this.html.find('div[node-id="' + layerId + '"] i'));
+                this.html.find('div[node-id="' + layerId + '"]').append(itemDiv);
             }
 
-            for(var i in showData){
+            for (var i in showData) {
                 itemDiv.append(this._makeItem(showData[i]));
             }
         },
-        _removeLayer:function(layerId){
-            this.html.find('div[node-id="'+layerId+'"]>div').remove();
-            toExpand(this.html.find('div[node-id="'+layerId+'"] i'));
+        _removeLayer: function (layerId) {
+            this.html.find('div[node-id="' + layerId + '"]>div').remove();
+            toExpand(this.html.find('div[node-id="' + layerId + '"] i'));
         },
-
-
 
 
         /**
          *      数据方法
          */
-        _getLayerData:function (parent){
-            var res=[];
-            for(var i in this.data){
-                if(this.data[i].nodeId==parent){
+        _getLayerData: function (parent) {
+            var res = [];
+            for (var i in this.data) {
+                if (this.data[i].nodeId == parent) {
 //                if(data[i].is_node){
 //                    res.unshift(data[i])
 //                }else{
 //                    res.push(data[i]);
 //                }
-
                     res.push(this.data[i]);  //原序
                 }
             }
@@ -723,7 +718,7 @@
 
     function makeExpand(){
         // var html='<span data-icon="expand">＋</span>';
-        var html='<i class="iconfont icon-jia1"></i>';
+        var html='<i class="iconfont icon-expand"></i>';
 
         return $(html).css({
             'font-size':'14px',
@@ -735,13 +730,13 @@
     }
 
     function toShrink(dom){
-        dom.removeClass('icon-jia1');
-        dom.addClass('icon-jian1');
+        dom.removeClass('icon-Expand');
+        dom.addClass('icon-shrink');
     }
 
     function toExpand(dom){
-        dom.removeClass('icon-jian1');
-        dom.addClass('icon-jia1');
+        dom.removeClass('icon-shrink');
+        dom.addClass('icon-expand');
     }
 
 
@@ -751,6 +746,11 @@
             return typeof data[i] =='object';
         }
         return false;
+    }
+
+    //todo 检查data有没有子节点，如果有则isNode=true,如果没有则isNode=true
+    function isNode(data){
+
     }
 
 
