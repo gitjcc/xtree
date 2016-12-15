@@ -3,23 +3,23 @@
  * 命名大意：
  * dom    用户定义承载树的dom
  * html   树的html
- * item   data的每一条,可以是node也可以是child
- * child  树的叶子;子元素;成员
+ * item   data的每一条,可以是node也可以是leaf
+ * leaf  树的叶子;子元素;成员
  * node   树的节点;文件夹;部门
- * layer  树的层级,包含同一层的item(node,child);
+ * layer  树的层级,包含同一层的item(node,leaf);
  * _      带有下划线的是插件需要的方法属性，用户不需要使用
  *
  *
  *
  *
  * 思路:
- * 1.node的id和child的id可以重复,因为实际场景可能是两种数据比如,部门和人员.对于省份和城市可能本身就不会重复
- * 2.选择数据,用户需要的结果是:1.所有child.2.node+child
+ * 1.node的id和leaf的id可以重复,因为实际场景可能是两种数据比如,部门和人员.对于省份和城市可能本身就不会重复
+ * 2.选择数据,用户需要的结果是:1.所有leaf.2.node+leaf
  * 3.is_trigger如果是true,是为input框设计的,会去读取input框的宽度作为自身的宽度
  * 4.这里html的input显示的时候根据data决定是否check，
  * 5.每次的点击input产生的变化是html变了，然后data也变。
  * 6.4，5导致容易出错,但我觉得应该是根据操作data数据发生变化，变化完毕，统一一个方法决定html结构的变化，不过效率不一定更高
- * 7.only_child为true必然不会node_merge
+ * 7.only_leaf为true必然不会node_merge
  * 8.代码中还有一些根据标签(div,span)来做的判断,都不太靠谱
  *
  *
@@ -32,7 +32,7 @@
         dom:'',  //jqueryDom
         is_trigger:true,  //是否需要触发? 否则直接显示
         has_search:false,
-        only_child:true,//是否结果只要 child
+        only_leaf:true,//是否结果只要 leaf
         node_merge:true,//结果只显示最上层  比如   中国被选中  四川,成都则不会显示  否则 每个被勾选的节点都显示
         zIndex:1,
         choose:false,  //哪些是选中的？优先级高于data  {nodeId:[1,2,3],id:[1,2,3]}
@@ -76,12 +76,12 @@
         })[0].outerHTML;
     }
     function toShrink(dom){
-        dom.removeClass('icon-jia1');
-        dom.addClass('icon-jian1');
+        dom.removeClass('icon-expand');
+        dom.addClass('icon-shrink');
     }
     function toExpand(dom){
-        dom.removeClass('icon-jian1');
-        dom.addClass('icon-jia1');
+        dom.removeClass('icon-shrink');
+        dom.addClass('icon-expand');
     }
     function checkData(data){
         for(var i in data){
@@ -211,7 +211,7 @@
         function getName(){
             var text=[];
             var data=this.data;
-            if(this.opt.only_child){
+            if(this.opt.only_leaf){
                 $.each(data,function(i,n){
                     if(n.is_check && !n.is_node){
                         text.push( n.name);
@@ -249,7 +249,7 @@
             var nodeId=[];
             var data=this.data;
 
-            if(this.opt.only_child){
+            if(this.opt.only_leaf){
                 $.each(data,function(i,n){
                     if(n.is_check && !n.is_node){
                         id.push( data[i].id);
@@ -347,7 +347,7 @@
         function getItem(){
             var arr=[];
             var data=this.data;
-            if(this.opt.only_child) {
+            if(this.opt.only_leaf) {
                 $.each(data, function (i, n) {
                     if (n.is_check && !n.is_node) {
                         arr.push(n);
@@ -654,7 +654,7 @@
                 $html = $('<div node-id="'+item.id+'">'+makeExpand()+'<label><input type="checkbox" data-isNode="1" data-id="'+item.id+'" '+(item.is_check?'checked':'')+' data-name="'+item.name+'"/><span>'+item.name+'</span></label></div>');
             }
             else{
-                if(this.opt.only_child){
+                if(this.opt.only_leaf){
                     $html = $('<div node-id="'+item.id+'">'+makeExpand()+'<span>'+item.name+'</span></div>');
                 }
                 else{
@@ -684,13 +684,13 @@
 
             return $html;
         }
-        function _makeChild(item){
+        function _makeLeaf(item){
             var $html;
             if(this.opt.is_multi){
                 $html = $('<div><span></span><label><input type="checkbox" data-id="'+item.id+'" data-isNode="0" data-name="'+item.name+'" '+(item.is_check?'checked':'') +'/>'+item.name+'</label></div>');
             }
             else{
-                $html = $('<div>'+(this.opt.only_child?'':'<span></span>')+'<label><input type="radio" name="'+ this.dom.selector +'" data-id="'+item.id+'" data-isNode="0" data-name="'+item.name+'" />'+item.name+'</label></div>');
+                $html = $('<div>'+(this.opt.only_leaf?'':'<span></span>')+'<label><input type="radio" name="'+ this.dom.selector +'" data-id="'+item.id+'" data-isNode="0" data-name="'+item.name+'" />'+item.name+'</label></div>');
             }
             $html.find('span').css({
                 'width':'16px',
@@ -710,7 +710,7 @@
             if(item.is_node){
                 $html= this._makeNode(item);
             }else{
-                $html= this._makeChild(item);
+                $html= this._makeLeaf(item);
             }
 
             var obj=this;
@@ -766,7 +766,7 @@
             _makePanel:_makePanel,
             _makeSearch:_makeSearch,
             _makeNode: _makeNode,
-            _makeChild:_makeChild,
+            _makeLeaf:_makeLeaf,
             _makeItem:_makeItem
         };
     })();

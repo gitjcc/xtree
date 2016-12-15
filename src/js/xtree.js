@@ -9,9 +9,6 @@
  * layer  树的层级,包含同一层的item(node,child);
  * _      带有下划线的是插件需要的方法属性，用户不需要使用
  *
- *
- *
- *
  * 思路:
  * 1.node的id和child的id可以重复,因为实际场景可能是两种数据比如,部门和人员.对于省份和城市可能本身就不会重复
  * 2.选择数据,用户需要的结果是:1.所有child.2.node+child
@@ -22,7 +19,8 @@
  * 7.only_child为true必然不会node_merge
  * 8.代码中还有一些根据标签(div,span)来做的判断,都不太靠谱
  *
- *
+ * 9.现在的 child 指的是树的叶子，与‘子成员’概念并不一致，是否需要改为 leaf 或者其他？
+ * 10. 8的问题是否可以用 class 来解决？ 同样的还有 js 直接操作样式的代码块，是否都可以用class来代替
  */
 
 ;(function ($) {
@@ -31,8 +29,7 @@
         return new Tree(opt);
     };
 
-    //todo 是否允许用户自定义opt的默认值
-    //todo 是否需要用户提供isnode？数据
+
     var defOpt = {
         dom:'',  //jqueryDom
         is_trigger:true,  //是否需要触发? 否则直接显示
@@ -70,7 +67,7 @@
          *     'start':this.start,
          *     'end':this.end
          * };  //todo  这样会导致 this 没有 别的方法 到底 还是不能正常使用
-         *  //todo  是否可以return 一个对象，包含start、end 等给外部调用的函数。其他函数放在闭包中，由暴露函数调用。
+         * //todo 是否可以return 一个对象，包含start、end 等给外部调用的函数。其他函数放在闭包中，由暴露函数调用？原型中能否用闭包？
          */
     };
 
@@ -665,7 +662,7 @@
                 $html = $('<div>'+(this.opt.only_child?'':'<span></span>')+'<label><input type="radio" name="'+ this.dom.selector +'" data-id="'+item.id+'" data-isNode="0" data-name="'+item.name+'" />'+item.name+'</label></div>');
             }
             $html.find('span').css({
-                'width':'16px',
+                'width':'12px',
                 'user-select':'none',
                 '-webkit-user-select':'none',
                 '-moz-user-select':'none',
@@ -720,7 +717,7 @@
         var html='<i class="iconfont icon-expand"></i>';
 
         return $(html).css({
-            'font-size':'14px',
+            'font-size':'12px',
             'font-weight':'bold',
             'vertical-align':'base-line',
             'padding-right':'0px',
