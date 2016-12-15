@@ -694,7 +694,6 @@
                     item.is_check=true;
                 }
 
-
                 obj._chgItem(item,$(this));
 
             });

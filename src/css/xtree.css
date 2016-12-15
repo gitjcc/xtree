@@ -13,22 +13,10 @@ body {
     background: #fff;
 }
 
-.icon-expand{
-    width: 16px;
-    height: 16px;
-    background:#397;
-}
-
 .icon-expand:before {
-    content: "\e615";
-}
-
-.icon-shrink{
-    width: 16px;
-    height: 16px;
-    background:#895;
+    content: "\e61d";
 }
 
 .icon-shrink:before {
-    content: "\e614";
+    content: "\e61e";
 }
