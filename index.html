@@ -8,7 +8,7 @@
 </head>
 <body>
 <script type="text/javascript" src="src/lib/jquery-3.1.1.min.js"></script>
-<script type="text/javascript" src="src/js/xtree.js"></script>
+<script type="text/javascript" src="src/js/xtree2.js"></script>
 
 
 <div class="tree-wrap">
@@ -40,6 +40,7 @@
         //        },
         onInit: function () {
             console.log('init');
+            this._is_first = 'tree1';
         },
         onOpen: function () {
             console.log('open');
@@ -92,6 +93,7 @@
         //            id:[1]
         //        },
         onInit: function () {
+            this._is_first = 'tree2';
         },
         onOpen: function () {
         },
@@ -139,6 +141,7 @@
         //            id:[1]
         //        },
         onInit: function () {
+            this._is_first = 'tree3';
         },
         onOpen: function () {
         },
