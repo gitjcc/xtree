@@ -27,107 +27,45 @@
 
 ;(function ($) {
 
-    //闭包中的变量和函数
-    var defOpt = {
-        dom:'',  //jqueryDom
-        is_trigger:true,  //是否需要触发? 否则直接显示
-        has_search:false,
-        only_leaf:true,//是否结果只要 leaf
-        node_merge:true,//结果只显示最上层  比如   中国被选中  四川,成都则不会显示  否则 每个被勾选的节点都显示
-        zIndex:1,
-        choose:false,  //哪些是选中的？优先级高于data  {nodeId:[1,2,3],id:[1,2,3]}
-        //node_first:false,//是否需要节点排在前面  否则按照data的顺序
-        is_multi:true,//是否多选
-        expand:false, //是否展开，false、true、num  //todo expand
-        rootId:0,//todo  如何去掉这个参数
-        width:null,
-        maxHeight:null,
-        data:[],//{id:1,name:'xx',nodeId:'0',is_node:true,is_check:false},
-        onInit: function () {},
-        onOpen: function () {}, //触发时
-        onBeforeOpen: function () {},
-        onClose: function (has_chg) {
-            //has_chg  是否发生变化
-        },
-        onCheck: function (item,dom,childrenItem) {
-            //item 点击的item
-            //dom 点击的dom
-            //childrenItem  所有影响的子节点
-        },
-        onCancel: function (item,dom,childrenItem) {}
-    };
-    function makeLayer(){
-        var html='<div></div>';
+    // window.xTreeClosure=function () {
+    //     return tree;
+    // };
+    window.xTreeClosure = tree;
 
-        return $(html).css({
-            'margin-left':'13px'
-        });
-    }
-    function makeExpand(){
-        // var html='<span data-icon="expand">＋</span>';
-        var html='<i class="iconfont icon-jia1"></i>';
+    function tree (opt){
+        //闭包中的变量和函数
+        var defOpt = {
+            dom:'',  //jqueryDom
+            is_trigger:true,  //是否需要触发? 否则直接显示
+            has_search:false,
+            only_leaf:true,//是否结果只要 leaf
+            node_merge:true,//结果只显示最上层  比如   中国被选中  四川,成都则不会显示  否则 每个被勾选的节点都显示
+            zIndex:1,
+            choose:false,  //哪些是选中的？优先级高于data  {nodeId:[1,2,3],id:[1,2,3]}
+            //node_first:false,//是否需要节点排在前面  否则按照data的顺序
+            is_multi:true,//是否多选
+            expand:false, //是否展开，false、true、num  //todo expand
+            rootId:0,//todo  如何去掉这个参数
+            width:null,
+            maxHeight:null,
+            data:[],//{id:1,name:'xx',nodeId:'0',is_node:true,is_check:false},
+            onInit: function () {},
+            onOpen: function () {}, //触发时
+            onBeforeOpen: function () {},
+            onClose: function (has_chg) {
+                //has_chg  是否发生变化
+            },
+            onCheck: function (item,dom,childrenItem) {
+                //item 点击的item
+                //dom 点击的dom
+                //childrenItem  所有影响的子节点
+            },
+            onCancel: function (item,dom,childrenItem) {}
+        };
 
-        return $(html).css({
-            'font-size':'14px',
-            'font-weight':'bold',
-            'vertical-align':'base-line',
-            'padding-right':'0px',
-            'cursor':'pointer'
-        })[0].outerHTML;
-    }
-    function toShrink(dom){
-        dom.removeClass('icon-expand');
-        dom.addClass('icon-shrink');
-    }
-    function toExpand(dom){
-        dom.removeClass('icon-shrink');
-        dom.addClass('icon-expand');
-    }
-    function checkData(data){
-        for(var i in data){
-            return typeof data[i] =='object';
-        }
-        return false;
-    }
-
-
-    window.xTreeNext=function(opt){
-        return new tree(opt);
-    };
-
-    var tree=function(opt){
         console.log(this);
         console.log(this._init);
         this._init(opt);
-        return {
-            start:this.start,
-            end:this.end,
-            getName:this.getName,
-            getId:this.getId,
-            cancelItem:this.cancelItem,
-            cancelAll:this.cancelAll,
-            checkItem:this.checkItem,
-            checkAll:this.checkAll,
-            getItem:this.getItem,
-            search:this.search
-        };
-        // return this;
-        /**
-         * return {
-         *     'start':this.start,
-         *     'end':this.end
-         * };  //todo  这样会导致 this 没有 别的方法 到底 还是不能正常使用
-         */
-    };
-
-    /**
-     * @var opt  用户传进来的option
-     * @var dom 打开tree的载体jquery dom
-     * @var data  做tree的data
-     * @var html tree的html
-     */
-
-    tree.prototype=(function(){
         // 初始化
         function _init(opt){
             this.opt = $.extend(true,{},defOpt,opt);
@@ -730,45 +668,68 @@
             return $html;
         }
 
+        function makeLayer(){
+            var html='<div></div>';
+
+            return $(html).css({
+                'margin-left':'13px'
+            });
+        }
+        function makeExpand(){
+            // var html='<span data-icon="expand">＋</span>';
+            var html='<i class="iconfont icon-jia1"></i>';
+
+            return $(html).css({
+                'font-size':'14px',
+                'font-weight':'bold',
+                'vertical-align':'base-line',
+                'padding-right':'0px',
+                'cursor':'pointer'
+            })[0].outerHTML;
+        }
+        function toShrink(dom){
+            dom.removeClass('icon-expand');
+            dom.addClass('icon-shrink');
+        }
+        function toExpand(dom){
+            dom.removeClass('icon-shrink');
+            dom.addClass('icon-expand');
+        }
+        function checkData(data){
+            for(var i in data){
+                return typeof data[i] =='object';
+            }
+            return false;
+        }
+        //todo 检查data有没有子节点，如果有则isNode=true,如果没有则isNode=true
+        function _isNode(data){
+            var ids = [];
+            var nodeIds = [];
+            for (var i = 0; i < data.length; i++) {
+                for (var j = 0; j < data.length; j++) {
+                    if(data[i].id === data[j].nodeId){
+                        data[i].is_node = true;
+                        break;
+                    }
+                }
+            }
+            ids.append(data[i].id);
+            nodeIds.append(data[i].nodeId);
+        }
+
 
         return {
-            _is_open:false,  //是否open
-            _originId:{nodeId:[],id:[]},   //上次打开时候选中了哪一些id
-            _searchTimer:'',   //搜索框的定时器
-            _is_first:true,  //是不是第一次打开
-            _init:_init,
-
-            start:start,
-            end:end,
-            getName:getName,
-            getId:getId,
-            cancelItem:cancelItem,
-            cancelAll:cancelAll,
-            checkItem:checkItem,
-            checkAll:checkAll,
-            getItem:getItem,
-            search:search,
-
-            _showPanel:_showPanel,
-            _showData:_showData,
-            _expand:_expand,
-            _expandLevel:_expandLevel,
-            _showLayer:_showLayer,
-            _removeLayer:_removeLayer,
-
-            _getLayerData:_getLayerData,
-            _chgItem:_chgItem,
-            _getChild:_getChild,
-            _cancelParentNode:_cancelParentNode,
-            _checkParentNode:_checkParentNode,
-            _chgAllChildren:_chgAllChildren,
-
-            _makePanel:_makePanel,
-            _makeSearch:_makeSearch,
-            _makeNode: _makeNode,
-            _makeLeaf:_makeLeaf,
-            _makeItem:_makeItem
+            start:this.start,
+            end:this.end,
+            getName:this.getName,
+            getId:this.getId,
+            cancelItem:this.cancelItem,
+            cancelAll:this.cancelAll,
+            checkItem:this.checkItem,
+            checkAll:this.checkAll,
+            getItem:this.getItem,
+            search:this.search
         };
-    })();
+    };
 
 })($);

@@ -8,7 +8,7 @@
 </head>
 <body>
 <script type="text/javascript" src="src/lib/jquery-3.1.1.min.js"></script>
-<script type="text/javascript" src="src/js/x-tree-prototype.js"></script>
+<script type="text/javascript" src="src/js/x-tree-closure.js"></script>
 
 
 <div class="tree-wrap">
@@ -16,7 +16,7 @@
     <div class="test_tree1"></div>
 </div>
 <script>
-    var testTree1 = xTree({
+    var testTree1 = xTreeClosure({
         dom: $('.test_tree1'),
         only_child: false,
         is_multi: true,
@@ -72,7 +72,7 @@
     <input class="test_tree2" placeholder="">
 </div>
 <script>
-    var testTree2 = xTree({
+    var testTree2 = xTreeClosure({
         dom: $('.test_tree2'),
         only_child: false,
         is_multi: true,
@@ -120,7 +120,7 @@
     <input class="test_tree3" placeholder="">
 </div>
 <script>
-    var testTree3 = xTree({
+    var testTree3 = xTreeClosure({
         dom: $('.test_tree3'),
         only_child: false,
         is_multi: true,
