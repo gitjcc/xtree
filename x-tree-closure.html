@@ -41,7 +41,6 @@
 
         onInit: function () {
             console.log('init');
-            this._is_first = 'tree1';
         },
         onOpen: function () {
             console.log('open');
@@ -94,22 +93,27 @@
         //            id:[1]
         //        },
         onInit: function () {
-            this._is_first = 'tree2';
+            console.log('tree2, init');
         },
         onOpen: function () {
+            console.log('tree2, open');
         },
         onBeforeOpen: function () {
+            console.log('tree2, beforeopen');
         },
         onClose: function (hasChange) {
+            console.log('tree2, close');
             console.log(testTree2.getId());
         },
         onCheck: function (item, dom, childrenItem) {
+            console.log('check: ', this );
 //            console.log(this);
 //            console.log(this.getId());
-//            console.log(testTree2);
-//            应该是  this.getId()比较规范  还是 testTree2.getId()比较规范   this可以做到 只暴漏该暴漏的方法
+//            console.log(testTree1);
+//            应该是  this.getId()比较规范  还是 testTree1.getId()比较规范   this可以做到 只暴漏该暴漏的方法
         },
         onCancel: function (item, dom, childrenItem) {
+            console.log('cancel: ', this );
         }
     });
 </script>
@@ -142,7 +146,6 @@
         //            id:[1]
         //        },
         onInit: function () {
-            this._is_first = 'tree3';
         },
         onOpen: function () {
         },
