@@ -87,7 +87,6 @@
 
             var res = checkData(_data);
             if(!res){
-                console.log('数据格式无法识别');
                 return false;
             }
 
@@ -195,7 +194,8 @@
 
             return text.join();
         }
-        function getId(){
+
+        function getId() {
             var id = [];
             var nodeId = [];
             if (_opt.only_leaf) {
@@ -204,43 +204,45 @@
                         id.push(n.id);
                     }
                 });
-            } else if (_opt.node_merge) {
-                var node = [];
-                $.each(_data, function (i, n) {
-                    if (n.is_check && n.is_node) {
-                        node.push(n.id);
-//                            text.push( n.name);  //nodefirst
-                    }
-                });
-
-                var clone = $.extend(true, [], _data);
-                $.each(clone, function (i, n) {
-                    if ((n.is_check && $.inArray(n.nodeId, node) != -1) || !n.is_check) {
-                        clone[i] = null;
-                    }
-                });
-
-                $.each(clone, function (i, n) {
-                    if (n) {
-                        if (n.is_node) {
-                            nodeId.push(n.id);
-                        } else {
-                            id.push(n.id);
-                        }
-                    }
-                });
             } else {
-                $.each(_data, function (i, n) {
-                    if (n.is_check) {
-                        if (n.is_node) {
-                            nodeId.push(n.id);
-                        } else {
-                            id.push(n.id);
+                if (_opt.node_merge) {
+                    var node = [];
+                    $.each(_data, function (i, n) {
+                        if (n.is_check && n.is_node) {
+                            node.push(n.id);
+//                            text.push( n.name);  //nodefirst
                         }
-                    }
-                });
+                    });
+
+                    var clone = $.extend(true, [], _data);
+                    $.each(clone, function (i, n) {
+                        if ((n.is_check && $.inArray(n.nodeId, node) != -1) || !n.is_check) {
+                            clone[i] = null;
+                        }
+                    });
+
+                    $.each(clone, function (i, n) {
+                        if (n) {
+                            if (n.is_node) {
+                                nodeId.push(n.id);
+                            } else {
+                                id.push(n.id);
+                            }
+                        }
+                    });
+                } else {
+                    $.each(_data, function (i, n) {
+                        if (n.is_check) {
+                            if (n.is_node) {
+                                nodeId.push(n.id);
+                            } else {
+                                id.push(n.id);
+                            }
+                        }
+                    });
+                }
+                id = {'id': id, 'nodeId': nodeId};
             }
-            id = {'id': id, 'nodeId': nodeId};
             return id;
         }
         function cancelItem(id,type){
@@ -349,7 +351,6 @@
          *      视图方法
          */
         function _showPanel(){
-            console.log('show-panel-1');
             if(_opt.is_trigger){
                 _html.css({
                     top:_dom.position().top+_dom.outerHeight(),
@@ -366,16 +367,13 @@
             }else{
                 _dom.append(_html);
             }
-            console.log('show-panel-2');
         }
         function _showData(){
-            console.log('show-data-1');
             if( _state._is_first ){
                 _showLayer(_state._rootId);
             }else{
                 _html.show();
             }
-            console.log('show-data-2');
 
         }
         function _expand(){
@@ -405,7 +403,6 @@
             return expandId;
         }
         function _showLayer(layerId){
-            console.log('showLayer-1');
             var showData = _getLayerData(layerId);
             var itemDiv = makeLayer();
 
@@ -424,7 +421,6 @@
             for (var i in showData) {
                 itemDiv.append(_makeItem(showData[i]));
             }
-            console.log('showLayer-2');
         }
 
         function _removeLayer(layerId) {
@@ -452,32 +448,32 @@
         }
         function _chgItem(item,dom){
 
-            if(_opt.is_multi){
-                if(item.is_node){
-                    dom.parent().find('input').prop('checked',item.is_check);
-                    _chgAllChildren(item.id,item.is_check);
+            if (_opt.is_multi) {
+                if (item.is_node) {
+                    dom.parent().find('input').prop('checked', item.is_check);
+                    _chgAllChildren(item.id, item.is_check);
                 }
 
-                if(!item.is_check){
+                if (!item.is_check) {
                     _cancelParentNode(item.nodeId);
-                }else{
+                } else {
                     _checkParentNode(item.nodeId);
                 }
-            }else{
+            } else {
 //                    _html.find('input').prop("checked",false);
 //                    $(this).prop('checked',true);
             }
 
 
-            var  childItem=[];
-            _getChild(item,childItem);
+            var childItem = [];
+            _getChild(item, childItem);
 
 
-            if(!item.is_check){
-                _opt.onCancel(item,dom,childItem);
+            if (!item.is_check) {
+                _opt.onCancel(item, dom, childItem);
 
-            }else{
-                _opt.onCheck(item,dom,childItem);
+            } else {
+                _opt.onCheck(item, dom, childItem);
             }
 
 
@@ -607,13 +603,11 @@
             });
 
             $html.find('i').on('click',function(e){
-                //这里判断有没有数据的方法 感觉有点不靠谱
-                if(!$html.find('i')[1]){
+                if($(this).hasClass('icon-expand')){
                     _showLayer(item.id);
                 }else{
                     _removeLayer(item.id);
                 }
-                //e.stopPropagation();
             });
 
             return $html;
@@ -647,16 +641,18 @@
                 $html= _makeLeaf(item);
             }
 
-            $html.find('input').on('click',function(){
-                if(_opt.is_multi){
-                    item.is_check=!item.is_check;
-                }else{
-                    $.each(_data,function(index,item){item.is_check = false;});
-                    item.is_check=true;
+            $html.find('input').on('click', function () {
+                if (_opt.is_multi) {
+                    item.is_check = !item.is_check;
+                } else {
+                    $.each(_data, function (index, item) {
+                        item.is_check = false;
+                    });
+                    item.is_check = true;
                 }
 
 
-                _chgItem(item,$(this));
+                _chgItem(item, $(this));
 
             });
 
@@ -672,7 +668,7 @@
         }
         function makeExpand(){
             // var html='<span data-icon="expand">＋</span>';
-            var html='<i class="iconfont icon-jia1"></i>';
+            var html='<i class="iconfont icon-expand"></i>';
 
             return $(html).css({
                 'font-size':'14px',

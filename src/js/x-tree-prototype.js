@@ -62,22 +62,9 @@
     var Tree=function(opt){
         this._init(opt);
         return this;
-        // return {
-        //          'start':this.start,
-        //      'end':this.end
-        //  };
-        /**
-         * return {xtree.js
-         *     'start':this.start,
-         *     'end':this.end
-         * };  //todo  这样会导致 this 没有 别的方法 到底 还是不能正常使用
-         * //是否可以return 一个对象，包含start、end 等给外部调用的函数。其他函数放在闭包中，由暴露函数调用？原型中能否用闭包？
-         * //原型与闭包不能同时实现，即继承与私有变量不能同时实现。
-         */
     };
 
     /**
-     *
      * @var opt  用户传进来的option
      * @var dom 打开tree的载体jquery dom
      * @var data  做tree的data
