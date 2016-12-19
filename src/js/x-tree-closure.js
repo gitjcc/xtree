@@ -33,7 +33,7 @@
         var _defOpt = {
             dom: '',  //jqueryDom
             is_trigger: true,  //是否需要触发? 否则直接显示
-            has_search: false,
+            has_search: true,
             only_child: true,//是否结果只要 child
             node_merge: false,//结果只显示最上层  比如   中国被选中  四川,成都则不会显示  否则 每个被勾选的节点都显示
             zIndex: 1,
@@ -63,7 +63,6 @@
             onCancel: function (item, dom, childrenItem) {
             }
         };
-
         var _opt = {};
         var _data = {};
         var _dom = {};
@@ -76,43 +75,40 @@
             _searchTimer:''
         };
 
-        // console.log(this);
-        // console.log(_init);
-
         _init(option);
 
         // 初始化
         function _init(option){
             _opt = $.extend(true,{},_defOpt,option);
-            console.log(_opt);
             _dom = _opt.dom;
             _data = _opt.data;
             _html = _makePanel();
 
+
             var res = checkData(_data);
             if(!res){
+                console.log('数据格式无法识别');
                 return false;
             }
 
             _opt.onInit();
-            _state._is_open=false;
-            
-            if(_opt.choose) {
+
+            if (_opt.choose) {
                 var choose = _opt.choose;
-                $.each(choose.nodeId,function (i,n){
-                    var item={};
-                    $.each(_data,function(i2,n2){
-                        if(n2.id == n  &&  n2.is_node == 1){
-                            item=n2;
-                            item.is_check=true;
+                $.each(choose.nodeId, function (i, n) {
+                    var item = {};
+                    $.each(_data, function (i2, n2) {
+                        if (n2.id == n && n2.is_node == 1) {
+                            item = n2;
+                            item.is_check = true;
                         }
                     });
-                    _chgAllChildren(item.id,item.is_check);
+                    _chgAllChildren(item.id, item.is_check);
                 });
-                $.each(choose.id,function (i,n){
-                    $.each(_data,function(i2,n2){
-                        if(n2.id == n && n2.is_node == false){
-                            n2.is_check=true;
+                $.each(choose.id, function (i, n) {
+                    $.each(_data, function (i2, n2) {
+                        if (n2.id == n && n2.is_node == false) {
+                            n2.is_check = true;
                         }
                     });
                 });
@@ -130,6 +126,8 @@
                 $(document).on('click.xTree', function () {
                     end();
                 });
+            } else {
+                start();
             }
         }
 
@@ -138,7 +136,6 @@
          *
          */
         function start(){
-            console.log(_opt);
             _opt.onBeforeOpen();
             _showPanel();
             _showData();
@@ -199,61 +196,51 @@
             return text.join();
         }
         function getId(){
-            var id=[];
-            var nodeId=[];
-            var data=_data;
-
-            if(_opt.only_leaf){
-                $.each(data,function(i,n){
-                    if(n.is_check && !n.is_node){
-                        id.push( data[i].id);
+            var id = [];
+            var nodeId = [];
+            if (_opt.only_leaf) {
+                $.each(_data, function (i, n) {
+                    if (n.is_check && !n.is_node) {
+                        id.push(n.id);
+                    }
+                });
+            } else if (_opt.node_merge) {
+                var node = [];
+                $.each(_data, function (i, n) {
+                    if (n.is_check && n.is_node) {
+                        node.push(n.id);
+//                            text.push( n.name);  //nodefirst
                     }
                 });
 
-            }else{
+                var clone = $.extend(true, [], _data);
+                $.each(clone, function (i, n) {
+                    if ((n.is_check && $.inArray(n.nodeId, node) != -1) || !n.is_check) {
+                        clone[i] = null;
+                    }
+                });
 
-                if(_opt.node_merge){
-                    var node=[];
-                    $.each(data,function(i,n){
-                        if(n.is_check && n.is_node){
-                            node.push( n.id);
-//                            text.push( n.name);  //nodefirst
+                $.each(clone, function (i, n) {
+                    if (n) {
+                        if (n.is_node) {
+                            nodeId.push(n.id);
+                        } else {
+                            id.push(n.id);
                         }
-                    });
-
-                    var clone= $.extend(true,[],data);
-                    $.each(clone,function(i,n){
-                        if(    (n.is_check  &&  $.inArray(n.nodeId,node) != -1) || !n.is_check  ){
-                            clone[i]=null;
+                    }
+                });
+            } else {
+                $.each(_data, function (i, n) {
+                    if (n.is_check) {
+                        if (n.is_node) {
+                            nodeId.push(n.id);
+                        } else {
+                            id.push(n.id);
                         }
-                    });
-
-
-                    $.each(clone,function(i,n){
-                        if(n){
-                            if(n.is_node){
-                                nodeId.push( data[i].id);
-                            }else{
-                                id.push( data[i].id);
-                            }
-                        }
-                    });
-                }else{
-                    $.each(data,function(i,n){
-                        if(n.is_check){
-                            if(n.is_node){
-                                nodeId.push( data[i].id);
-                            }else{
-                                id.push( data[i].id);
-                            }
-                        }
-                    });
-                }
-
-
-
-                id={'id':id,'nodeId':nodeId};
+                    }
+                });
             }
+            id = {'id': id, 'nodeId': nodeId};
             return id;
         }
         function cancelItem(id,type){
@@ -344,15 +331,15 @@
             return arr;
         }
         function search(val){
-            _removeLayer(_opt.rootId);
+            _removeLayer(_state._rootId);
 
             if(val===''){
-                _html.find('div[node-id="'+_opt.rootId+'"]').remove();
-                _showLayer(_opt.rootId);
+                _html.find('div[node-id="'+_state._rootId+'"]').remove();
+                _showLayer(_state._rootId);
             }else{
                 for(var i in _data){
                     if(  !_data[i].is_node &&   _data[i].name.indexOf(val) != -1){
-                        _html.find('div[node-id="'+_opt.rootId+'"]').append(_makeItem(_data[i]));
+                        _html.find('div[node-id="'+_state._rootId+'"]').append(_makeItem(_data[i]));
                     }
                 }
             }
@@ -384,7 +371,7 @@
         function _showData(){
             console.log('show-data-1');
             if( _state._is_first ){
-                _showLayer(_opt.rootId);
+                _showLayer(_state._rootId);
             }else{
                 _html.show();
             }
@@ -399,7 +386,7 @@
                     }
                 });
             }else if(_opt.expand){
-                var expandId = _opt.rootId;
+                var expandId = _state._rootId;
                 for (var i = 0; i < _opt.expand; i++) {
                     expandId = _expandLevel(expandId);
                 }
@@ -424,8 +411,8 @@
 
 
             //这里 0节点的结构 和 子节点的结构 没有处理好    以后尽量让node-id 和  itemdiv 分开
-            if (layerId === _opt.rootId) {
-                itemDiv = $(itemDiv).attr('node-id', _opt.rootId);
+            if (layerId === _state._rootId) {
+                itemDiv = $(itemDiv).attr('node-id', _state._rootId);
                 _html.append(itemDiv);
                 //itemDiv.parent().attr('node-id',0);
 
@@ -714,7 +701,7 @@
             var ids = [];
             var nodeIds = [];
             var rootId = 0;
-            for (var i = 0; i < data.length; i++) {
+            for (var i = 0; i < _data.length; i++) {
                 for (var j = 0; j < data.length; j++) {
                     if(data[i].id === data[j].nodeId){
                         data[i].is_node = true;
@@ -722,8 +709,8 @@
                     }
                 }
             }
-            ids.append(data[i].id);
-            nodeIds.append(data[i].nodeId);
+            ids.append(_data[i].id);
+            nodeIds.append(_data[i].nodeId);
             return rootId;
         }
 
