@@ -150,7 +150,6 @@
                 _html.hide();
                 _dom.val(getName());
                 var ids = getId();
-                _state._is_first = false;
 
                 _state._is_open = false;
                 _opt.onClose(JSON.stringify(ids) !== JSON.stringify(_state._originId));
@@ -371,6 +370,7 @@
         function _showData(){
             if( _state._is_first ){
                 _showLayer(_state._rootId);
+                _state._is_first = false;
             }else{
                 _html.show();
             }
