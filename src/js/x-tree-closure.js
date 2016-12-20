@@ -91,6 +91,8 @@
 
             _opt.onInit();
 
+            _initNode();
+
             if (_opt.choose) {
                 var choose = _opt.choose;
                 $.each(choose.nodeId, function (i, n) {
@@ -715,22 +717,28 @@
             return false;
         }
 
+        //todo 是否需要用户提供isnode？数据
         //todo 检查data有没有子节点，如果有则isNode=true,如果没有则isNode=true
-        function _isNode() {
-            var ids = [];
+        function _initNode() {
             var nodeIds = [];
             var rootId = 0;
             for (var i = 0; i < _data.length; i++) {
-                for (var j = 0; j < _data.length; j++) {
+                for (var j = i; j < _data.length; j++) {
                     if (_data[i].id === _data[j].nodeId) {
                         _data[i].is_node = true;
+                        nodeIds.push(_data[i].id);
                         break;
                     }
+                    if (_data[i].nodeId === _data[j].id) {
+                        _data[j].is_node = true;
+                        nodeIds.push(_data[j].id);
+                        break;
+                    }
+
                 }
             }
-            ids.append(_data[i].id);
-            nodeIds.append(_data[i].nodeId);
-            return rootId;
+
+            _state._rootId = rootId;
         }
 
         return {
