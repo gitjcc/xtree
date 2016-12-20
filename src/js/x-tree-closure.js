@@ -703,9 +703,9 @@
             var nodeIds = [];
             var rootId = 0;
             for (var i = 0; i < _data.length; i++) {
-                for (var j = 0; j < data.length; j++) {
-                    if(data[i].id === data[j].nodeId){
-                        data[i].is_node = true;
+                for (var j = 0; j < _data.length; j++) {
+                    if(_data[i].id === _data[j].nodeId){
+                        _data[i].is_node = true;
                         break;
                     }
                 }
