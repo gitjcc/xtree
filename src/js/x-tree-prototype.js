@@ -28,59 +28,122 @@
 ;(function ($) {
 
     //todo 是否需要用户提供isnode？数据
-
-    window.xTree=function(opt){
-        return new tree(opt);
-    };
-
     var defOpt = {
-        dom:'',  //jqueryDom
-        is_trigger:true,  //是否需要触发? 否则直接显示
-        has_search:false,
-        only_child:true,//是否结果只要 child
-        node_merge:true,//结果只显示最上层  比如   中国被选中  四川,成都则不会显示  否则 每个被勾选的节点都显示
-        zIndex:1,
-        choose:false,  //哪些是选中的？优先级高于data  {nodeId:[1,2,3],id:[1,2,3]}
+        dom: '',  //jqueryDom
+        is_trigger: true,  //是否需要触发? 否则直接显示
+        has_search: true,
+        only_child: true,//是否结果只要 child
+        node_merge: false,//结果只显示最上层  比如   中国被选中  四川,成都则不会显示  否则 每个被勾选的节点都显示
+        zIndex: 1,
+        choose: false,  //哪些是选中的？优先级高于data  {nodeId:[1,2,3],id:[1,2,3]}
         //node_first:false,//是否需要节点排在前面  否则按照data的顺序
-        is_multi:true,//是否多选
-        expand:false, //是否展开，false、true、num  //todo expand
-        rootId:0,//todo  如何去掉这个参数
-        width:null,
-        maxHeight:null,
-        data:[],//{id:1,name:'xx',nodeId:'0',is_node:true,is_check:false},
-        onInit: function () {},
-        onOpen: function () {}, //触发时
-        onBeforeOpen: function () {},
+        is_multi: true,//是否多选
+        only_leaf: false,
+        expand: false, //是否展开，false、true、num  //todo expand
+        // rootId:0,//todo  如何去掉这个参数
+        width: null,
+        maxHeight: null,
+        data: [],//{id:1,name:'xx',nodeId:'0',is_node:true,is_check:false},
+        onInit: function () {
+        },
+        onOpen: function () {
+        }, //触发时
+        onBeforeOpen: function () {
+        },
         onClose: function (has_chg) {
             //has_chg  是否发生变化
         },
-        onCheck: function (item,dom,childrenItem) {
+        onCheck: function (item, dom, childrenItem) {
             //item 点击的item
             //dom 点击的dom
             //childrenItem  所有影响的子节点
         },
-        onCancel: function (item,dom,childrenItem) {}
+        onCancel: function (item, dom, childrenItem) {
+        }
     };
 
-
-
-    var tree=function(opt){
-        this._init(opt);
-        return this;
-        /**
-         * return {
-         *     'start':this.start,
-         *     'end':this.end
-         * };  //todo  这样会导致 this 没有 别的方法 到底 还是不能正常使用
-         */
-
-
-
+    window.xTree=function(opt){
+        return new Tree(opt);
     };
 
+    function Tree(opt){
+        var that = this;
+        _init(that,opt);
+        return {
+            start:this.start,
+            end:this.end,
+            getName:this.getName,
+            getId:this.getId,
+            cancelItem:this.cancelItem,
+            cancelAll:this.cancelAll,
+            checkItem:this.checkItem,
+            checkAll:this.checkAll,
+            getItem:this.getItem,
+            search:this.search
+        };
+    }
+
+    function _init(that,opt){
+        that.opt = $.extend(true, {}, defOpt, opt);
+        that.dom = that.opt.dom;
+        that.data = that.opt.data;
+        that.html = that._makePanel();
+        that.state = {
+            _rootId: 0,
+            _is_open: false,  //是否open
+            _originId: {nodeId: [], id: []},   //上次打开时候选中了哪一些id
+            _searchTimer: '',   //搜索框的定时器
+            _is_first: true    //是不是第一次打开
+        };
+
+        var res = checkData(that.data);
+        if (!res) {
+            return false;
+        }
+
+        that.opt.onInit();
+
+        that.state._is_open=false;
+
+
+        if(that.opt.choose) {
+            var choose=that.opt.choose;
+            $.each(choose.nodeId,function (i,n){
+                var item={};
+                $.each(that.data,function(i2,n2){
+                    if(n2.id == n  &&  n2.is_node == 1){
+                        item=n2;
+                        item.is_check=true;
+                    }
+                });
+                that._chgAllChildren(item.id,item.is_check);
+            });
+            $.each(choose.id,function (i,n){
+                $.each(that.data,function(i2,n2){
+                    if(n2.id == n && n2.is_node == false){
+                        n2.is_check=true;
+                    }
+                });
+            });
+        }
+
+        that.state._originId=that.getId();
+
+
+        if(that.opt.is_trigger){
+            that.dom.off('click.xTree');
+            that.dom.on('click.xTree', function (e) {
+                that.start();
+                e.stopPropagation();
+            });
+
+            $(document).on('click.xTree', function () {
+                that.end();
+            });
+        }
+    }
 
     /**
-     *
      * @var opt  用户传进来的option
      * @var dom 打开tree的载体jquery dom
      * @var data  做tree的data
@@ -88,97 +151,31 @@
      */
 
 
-    tree.prototype={
-        _is_open:false,  //是否open
-        _originId:{nodeId:[],id:[]},   //上次打开时候选中了哪一些id
-        _searchTimer:'',   //搜索框的定时器
-        _is_first:true,  //是不是第一次打开
-        _init:function(opt){
-            this.opt = $.extend(true,{},defOpt,opt);
-            this.dom = this.opt.dom;
-            this.data = this.opt.data;
-            this.html = this._makePanel();
-
-            var res = checkData(this.data);
-            if(!res){
-                return false;
-            }
-
-
-
-            this.opt.onInit();
-
-            this._is_open=false;
-
-            var that=this;
-
-
-            if(this.opt.choose) {
-                var choose=this.opt.choose;
-                $.each(choose.nodeId,function (i,n){
-                    var item={};
-                    $.each(that.data,function(i2,n2){
-                        if(n2.id == n  &&  n2.is_node == 1){
-                            item=n2;
-                            item.is_check=true;
-                        }
-                    });
-                    that._chgAllChildren(item.id,item.is_check);
-                });
-                $.each(choose.id,function (i,n){
-                    $.each(that.data,function(i2,n2){
-                        if(n2.id == n && n2.is_node == false){
-                            n2.is_check=true;
-                        }
-                    });
-                });
-            }
-
-            this._originId=this.getId();
-
-
-            if(this.opt.is_trigger){
-                this.dom.off('click.xTree');
-                this.dom.on('click.xTree', function (e) {
-                    that.start();
-                    e.stopPropagation();
-                });
-
-                $(document).on('click.xTree', function () {
-                    that.end();
-                });
-            }
-        },
-
-        /**
-         *      方法
-         *
-         */
+    Tree.prototype={
+        /** 方法 */
         start:function(){
             this.opt.onBeforeOpen();
             this._showPanel();
             this._showData();
             this._expand();
-            this._is_open=true;
+            this.state._is_open=true;
 
             this.html.find('.x-tree-search').focus();
             this.opt.onOpen();
             return this;
         },
         end:function(){
-            if(this._is_open){
+            if(this.state._is_open){
                 this.html.hide();
                 this.dom.val(this.getName());
                 var ids=this.getId();
                 this._is_first=false;
 
-                this._is_open=false;
-                this.opt.onClose(JSON.stringify(ids) !== JSON.stringify(this._originId));
-                this._originId=ids;
+                this.state._is_open=false;
+                this.opt.onClose(JSON.stringify(ids) !== JSON.stringify(this.state._originId));
+                this.state._originId=ids;
             }
         },
-
-
         getName:function(){
             var text=[];
             var data=this.data;
@@ -361,25 +358,23 @@
             return arr;
         },
         search:function(val){
-            this._removeLayer(this.opt.rootId);
+            this._removeLayer(this.state._rootId);
 
             if(val===''){
-                this.html.find('div[node-id="'+this.opt.rootId+'"]').remove();
-                this._showLayer(this.opt.rootId);
+                this.html.find('div[node-id="'+this.state._rootId+'"]').remove();
+                this._showLayer(this.state._rootId);
             }else{
                 for(var i in this.data){
                     if(  !this.data[i].is_node &&   this.data[i].name.indexOf(val) != -1){
-                        this.html.find('div[node-id="'+this.opt.rootId+'"]').append(this._makeItem(this.data[i]));
+                        this.html.find('div[node-id="'+this.state._rootId+'"]').append(this._makeItem(this.data[i]));
                     }
                 }
             }
         },
 
-
         /**
          *      视图方法
          */
-
         _showPanel:function(){
             if(this.opt.is_trigger){
                 this.html.css({
@@ -401,7 +396,7 @@
         },
         _showData:function(){
             if( this._is_first ){
-                this._showLayer(this.opt.rootId);
+                this._showLayer(this.state._rootId);
             }else{
                 this.html.show();
             }
@@ -416,7 +411,7 @@
                     }
                 });
             }else if(obj.opt.expand){
-                var expandId = obj.opt.rootId;
+                var expandId = obj.state._rootId;
                 for (var i = 0; i < obj.opt.expand; i++) {
                     expandId = obj._expandLevel(expandId);
                 }
@@ -441,8 +436,8 @@
 
 
             //这里 0节点的结构 和 子节点的结构 没有处理好    以后尽量让node-id 和  itemdiv 分开
-            if(layerId === this.opt.rootId){
-                itemDiv=$(itemDiv).attr('node-id',this.opt.rootId);
+            if(layerId === this.state._rootId){
+                itemDiv=$(itemDiv).attr('node-id',this.state._rootId);
                 this.html.append(itemDiv);
                 //itemDiv.parent().attr('node-id',0);
 
@@ -459,9 +454,6 @@
             this.html.find('div[node-id="'+layerId+'"]>div').remove();
             toExpand(this.html.find('div[node-id="'+layerId+'"] i'));
         },
-
-
-
 
         /**
          *      数据方法
@@ -481,7 +473,6 @@
             }
             return res;
         },
-
         _chgItem:function(item,dom){
 
             if(this.opt.is_multi){
@@ -566,14 +557,9 @@
             });
         },
 
-
-
         /**
          * 构造html内部方法
          */
-
-
-
         _makePanel:function(){
             var html='<div></div>';
 
@@ -709,11 +695,7 @@
             return $html;
         }
 
-
     };
-
-
-
 
     function makeLayer(){
         var html='<div></div>';
@@ -722,7 +704,6 @@
             'margin-left':'13px'
         });
     }
-
     function makeExpand(){
         // var html='<span data-icon="expand">＋</span>';
         var html='<i class="iconfont icon-jia1"></i>';
@@ -735,26 +716,20 @@
             'cursor':'pointer'
         })[0].outerHTML;
     }
-
     function toShrink(dom){
         dom.removeClass('icon-jia1');
         dom.addClass('icon-jian1');
     }
-
     function toExpand(dom){
         dom.removeClass('icon-jian1');
         dom.addClass('icon-jia1');
     }
-
-
     function checkData(data){
         for(var i in data){
             return typeof data[i] =='object';
         }
         return false;
     }
-
-
 
 })($);
 

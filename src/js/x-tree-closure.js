@@ -138,7 +138,7 @@
             _opt.onBeforeOpen();
             _showPanel();
             _showData();
-            // _expand();
+            _expand();
             _state._is_open=true;
 
             _html.find('.x-tree-search').focus();
@@ -376,27 +376,33 @@
             }
 
         }
-        function _expand(){
-            if(_opt.expand === true){
-                $.each(_data,function(index,item){
-                    if(item.is_node){
-                        _html.find('div[node-id="'+item.id+'"] span[data-icon="expand"]').click();
+
+        function _expand() {
+            if (_opt.expand === true) {
+                $.each(_data, function (index, item) {
+                    if (item.is_node) {
+                        _html.find('i').filter('.icon-expand').click();
                     }
                 });
-            }else if(_opt.expand){
-                var expandId = _state._rootId;
+            } else if (_opt.expand) {
+                var expandId = [];
+                expandId.push(_state._rootId);
                 for (var i = 0; i < _opt.expand; i++) {
+                    console.log('expandID', expandId);
                     expandId = _expandLevel(expandId);
                 }
             }
+            console.log('expand', _opt.expand);
         }
-        function _expandLevel(id){
+
+        function _expandLevel(id) {
             var expandId = [];
-            $.each(id,function(index,item){
-                $.each(_data,function(index2,item2){
-                    if(item2.nodeId===item){
+            $.each(id, function (index, item) {
+                $.each(_data, function (index2, item2) {
+                    if (item2.nodeId === item) {
                         expandId.push(item2.id);
-                        _html.find('div[node-id="'+item2.id+'"] span[data-icon="expand"]').click();
+                        var a = _html.find('div[node-id="' + item2.nodeId + '"] > i').filter('.icon-expand').click();
+                        console.log('a', a);
                     }
                 });
             });
@@ -422,7 +428,6 @@
                 itemDiv.append(_makeItem(showData[i]));
             }
         }
-
         function _removeLayer(layerId) {
             _html.find('div[node-id="' + layerId + '"]>div').remove();
             toExpand(_html.find('div[node-id="' + layerId + '"] i'));
