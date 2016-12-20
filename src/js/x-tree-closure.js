@@ -1,4 +1,3 @@
-
 /**
  * 命名大意：
  * dom    用户定义承载树的dom
@@ -28,7 +27,7 @@
 
     window.xTreeClosure = tree;
 
-    function tree (option){
+    function tree(option) {
         //定义变量
         var _defOpt = {
             dom: '',  //jqueryDom
@@ -68,25 +67,25 @@
         var _dom = {};
         var _html = {};
         var _state = {
-            _is_first:true,
-            _is_open:false,
-            _rootId:0,//todo  如何去掉这个参数
-            _originId:{nodeId:[],id:[]},
-            _searchTimer:''
+            _is_first: true,
+            _is_open: false,
+            _rootId: 0,//todo  如何去掉这个参数
+            _originId: {nodeId: [], id: []},
+            _searchTimer: ''
         };
 
         _init(option);
 
         // 初始化
-        function _init(option){
-            _opt = $.extend(true,{},_defOpt,option);
+        function _init(option) {
+            _opt = $.extend(true, {}, _defOpt, option);
             _dom = _opt.dom;
             _data = _opt.data;
             _html = _makePanel();
 
 
             var res = checkData(_data);
-            if(!res){
+            if (!res) {
                 return false;
             }
 
@@ -115,7 +114,7 @@
 
             _state._originId = getId();
 
-            if(_opt.is_trigger){
+            if (_opt.is_trigger) {
                 _dom.off('click.xTree');
                 _dom.on('click.xTree', function (e) {
                     start();
@@ -134,12 +133,12 @@
          *      方法
          *
          */
-        function start(){
+        function start() {
             _opt.onBeforeOpen();
             _showPanel();
             _showData();
             _expand();
-            _state._is_open=true;
+            _state._is_open = true;
 
             _html.find('.x-tree-search').focus();
             _opt.onOpen();
@@ -244,82 +243,86 @@
             }
             return id;
         }
-        function cancelItem(id,type){
-            var item={};
-            var dom=_html.find('input[data-isNode="'+parseInt(type)+'"][data-id="'+id+'"]').prop('checked',false);
-            $.each(_data,function(i,n){
-                if(n.id ==id  &&  n.is_node == type){
-                    item=n;
-                    item.is_check=false;
+
+        function cancelItem(id, type) {
+            var item = {};
+            var dom = _html.find('input[data-isNode="' + parseInt(type) + '"][data-id="' + id + '"]').prop('checked', false);
+            $.each(_data, function (i, n) {
+                if (n.id == id && n.is_node == type) {
+                    item = n;
+                    item.is_check = false;
                 }
             });
 
-            _chgItem(item,dom);
+            _chgItem(item, dom);
 
         }
-        function cancelAll(){
-            $.each(_data,function(index,item){
+
+        function cancelAll() {
+            $.each(_data, function (index, item) {
                 item.is_check = false;
             });
-            _html.find('input').prop("checked",false);
+            _html.find('input').prop("checked", false);
             _opt.onCancel();
         }
-        function checkItem(id,type){
-            var item={};
-            var dom=_html.find('input[data-isNode="'+parseInt(type)+'"][data-i="'+id+'"]').prop('checked',true);
-            $.each(_data,function(i,n){
-                if(n.id ==id  &&  n.is_node == type){
-                    item=n;
-                    item.is_check=true;
+
+        function checkItem(id, type) {
+            var item = {};
+            var dom = _html.find('input[data-isNode="' + parseInt(type) + '"][data-i="' + id + '"]').prop('checked', true);
+            $.each(_data, function (i, n) {
+                if (n.id == id && n.is_node == type) {
+                    item = n;
+                    item.is_check = true;
                 }
             });
 
-            _chgItem(item,dom);
+            _chgItem(item, dom);
 
         }
+
         function checkAll() {
-            if(_opt.is_multi){
-                $.each(_data,function(index,item){
+            if (_opt.is_multi) {
+                $.each(_data, function (index, item) {
                     item.is_check = true;
                 });
-                _html.find('input').prop("checked",true);
+                _html.find('input').prop("checked", true);
                 _opt.onCheck();
             }
         }
-        function getItem(){
-            var arr=[];
-            var data=_data;
-            if(_opt.only_leaf) {
+
+        function getItem() {
+            var arr = [];
+            var data = _data;
+            if (_opt.only_leaf) {
                 $.each(data, function (i, n) {
                     if (n.is_check && !n.is_node) {
                         arr.push(n);
                     }
                 });
-            }else{
-
-                if(_opt.node_merge){
-                    var node=[];
-                    $.each(data,function(i,n){
-                        if(n.is_check && n.is_node){
-                            node.push( n.id);
+            } else {
+                if (_opt.node_merge) {
+                    var node = [];
+                    $.each(data, function (i, n) {
+                        if (n.is_check && n.is_node) {
+                            node.push(n.id);
 //                            text.push( n.name);  //nodefirst
                         }
                     });
 
-                    var clone= $.extend(true,[],data);
-                    $.each(clone,function(i,n){
-                        if(    (n.is_check  &&  $.inArray(n.nodeId,node) != -1) || !n.is_check  ){
-                            clone[i]=null;
+                    var clone = $.extend(true, [], data);
+                    $.each(clone, function (i, n) {
+                        if ((n.is_check && $.inArray(n.nodeId, node) != -1) || !n.is_check) {
+                            clone[i] = null;
                         }
                     });
 
 
-                    $.each(clone,function(i,n){
-                        if(n){
-                            arr.push( n);
+                    $.each(clone, function (i, n) {
+                        if (n) {
+                            arr.push(n);
                         }
                     });
-                }else {
+                } else {
                     $.each(data, function (i, n) {
                         if (n.is_check) {
                             arr.push(n);
@@ -331,16 +334,17 @@
             }
             return arr;
         }
-        function search(val){
+
+        function search(val) {
             _removeLayer(_state._rootId);
 
-            if(val===''){
-                _html.find('div[node-id="'+_state._rootId+'"]').remove();
+            if (val === '') {
+                _html.find('div[node-id="' + _state._rootId + '"]').remove();
                 _showLayer(_state._rootId);
-            }else{
-                for(var i in _data){
-                    if(  !_data[i].is_node &&   _data[i].name.indexOf(val) != -1){
-                        _html.find('div[node-id="'+_state._rootId+'"]').append(_makeItem(_data[i]));
+            } else {
+                for (var i in _data) {
+                    if (!_data[i].is_node && _data[i].name.indexOf(val) != -1) {
+                        _html.find('div[node-id="' + _state._rootId + '"]').append(_makeItem(_data[i]));
                     }
                 }
             }
@@ -349,12 +353,12 @@
         /**
          *      视图方法
          */
-        function _showPanel(){
-            if(_opt.is_trigger){
+        function _showPanel() {
+            if (_opt.is_trigger) {
                 _html.css({
-                    top:_dom.position().top+_dom.outerHeight(),
-                    left:_dom.position().left,
-                    minWidth:_opt.width?_opt.width:_dom.outerWidth()
+                    top: _dom.position().top + _dom.outerHeight(),
+                    left: _dom.position().left,
+                    minWidth: _opt.width ? _opt.width : _dom.outerWidth()
                 });
 
                 _html.on('click', function (e) {
@@ -363,15 +367,16 @@
 
                 _dom.after(_html);
 
-            }else{
+            } else {
                 _dom.append(_html);
             }
         }
-        function _showData(){
-            if( _state._is_first ){
+
+        function _showData() {
+            if (_state._is_first) {
                 _showLayer(_state._rootId);
                 _state._is_first = false;
-            }else{
+            } else {
                 _html.show();
             }
 
@@ -388,11 +393,9 @@
                 var expandId = [];
                 expandId.push(_state._rootId);
                 for (var i = 0; i < _opt.expand; i++) {
-                    console.log('expandID', expandId);
                     expandId = _expandLevel(expandId);
                 }
             }
-            console.log('expand', _opt.expand);
         }
 
         function _expandLevel(id) {
@@ -401,17 +404,16 @@
                 $.each(_data, function (index2, item2) {
                     if (item2.nodeId === item) {
                         expandId.push(item2.id);
-                        var a = _html.find('div[node-id="' + item2.nodeId + '"] > i').filter('.icon-expand').click();
-                        console.log('a', a);
+                        _html.find('div[node-id="' + item2.nodeId + '"] > i').filter('.icon-expand').click();
                     }
                 });
             });
             return expandId;
         }
-        function _showLayer(layerId){
+
+        function _showLayer(layerId) {
             var showData = _getLayerData(layerId);
             var itemDiv = makeLayer();
-
 
             //这里 0节点的结构 和 子节点的结构 没有处理好    以后尽量让node-id 和  itemdiv 分开
             if (layerId === _state._rootId) {
@@ -428,6 +430,7 @@
                 itemDiv.append(_makeItem(showData[i]));
             }
         }
+
         function _removeLayer(layerId) {
             _html.find('div[node-id="' + layerId + '"]>div').remove();
             toExpand(_html.find('div[node-id="' + layerId + '"] i'));
@@ -436,10 +439,10 @@
         /**
          *      数据方法
          */
-        function _getLayerData(parent){
-            var res=[];
-            for(var i in _data){
-                if(_data[i].nodeId==parent){
+        function _getLayerData(parent) {
+            var res = [];
+            for (var i in _data) {
+                if (_data[i].nodeId == parent) {
 //                if(data[i].is_node){
 //                    res.unshift(data[i])
 //                }else{
@@ -451,11 +454,12 @@
             }
             return res;
         }
-        function _chgItem(item,dom){
+
+        function _chgItem(item, dom) {
 
             if (_opt.is_multi) {
                 if (item.is_node) {
-                    dom.parent().find('input').prop('checked', item.is_check);
+                    dom.parent().parent().find('label > input').prop('checked', item.is_check);
                     _chgAllChildren(item.id, item.is_check);
                 }
 
@@ -483,49 +487,53 @@
 
 
         }
-        function _getChild(node,cont) {
-            if(node.is_node){
-                $.each(_data,function(i,n){
-                    if(n.nodeId ==node.id ){
+
+        function _getChild(node, cont) {
+            if (node.is_node) {
+                $.each(_data, function (i, n) {
+                    if (n.nodeId == node.id) {
                         cont.push(n);
-                        if(n.is_node){
-                            _getChild(n,cont);
+                        if (n.is_node) {
+                            _getChild(n, cont);
                         }
                     }
                 })
             }
 
         }
-        function _cancelParentNode(id){
-            $.each(_data,function(i,n){
-                if(n.id ==id && n.is_node && n.is_check){
-                    n.is_check=false;
-                    _html.find('input[data-isNode="1"][data-id="'+id+'"]').prop('checked',false);
+
+        function _cancelParentNode(id) {
+            $.each(_data, function (i, n) {
+                if (n.id == id && n.is_node && n.is_check) {
+                    n.is_check = false;
+                    _html.find('input[data-isNode="1"][data-id="' + id + '"]').prop('checked', false);
                     _cancelParentNode(n.nodeId);
                 }
             })
         }
-        function _checkParentNode(id){
+
+        function _checkParentNode(id) {
             var allChildrenChecked = true;
-            $.each(_data,function(i,n){
-                if(n.nodeId==id && !n.is_check){
+            $.each(_data, function (i, n) {
+                if (n.nodeId == id && !n.is_check) {
                     allChildrenChecked = false;
                 }
             });
-            $.each(_data,function(i,n){
-                if(n.id == id && n.is_node && !n.is_check && allChildrenChecked){
-                    n.is_check=true;
-                    _html.find('input[data-isNode="1"][data-id="'+id+'"]').prop('checked',true);
+            $.each(_data, function (i, n) {
+                if (n.id == id && n.is_node && !n.is_check && allChildrenChecked) {
+                    n.is_check = true;
+                    _html.find('input[data-isNode="1"][data-id="' + id + '"]').prop('checked', true);
                     _checkParentNode(n.nodeId);
                 }
             });
         }
-        function _chgAllChildren(nodeid,bol){
-            $.each($.extend(true,[], _data),function(i,n){   //这句话 看起来 好像 不用 extend
-                if(n.nodeId == nodeid){
-                    _data[i].is_check=bol;
-                    if(n.is_node){
-                        _chgAllChildren(n.id,bol);
+
+        function _chgAllChildren(nodeid, bol) {
+            $.each($.extend(true, [], _data), function (i, n) {   //这句话 看起来 好像 不用 extend
+                if (n.nodeId == nodeid) {
+                    _data[i].is_check = bol;
+                    if (n.is_node) {
+                        _chgAllChildren(n.id, bol);
                     }
                 }
             });
@@ -534,7 +542,7 @@
         /**
          * 构造html内部方法
          */
-        function _makePanel(){
+        function _makePanel() {
             var html = '<div></div>';
 
             if (_opt.has_search) {
@@ -564,86 +572,91 @@
             }
             return $(html).css(css);
         }
-        function _makeSearch(html){
-            var search='<input class="x-tree-search" type="text" placeholder="搜索"/></div>';
-            search=$(search).css({
-                'border':'none',
-                'padding':'4px 0',
-                'margin':'5px auto 0 auto',
-                'display':'block'
+
+        function _makeSearch(html) {
+            var searchHtml = '<input class="x-tree-search" type="text" placeholder="搜索"/></div>';
+            var searchDom = $(searchHtml).css({
+                'border': 'none',
+                'padding': '4px 0',
+                'margin': '5px auto 0 auto',
+                'display': 'block'
             });
 
-            $(search).on('keyup paste',function(){
-                clearTimeout(_searchTimer);
-                _state._searchTimer = setTimeout(function(){
-                    search(this.value);
-                },100);
+            $(searchDom).on('keyup paste', function () {
+                var that = this;
+                clearTimeout(_state._searchTimer);
+                _state._searchTimer = setTimeout(function () {
+                    search(that.value);
+                }, 100);
             });
 
-            return  $(html).append(search);
+            return $(html).append(searchDom);
 
         }
+
         function _makeNode(item) {
             var $html;
-            if(_opt.is_multi){
-                $html = $('<div node-id="'+item.id+'">'+makeExpand()+'<label><input type="checkbox" data-isNode="1" data-id="'+item.id+'" '+(item.is_check?'checked':'')+' data-name="'+item.name+'"/><span>'+item.name+'</span></label></div>');
+            if (_opt.is_multi) {
+                $html = $('<div node-id="' + item.id + '">' + makeExpand() + '<label><input type="checkbox" data-isNode="1" data-id="' + item.id + '" ' + (item.is_check ? 'checked' : '') + ' data-name="' + item.name + '"/><span>' + item.name + '</span></label></div>');
             }
-            else{
-                if(_opt.only_leaf){
-                    $html = $('<div node-id="'+item.id+'">'+makeExpand()+'<span>'+item.name+'</span></div>');
+            else {
+                if (_opt.only_leaf) {
+                    $html = $('<div node-id="' + item.id + '">' + makeExpand() + '<span>' + item.name + '</span></div>');
                 }
-                else{
-                    $html = $('<div node-id="'+item.id+'">'+makeExpand()+'<label><input type="radio" name="'+ _dom.selector +'" data-isNode="1" data-id="'+item.id+'" '+(item.is_check?'checked':'')+' data-name="'+item.name+'"/><span>'+item.name+'</span></label></div>');
+                else {
+                    $html = $('<div node-id="' + item.id + '">' + makeExpand() + '<label><input type="radio" name="' + _dom.selector + '" data-isNode="1" data-id="' + item.id + '" ' + (item.is_check ? 'checked' : '') + ' data-name="' + item.name + '"/><span>' + item.name + '</span></label></div>');
                 }
             }
             $html.find('span').css({
-                'cursor':'pointer',
-                'user-select':'none',
-                '-webkit-user-select':'none',
-                '-moz-user-select':'none',
-                '-ms-user-select':'none'
+                'cursor': 'pointer',
+                'user-select': 'none',
+                '-webkit-user-select': 'none',
+                '-moz-user-select': 'none',
+                '-ms-user-select': 'none'
             });
             $html.find('input').css({
-                'vertical-align':'middle'
+                'vertical-align': 'middle'
             });
 
-            $html.find('i').on('click',function(e){
-                if($(this).hasClass('icon-expand')){
+            $html.find('i').on('click', function (e) {
+                if ($(this).hasClass('icon-expand')) {
                     _showLayer(item.id);
-                }else{
+                } else {
                     _removeLayer(item.id);
                 }
             });
 
             return $html;
         }
-        function _makeLeaf(item){
+
+        function _makeLeaf(item) {
             var $html;
-            if(_opt.is_multi){
-                $html = $('<div><span></span><label><input type="checkbox" data-id="'+item.id+'" data-isNode="0" data-name="'+item.name+'" '+(item.is_check?'checked':'') +'/>'+item.name+'</label></div>');
+            if (_opt.is_multi) {
+                $html = $('<div><span></span><label><input type="checkbox" data-id="' + item.id + '" data-isNode="0" data-name="' + item.name + '" ' + (item.is_check ? 'checked' : '') + '/>' + item.name + '</label></div>');
             }
-            else{
-                $html = $('<div>'+(_opt.only_leaf?'':'<span></span>')+'<label><input type="radio" name="'+ _dom.selector +'" data-id="'+item.id+'" data-isNode="0" data-name="'+item.name+'" />'+item.name+'</label></div>');
+            else {
+                $html = $('<div>' + (_opt.only_leaf ? '' : '<span></span>') + '<label><input type="radio" name="' + _dom.selector + '" data-id="' + item.id + '" data-isNode="0" data-name="' + item.name + '" />' + item.name + '</label></div>');
             }
             $html.find('span').css({
-                'width':'16px',
-                'user-select':'none',
-                '-webkit-user-select':'none',
-                '-moz-user-select':'none',
-                '-ms-user-select':'none',
-                'display':'inline-block'
+                'width': '16px',
+                'user-select': 'none',
+                '-webkit-user-select': 'none',
+                '-moz-user-select': 'none',
+                '-ms-user-select': 'none',
+                'display': 'inline-block'
             });
             $html.find('input').css({
-                'vertical-align':'middle'
+                'vertical-align': 'middle'
             });
             return $html;
         }
-        function _makeItem(item){
+
+        function _makeItem(item) {
             var $html;
-            if(item.is_node){
-                $html= _makeNode(item);
-            }else{
-                $html= _makeLeaf(item);
+            if (item.is_node) {
+                $html = _makeNode(item);
+            } else {
+                $html = _makeLeaf(item);
             }
 
             $html.find('input').on('click', function () {
@@ -664,47 +677,52 @@
             return $html;
         }
 
-        function makeLayer(){
-            var html='<div></div>';
+        function makeLayer() {
+            var html = '<div></div>';
 
             return $(html).css({
-                'margin-left':'13px'
+                'margin-left': '13px'
             });
         }
-        function makeExpand(){
+
+        function makeExpand() {
             // var html='<span data-icon="expand">＋</span>';
-            var html='<i class="iconfont icon-expand"></i>';
+            var html = '<i class="iconfont icon-expand"></i>';
 
             return $(html).css({
-                'font-size':'14px',
-                'font-weight':'bold',
-                'vertical-align':'base-line',
-                'padding-right':'0px',
-                'cursor':'pointer'
+                'font-size': '14px',
+                'font-weight': 'bold',
+                'vertical-align': 'base-line',
+                'padding-right': '0px',
+                'cursor': 'pointer'
             })[0].outerHTML;
         }
-        function toShrink(dom){
+
+        function toShrink(dom) {
             dom.removeClass('icon-expand');
             dom.addClass('icon-shrink');
         }
-        function toExpand(dom){
+
+        function toExpand(dom) {
             dom.removeClass('icon-shrink');
             dom.addClass('icon-expand');
         }
-        function checkData(data){
-            for(var i in data){
-                return typeof data[i] =='object';
+
+        function checkData(data) {
+            for (var i in data) {
+                return typeof data[i] == 'object';
             }
             return false;
         }
+
         //todo 检查data有没有子节点，如果有则isNode=true,如果没有则isNode=true
-        function _isNode(){
+        function _isNode() {
             var ids = [];
             var nodeIds = [];
             var rootId = 0;
             for (var i = 0; i < _data.length; i++) {
                 for (var j = 0; j < _data.length; j++) {
-                    if(_data[i].id === _data[j].nodeId){
+                    if (_data[i].id === _data[j].nodeId) {
                         _data[i].is_node = true;
                         break;
                     }
@@ -716,16 +734,16 @@
         }
 
         return {
-            start:start,
-            end:end,
-            getName:getName,
-            getId:getId,
-            cancelItem:cancelItem,
-            cancelAll:cancelAll,
-            checkItem:checkItem,
-            checkAll:checkAll,
-            getItem:getItem,
-            search:search
+            start: start,
+            end: end,
+            getName: getName,
+            getId: getId,
+            cancelItem: cancelItem,
+            cancelAll: cancelAll,
+            checkItem: checkItem,
+            checkAll: checkAll,
+            getItem: getItem,
+            search: search
         };
     }
 
