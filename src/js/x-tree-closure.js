@@ -744,6 +744,14 @@
 
             // //去除数组重复值
             // function unique(array){
+            //     var n = [];
+            //     for(var i = 0; i < array.length; i++){
+            //         if (n.indexOf(array[i]) == -1) n.push(array[i]);
+            //     }
+            //     return n;
+            // }
+            //
+            // function unique(array){
             //     var r = [];
             //     for(var i = 0, l = array.length; i < l; i++) {
             //         for(var j = i + 1; j < l; j++){
@@ -757,6 +765,8 @@
             // }
             // rootId = unique(rootId);
             // console.log(rootId);
+
+
 
             _state._rootId = rootId[0];
         }
