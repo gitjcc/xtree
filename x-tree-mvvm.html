@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>xtree.js</title>
+    <link rel="stylesheet" href="src/css/xtree.css">
+    <link rel="stylesheet" href="src/lib/fonts/iconfont.css">
+</head>
+<body>
+<script type="text/javascript" src="src/lib/jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="src/js/x-tree-closure.js"></script>
+
+
+<div class="tree-wrap">
+    <!--    <input class="test_tree1" placeholder="">-->
+    <div class="test_tree1"></div>
+</div>
+<script>
+    var testTree1 = xTreeClosure({
+        dom: $('.test_tree1'),
+        only_leaf: false,
+        node_merge: false,
+        is_multi: true,
+        is_trigger: false,
+        has_search: false,
+        expand: 6,
+        data: [
+            {id: 1, name: '行政部', nodeId: 0, is_node: true, is_check: false},
+            {id: 3, name: '财务部3', nodeId: 1, is_node: true, is_check: false},
+            {id: 11, name: '财务部4', nodeId: 3, is_node: true, is_check: false},
+            {id: 12, name: '财务部5', nodeId: 11, is_node: true, is_check: false},
+            {id: 13, name: '财务部6', nodeId: 12, is_node: true, is_check: false},
+            {id: 14, name: '财务部7', nodeId: 13, is_node: true, is_check: false},
+            {id: 15, name: '财务部8', nodeId: 14, is_node: true, is_check: false},
+            {id: 16, name: '财务部9', nodeId: 15, is_node: true, is_check: false},
+            {id: 8, name: '财务部2', nodeId: 3, is_node: true, is_check: false},
+            {id: 5, name: '李职员', nodeId: 8, is_node: false, is_check: false},
+            {id: 6, name: '孙职员', nodeId: 8, is_node: false, is_check: false},
+            {id: 2, name: '张部长', nodeId: 1, is_node: false, is_check: false},
+            {id: 4, name: '刘职员', nodeId: 3, is_node: false, is_check: false},
+            {id: 1, name: '王经理', nodeId: 0, is_node: false, is_check: false}
+        ],
+        //        choose:{
+        //            nodeId:[1],
+        //            id:[1]
+        //        },
+
+        onInit: function () {
+            console.log('init');
+        },
+        onOpen: function () {
+            console.log('open');
+        },
+        onBeforeOpen: function () {
+            console.log('beforeopen');
+        },
+        onClose: function (hasChange) {
+            console.log('close');
+            console.log(testTree1.getId());
+        },
+        onCheck: function (item, dom, childrenItem) {
+            console.log('check: ', this );
+            console.log(testTree1.getName());
+            console.log(testTree1.getId());
+            console.log(testTree1.getItem());
+//            console.log(this);
+//            console.log(this.getId());
+//            console.log(testTree1);
+//            应该是  this.getId()比较规范  还是 testTree1.getId()比较规范   this可以做到 只暴漏该暴漏的方法
+        },
+        onCancel: function (item, dom, childrenItem) {
+            console.log('cancel: ', this );
+        }
+    });
+</script>
+
+
+</body>
+</html>

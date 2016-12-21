@@ -742,7 +742,7 @@
                 }
             });
 
-            // //去除数组重复值
+            // //去除数组重复值, 获取没重复的最右一值放入新数组
             // function unique(array){
             //     var r = [];
             //     for(var i = 0, l = array.length; i < l; i++) {

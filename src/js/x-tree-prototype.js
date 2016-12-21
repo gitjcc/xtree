@@ -62,7 +62,7 @@
         }
     };
 
-    window.xTree = function (opt) {
+    window.xTreePrototype = function (opt) {
         return new Tree(opt);
     };
 

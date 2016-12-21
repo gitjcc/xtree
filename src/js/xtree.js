@@ -189,28 +189,33 @@
                     }
                 });
             }else{
-                //todo  这里判断 node_merge
-                var node=[];
-                $.each(data,function(i,n){
-                    if(n.is_check && n.is_node){
-                        node.push( n.id);
-//                            text.push( n.name);  //nodefirst
-                    }
-                });
+                if (this.opt.node_merge) {
+                    var nodes = [];
+                    $.each(data, function (i, n) {
+                        if (n.is_check && n.is_node) {
+                            nodes.push(n.id);
+                        }
+                    });
 
-                var clone= $.extend(true,[],data);
-                $.each(clone,function(i,n){
-                    if(    (n.is_check  &&  $.inArray(n.nodeId,node) != -1) || !n.is_check  ){
-                        clone[i]=null;
-                    }
-                });
+                    var clone = $.extend(true, [], data); //直接赋值传的是引用
+                    $.each(clone, function (i, n) {
+                        if ((n.is_check && $.inArray(n.nodeId, nodes) != -1) || !n.is_check) {
+                            clone[i] = null;
+                        }
+                    });
 
-                $.each(clone,function(i,n){
-                    if(n){
-                        text.push( n.name);
-                    }
-                });
-
+                    $.each(clone, function (i, n) {
+                        if (n) {
+                            text.push(n.name);
+                        }
+                    });
+                } else {
+                    $.each(data, function (i, n) {
+                        if (n.is_check) {
+                            text.push(n.name);
+                        }
+                    });
+                }
             }
 
             return text.join();
