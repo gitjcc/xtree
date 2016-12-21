@@ -40,8 +40,7 @@
             //node_first:false,//是否需要节点排在前面  否则按照data的顺序
             is_multi: true,//是否多选
             only_leaf: false,
-            expand: false, //是否展开，false、true、num  //todo expand
-            // rootId:0,//todo  如何去掉这个参数
+            expand: false, //是否展开，false、true、num
             width: null,
             maxHeight: null,
             data: [],//{id:1,name:'xx',nodeId:'0',is_node:true,is_check:false},
@@ -69,7 +68,7 @@
         var _state = {
             _is_first: true,
             _is_open: false,
-            _rootId: 0,//todo  如何去掉这个参数
+            _rootId: 0,
             _originId: {nodeId: [], id: []},
             _searchTimer: ''
         };
@@ -160,36 +159,40 @@
 
         function getName() {
             var text = [];
-            var data = _data;
             if (_opt.only_leaf) {
-                $.each(data, function (i, n) {
+                $.each(_data, function (i, n) {
                     if (n.is_check && !n.is_node) {
                         text.push(n.name);
                     }
                 });
             } else {
-                //todo  这里判断 node_merge
-                var node = [];
-                $.each(data, function (i, n) {
-                    if (n.is_check && n.is_node) {
-                        node.push(n.id);
-//                            text.push( n.name);  //nodefirst
-                    }
-                });
+                if (_opt.node_merge) {
+                    var nodes = [];
+                    $.each(_data, function (i, n) {
+                        if (n.is_check && n.is_node) {
+                            nodes.push(n.id);
+                        }
+                    });
 
-                var clone = $.extend(true, [], data);
-                $.each(clone, function (i, n) {
-                    if ((n.is_check && $.inArray(n.nodeId, node) != -1) || !n.is_check) {
-                        clone[i] = null;
-                    }
-                });
+                    var clone = $.extend(true, [], _data); //直接赋值传的是引用
+                    $.each(clone, function (i, n) {
+                        if ((n.is_check && $.inArray(n.nodeId, nodes) != -1) || !n.is_check) {
+                            clone[i] = null;
+                        }
+                    });
 
-                $.each(clone, function (i, n) {
-                    if (n) {
-                        text.push(n.name);
-                    }
-                });
-
+                    $.each(clone, function (i, n) {
+                        if (n) {
+                            text.push(n.name);
+                        }
+                    });
+                } else {
+                    $.each(_data, function (i, n) {
+                        if (n.is_check) {
+                            text.push(n.name);
+                        }
+                    });
+                }
             }
 
             return text.join();
@@ -717,28 +720,30 @@
             return false;
         }
 
-        //todo 是否需要用户提供isnode？数据
-        //todo 检查data有没有子节点，如果有则isNode=true,如果没有则isNode=true
+        //todo 检查data有没有子节点，有则isNode=true,没有则isNode=false
         function _initNode() {
-            var nodeIds = [];
-            var rootId = 0;
-            for (var i = 0; i < _data.length; i++) {
-                for (var j = i; j < _data.length; j++) {
+            var rootId = [];
+            var datalen = _data.length;
+            var clone = $.extend(true, [], _data);
+            for (var i = 0; i < datalen; i++) {
+                for (var j = i; j < datalen; j++) {
                     if (_data[i].id === _data[j].nodeId) {
-                        _data[i].is_node = true;
-                        nodeIds.push(_data[i].id);
-                        break;
+                        // _data[i].is_node = true;
+                        clone[j] = null;
                     }
                     if (_data[i].nodeId === _data[j].id) {
-                        _data[j].is_node = true;
-                        nodeIds.push(_data[j].id);
-                        break;
+                        // _data[j].is_node = true;
+                        clone[i] = null;
                     }
-
                 }
             }
-
-            _state._rootId = rootId;
+            $.each(clone, function (i, t) {
+                if (t) {
+                    rootId.push(t.nodeId);
+                    console.log(rootId);
+                }
+            });
+            _state._rootId = rootId[0];
         }
 
         return {
