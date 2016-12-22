@@ -410,13 +410,14 @@
         _expand:function(){
             var obj = this;
             if(obj.opt.expand === true){
-                $.each(obj.data,function(index,item){
-                    if(item.is_node){
-                        obj.html.find('div[node-id="'+item.id+'"] span[data-icon="expand"]').click();
+                $.each(obj.data, function (index, item) {
+                    if (item.is_node) {
+                        obj.html.find('i').filter('.icon-expand').click();
                     }
                 });
             }else if(obj.opt.expand){
-                var expandId = obj.opt.rootId;
+                var expandId = [];
+                expandId.push(obj.opt.rootId);
                 for (var i = 0; i < obj.opt.expand; i++) {
                     expandId = obj._expandLevel(expandId);
                 }
@@ -426,10 +427,10 @@
             var obj = this;
             var expandId = [];
             $.each(id,function(index,item){
-                $.each(obj.data,function(index2,item2){
-                    if(item2.nodeId===item){
+                $.each(obj.data, function (index2, item2) {
+                    if (item2.nodeId === item) {
                         expandId.push(item2.id);
-                        obj.html.find('div[node-id="'+item2.id+'"] span[data-icon="expand"]').click();
+                        obj.html.find('div[node-id="' + item2.nodeId + '"] > i').filter('.icon-expand').click();
                     }
                 });
             });
