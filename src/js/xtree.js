@@ -487,7 +487,7 @@
 
             if(this.opt.is_multi){
                 if(item.is_node){
-                    dom.parent().find('input').prop('checked',item.is_check);
+                    dom.parent().parent().find('label > input').prop('checked', item.is_check);
                     this._chgAllChildren(item.id,item.is_check);
                 }
 
