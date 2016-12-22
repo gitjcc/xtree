@@ -150,10 +150,6 @@
             {id: 4, name: '刘职员', nodeId: 3, is_node: false, is_check: false},
             {id: 1, name: '王经理', nodeId: 0, is_node: false, is_check: false}
         ],
-        //        choose:{
-        //            nodeId:[1],
-        //            id:[1]
-        //        },
         onInit: function () {
         },
         onOpen: function () {
@@ -161,13 +157,8 @@
         onBeforeOpen: function () {
         },
         onClose: function (hasChange) {
-            console.log(testTree3.getId());
         },
         onCheck: function (item, dom, childrenItem) {
-//            console.log(this);
-//            console.log(this.getId());
-//            console.log(testTree3);
-//            应该是  this.getId()比较规范  还是 testTree3.getId()比较规范   this可以做到 只暴漏该暴漏的方法
         },
         onCancel: function (item, dom, childrenItem) {
         }
