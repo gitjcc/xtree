@@ -9,8 +9,13 @@
 <body>
 <script type="text/javascript" src="src/lib/jquery-3.1.1.min.js"></script>
 <script type="text/javascript" src="src/js/x-tree-closure.js"></script>
+
 <div class="tree-wrap">
     <input type="number" data-bind-123="name" />
+</div>
+
+<div class="tree-wrap">
+    <span class="output"></span>
 </div>
 
 <script>
@@ -112,11 +117,6 @@
             {id: 4, name: '刘职员', nodeId: 3, is_node: false, is_check: false},
             {id: 1, name: '王经理', nodeId: 0, is_node: false, is_check: false}
         ],
-        //        choose:{
-        //            nodeId:[1],
-        //            id:[1]
-        //        },
-
         onInit: function () {
             console.log('init');
         },
@@ -135,10 +135,6 @@
             console.log(testTree1.getName());
             console.log(testTree1.getId());
             console.log(testTree1.getItem());
-//            console.log(this);
-//            console.log(this.getId());
-//            console.log(testTree1);
-//            应该是  this.getId()比较规范  还是 testTree1.getId()比较规范   this可以做到 只暴漏该暴漏的方法
         },
         onCancel: function (item, dom, childrenItem) {
             console.log('cancel: ', this );
