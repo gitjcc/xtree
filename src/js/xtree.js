@@ -112,7 +112,6 @@
 
             var that=this;
 
-
             if(this.opt.choose) {
                 var choose=this.opt.choose;
                 $.each(choose.nodeId,function (i,n){
@@ -143,10 +142,11 @@
                     that.start();
                     e.stopPropagation();
                 });
-
                 $(document).on('click.xTree', function () {
                     that.end();
                 });
+            }else {
+                this.start();
             }
         },
 
@@ -410,7 +410,6 @@
             }else{
                 this.html.show();
             }
-
         },
         _expand:function(){
             var obj = this;
