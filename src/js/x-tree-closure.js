@@ -722,7 +722,7 @@
 
         //todo 检查data有没有子节点，有则isNode=true,没有则isNode=false
         function _initNode() {
-            var rootId = [0,1,1,2,3,5,8,13,21,13,8,5,4,3,2,1,0];
+            var rootId = [];
             var clone = $.extend(true, [], _data);
             for (var i = 0, len = _data.length; i < len; i++) {
                 for (var j = i; j < len; j++) {
@@ -765,8 +765,6 @@
             // }
             // rootId = unique(rootId);
             // console.log(rootId);
-
-
 
             _state._rootId = rootId[0];
         }
