@@ -104,11 +104,7 @@
                 return false;
             }
 
-
-
             this.opt.onInit();
-
-            this._is_open=false;
 
             var that=this;
 
@@ -170,7 +166,6 @@
                 this.html.hide();
                 this.dom.val(this.getName());
                 var ids=this.getId();
-                this._is_first=false;
 
                 this._is_open=false;
                 this.opt.onClose(JSON.stringify(ids) !== JSON.stringify(this._originId));
@@ -407,6 +402,7 @@
         _showData:function(){
             if( this._is_first ){
                 this._showLayer(this.opt.rootId);
+                this._is_first=false;
             }else{
                 this.html.show();
             }
@@ -655,16 +651,13 @@
                 'vertical-align':'middle'
             });
             var obj=this;
-            $html.find('i').on('click',function(e){
-                //这里判断有没有数据的方法 感觉有点不靠谱
-                if(!$html.find('i')[1]){
+            $html.find('i').on('click', function (e) {
+                if ($(this).hasClass('icon-jia1')) {
                     obj._showLayer(item.id);
-                }else{
+                } else {
                     obj._removeLayer(item.id);
                 }
-                //e.stopPropagation();
             });
-
             return $html;
         },
         _makeChild:function(item){
