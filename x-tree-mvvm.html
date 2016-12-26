@@ -16,6 +16,9 @@
 
     <input id="odp-input-name" class="odp-input" type="text" placeholder="" value="odp-mvvm-name">
     <div id="odp-output-name" class="odp-output">odp-mvvm</div>
+
+    <input id="odp-input-nodeId" class="odp-input" type="text" placeholder="" value="odp-mvvm-nodeId">
+    <div id="odp-output-nodeId" class="odp-output">odp-mvvm</div>
 </div>
 
 <script>
@@ -58,8 +61,27 @@ var nameInput = document.getElementById('odp-input-name');
 nameInput.addEventListener('input', function (e) {
     xTestData.name = e.srcElement.value;
 });
-    xTestData.name = 'name哦';
-    xTestData.id = 'id哦';
+
+var nodeIdBase = '';
+var nodeIdTemp = '';
+var nodeIdDescriptor = {
+    get:function () {
+        console.log(nodeIdBase);
+    },
+    set:function (value) {
+        nodeIdTemp = value;
+        nodeIdBase = value;
+        document.getElementById('odp-input-nodeId').value = nodeIdBase;
+        document.getElementById('odp-output-nodeId').innerHTML = nodeIdBase;
+        console.log(nodeIdBase);
+    }
+};
+Object.defineProperty(xTestData, 'nodeId', nodeIdDescriptor);
+var nodeIdInput = document.getElementById('odp-input-nodeId');
+nodeIdInput.addEventListener('click', function (e) {
+    nodeIdTemp += 1;
+    xTestData.nodeId = nodeIdTemp;
+});
 
 
 
