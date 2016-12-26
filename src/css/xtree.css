@@ -1,6 +1,7 @@
 body {
     padding: 20px;
-    background: #5CD
+    background: #5CD;
+    word-break: break-all;
 }
 
 .tree-wrap {

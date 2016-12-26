@@ -10,11 +10,55 @@
 <script type="text/javascript" src="src/lib/jquery-3.1.1.min.js"></script>
 <script type="text/javascript" src="src/js/x-tree-closure.js"></script>
 
-<div class="tree-wrap">
-    <span class="output"></span>
+<div id="odp-wrap" class="tree-wrap">
+    <input id="odp-input-id" type="text" placeholder="" value="odp-mvvm-id">
+    <div id="odp-output-id">odp-mvvm</div>
+
+    <input id="odp-input-name" type="text" placeholder="" value="odp-mvvm-name">
+    <div id="odp-output-name">odp-mvvm</div>
 </div>
 
+<script>
+//    Object.defineProperty(obj, prop, descriptor)
+    var xTestData = {};
 
+    var idBase = '';
+    var idDescriptor = {
+        get:function () {
+            console.log(idBase);
+        },
+        set:function (value) {
+            idBase = value;
+            document.getElementById('odp-input-id').value = idBase;
+            document.getElementById('odp-output-id').innerHTML = idBase;
+            console.log(idBase);
+        }
+    };
+    Object.defineProperty(xTestData, 'id', idDescriptor);
+    document.addEventListener('input odp-input-id', function (e) {
+        xTestData.id = e.srcElement.value;
+    });
+
+
+    var nameBase = '';
+    var nameDescriptor = {
+        get:function () {
+            console.log(nameBase);
+        },
+        set:function (value) {
+            nameBase = value;
+            document.getElementById('odp-input-name').value = nameBase;
+            document.getElementById('odp-output-name').innerHTML = nameBase;
+            console.log(nameBase);
+        }
+    };
+    Object.defineProperty(xTestData, 'name', nameDescriptor);
+    document.addEventListener('input odp-input-name', function (e) {
+        xTestData.name = e.srcElement.value;
+    });
+    
+
+</script>
 
 
 <div class="tree-wrap">
