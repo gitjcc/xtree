@@ -11,52 +11,57 @@
 <script type="text/javascript" src="src/js/x-tree-closure.js"></script>
 
 <div id="odp-wrap" class="tree-wrap">
-    <input id="odp-input-id" type="text" placeholder="" value="odp-mvvm-id">
-    <div id="odp-output-id">odp-mvvm</div>
+    <input id="odp-input-id" class="odp-input" type="text" placeholder="" value="odp-mvvm-id">
+    <div id="odp-output-id" class="odp-output">odp-mvvm</div>
 
-    <input id="odp-input-name" type="text" placeholder="" value="odp-mvvm-name">
-    <div id="odp-output-name">odp-mvvm</div>
+    <input id="odp-input-name" class="odp-input" type="text" placeholder="" value="odp-mvvm-name">
+    <div id="odp-output-name" class="odp-output">odp-mvvm</div>
 </div>
 
 <script>
 //    Object.defineProperty(obj, prop, descriptor)
-    var xTestData = {};
+var xTestData = {};
+var idBase = '';
+var idTemp = '';
+var idDescriptor = {
+    get:function () {
+        console.log(idBase);
+    },
+    set:function (value) {
+        idBase = value;
+        document.getElementById('odp-input-id').value = idBase;
+        document.getElementById('odp-output-id').innerHTML = idBase;
+        console.log(idBase);
+    }
+};
+Object.defineProperty(xTestData, 'id', idDescriptor);
+var idInput = document.getElementById('odp-input-id');
+idInput.addEventListener('input', function (e) {
+    xTestData.id = e.srcElement.value;
+});
 
-    var idBase = '';
-    var idDescriptor = {
-        get:function () {
-            console.log(idBase);
-        },
-        set:function (value) {
-            idBase = value;
-            document.getElementById('odp-input-id').value = idBase;
-            document.getElementById('odp-output-id').innerHTML = idBase;
-            console.log(idBase);
-        }
-    };
-    Object.defineProperty(xTestData, 'id', idDescriptor);
-    document.addEventListener('input odp-input-id', function (e) {
-        xTestData.id = e.srcElement.value;
-    });
+
+var nameBase = '';
+var nameDescriptor = {
+    get:function () {
+        console.log(nameBase);
+    },
+    set:function (value) {
+        nameBase = value;
+        document.getElementById('odp-input-name').value = nameBase;
+        document.getElementById('odp-output-name').innerHTML = nameBase;
+        console.log(nameBase);
+    }
+};
+Object.defineProperty(xTestData, 'name', nameDescriptor);
+var nameInput = document.getElementById('odp-input-name');
+nameInput.addEventListener('input', function (e) {
+    xTestData.name = e.srcElement.value;
+});
+    xTestData.name = 'name哦';
+    xTestData.id = 'id哦';
 
 
-    var nameBase = '';
-    var nameDescriptor = {
-        get:function () {
-            console.log(nameBase);
-        },
-        set:function (value) {
-            nameBase = value;
-            document.getElementById('odp-input-name').value = nameBase;
-            document.getElementById('odp-output-name').innerHTML = nameBase;
-            console.log(nameBase);
-        }
-    };
-    Object.defineProperty(xTestData, 'name', nameDescriptor);
-    document.addEventListener('input odp-input-name', function (e) {
-        xTestData.name = e.srcElement.value;
-    });
-    
 
 </script>
 
