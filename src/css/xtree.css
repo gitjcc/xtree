@@ -14,8 +14,19 @@ body {
     background: #fff;
 }
 
-.odp-input, .odp-output {
-    min-height:1.42em;
+.tree-node-wrap {
+    margin: 0 0 0 22px;
+    line-height:1.42;
+}
+
+
+.iconfont {
+    padding-right: 0;
+    font-size: 14px;
+    font-weight: bold;
+    line-height:1.42;
+    vertical-align: baseline;
+    cursor: pointer;
 }
 
 .icon-expand:before {
@@ -24,4 +35,12 @@ body {
 
 .icon-shrink:before {
     content: "\e61e";
+}
+
+.icon-checked:before {
+    content: "\e617";
+}
+
+.icon-unchecked:before {
+    content: "\e616";
 }

@@ -3,18 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <title>xtree.js</title>
-    <link rel="stylesheet" href="src/css/xtree.css">
     <link rel="stylesheet" href="src/lib/fonts/iconfont.css">
+    <link rel="stylesheet" href="src/css/xtree.css">
 </head>
 <body>
 <script type="text/javascript" src="src/lib/jquery-3.1.1.min.js"></script>
 <script type="text/javascript" src="src/js/x-tree-closure.js"></script>
 
-
-
 <div class="tree-wrap">
     <div class="tree-node-wrap">
         <i id="x-tree-odp-input" class="iconfont icon-expand"></i>
+        <i id="x-tree-odp-checkbox" class="iconfont icon-checked"></i>
+        <div class="tree-node-wrap">
+            <i id="x-tree-odp-input-2" class="iconfont icon-expand"></i>
+            <i id="x-tree-odp-checkbox-2" class="iconfont icon-checked"></i>
+        </div>
     </div>
     <div class="tree-node-wrap">
         <i id="x-tree-odp-output" class="iconfont icon-expand"></i>
@@ -38,6 +41,8 @@
         {id: 4, name: '刘职员', nodeId: 3, is_node: false, is_check: false},
         {id: 9, name: '王经理', nodeId: 0, is_node: false, is_check: false}
     ];
+    var dom
+
     var domBase = $('#x-tree-odp-input');
     var domOutput = $('#x-tree-odp-output');
     var dataBase = [];
