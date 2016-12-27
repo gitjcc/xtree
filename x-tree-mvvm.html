@@ -10,6 +10,9 @@
 <script type="text/javascript" src="src/lib/jquery-3.1.1.min.js"></script>
 <script type="text/javascript" src="src/js/x-tree-closure.js"></script>
 
+<div id="x-tree-odp-1" class="">
+
+</div>
 <div class="tree-wrap">
     <div class="tree-node-wrap">
         <i id="x-tree-odp-input" class="iconfont icon-expand"></i>
@@ -25,7 +28,7 @@
 </div>
 
 <script>
-    var data = [
+    var dataBase = [
         {id: 1, name: '行政部', nodeId: 0, is_node: true, is_check: false},
         {id: 3, name: '财务部3', nodeId: 1, is_node: true, is_check: false},
         {id: 11, name: '财务部4', nodeId: 3, is_node: true, is_check: false},
@@ -41,16 +44,12 @@
         {id: 4, name: '刘职员', nodeId: 3, is_node: false, is_check: false},
         {id: 9, name: '王经理', nodeId: 0, is_node: false, is_check: false}
     ];
-    var dom
-
-    var domBase = $('#x-tree-odp-input');
-    var domOutput = $('#x-tree-odp-output');
-    var dataBase = [];
-    var iconBase = true;
-    var dataDescriptor ={
+    var domBase = $('#x-tree-odp-1');
+    var dataOdp = {};
+    var dataDes = {
         get:function () {
-            return iconBase;
             console.log('getdb',dataBase);
+            return iconBase;
         },
         set:function (value) {
             iconBase = value;
@@ -61,27 +60,55 @@
                 toShrink(domBase);
                 toShrink(domOutput);
             }
-            console.log('setdb',dataBase);
+            console.log('setdb',dataOdp);
+        }
+    };
+    Object.defineProperty(dataOdp, 'data', dataDes);
+    for (
+        var i = 0; i < array.length; i++) {
+        var obj = array[i];
+    }
+
+
+
+
+    var domOutput = $('#x-tree-odp-output');
+    var iconBase = true;
+    var dataDescriptor ={
+        get:function () {
+            console.log('getdb',dataOdp);
+            return iconBase;
+        },
+        set:function (value) {
+            iconBase = value;
+            if(iconBase){
+                toExpand(domBase);
+                toExpand(domOutput);
+            }else{
+                toShrink(domBase);
+                toShrink(domOutput);
+            }
+            console.log('setdb',dataOdp);
         }
     };
 
-    Object.defineProperty(dataBase, 'icon', dataDescriptor);
+    Object.defineProperty(dataOdp, 'icon', dataDescriptor);
     var icon = document.getElementById('x-tree-odp-input');
     icon.addEventListener('click', function (e) {
         console.log('iconBase-1',iconBase);
-        console.log('dataBase.is_expand-1',dataBase.icon);
-        dataBase.icon = !iconBase;
+        console.log('dataOdp.is_expand-1',dataOdp.icon);
+        dataOdp.icon = !iconBase;
         console.log('iconBase-2',iconBase);
-        console.log('dataBase.is_expand-2',dataBase.icon);
+        console.log('dataOdp.is_expand-2',dataOdp.icon);
     });
 
 //    for (var i = 0; i < data.length; i++) {
-//        dataBase[i] = data[i];
-////        dataBase[i].id = data[i].id;
-////        dataBase[i].name = data[i].name;
-////        dataBase[i].nodeId = data[i].nodeId;
-////        dataBase[i].is_node = data[i].is_node;
-////        dataBase[i].is_check = data[i].is_check;
+//        dataOdp[i] = data[i];
+////        dataOdp[i].id = data[i].id;
+////        dataOdp[i].name = data[i].name;
+////        dataOdp[i].nodeId = data[i].nodeId;
+////        dataOdp[i].is_node = data[i].is_node;
+////        dataOdp[i].is_check = data[i].is_check;
 //    }
     function makeExpand() {
         var html = '<i class="iconfont icon-expand"></i>';
