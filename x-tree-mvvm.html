@@ -10,10 +10,11 @@
 <script type="text/javascript" src="src/lib/jquery-3.1.1.min.js"></script>
 <script type="text/javascript" src="src/js/x-tree-closure.js"></script>
 
-<div id="x-tree-odp-1" class="">
 
-</div>
 <div class="tree-wrap">
+    <div id="x-tree-odp-1" class="tree-node-wrap">
+        <i class="iconfont icon-expand"></i>
+    </div>
     <div class="tree-node-wrap">
         <i id="x-tree-odp-input" class="iconfont icon-expand"></i>
         <i id="x-tree-odp-checkbox" class="iconfont icon-checked"></i>
@@ -28,6 +29,20 @@
 </div>
 
 <script>
+//    document.getElementById("MyElement").className =
+//        document.getElementById("MyElement").className.replace
+//        ( /(?:^|\s)MyClass(?!\S)/g , '' )
+//    document.getElementById("MyElement").className += " MyClass"
+
+////H5
+//document.getElementById("MyElement").classList.add('class');
+//
+//document.getElementById("MyElement").classList.remove('class');
+//
+//if ( document.getElementById("MyElement").classList.contains('class') )
+//
+//    document.getElementById("MyElement").classList.toggle('class');
+
     var dataBase = [
         {id: 1, name: '行政部', nodeId: 0, is_node: true, is_check: false},
         {id: 3, name: '财务部3', nodeId: 1, is_node: true, is_check: false},
@@ -45,6 +60,7 @@
         {id: 9, name: '王经理', nodeId: 0, is_node: false, is_check: false}
     ];
     var domBase = $('#x-tree-odp-1');
+    var domTemp = {};
     var dataOdp = {};
     var dataDes = {
         get:function () {
@@ -54,20 +70,20 @@
         set:function (value) {
             iconBase = value;
             if(iconBase){
-                toExpand(domBase);
-                toExpand(domOutput);
+                toggleClass(domTemp);
             }else{
-                toShrink(domBase);
-                toShrink(domOutput);
+                toggleClass(domTemp);
             }
             console.log('setdb',dataOdp);
         }
     };
     Object.defineProperty(dataOdp, 'data', dataDes);
-    for (
-        var i = 0; i < array.length; i++) {
-        var obj = array[i];
-    }
+    domBase.on('click', function(e){
+        console.log('e.srcElement',e.target);
+        domTemp = e.target;
+        dataOdp.data = dataBase;
+    });
+
 
 
 
@@ -82,11 +98,11 @@
         set:function (value) {
             iconBase = value;
             if(iconBase){
-                toExpand(domBase);
-                toExpand(domOutput);
+                toggleClass(domBase);
+                toggleClass(domOutput);
             }else{
-                toShrink(domBase);
-                toShrink(domOutput);
+                toggleClass(domBase);
+                toggleClass(domOutput);
             }
             console.log('setdb',dataOdp);
         }
@@ -121,19 +137,26 @@
         })[0].outerHTML;
     }
 
-    function toShrink(dom) {
-        console.log('toShrink',dom);
-        dom.removeClass('icon-expand');
-        dom.addClass('icon-shrink');
-    }
-
-    function toExpand(dom) {
+    function toggleClass(dom) {
         console.log('toExpand',dom);
-        dom.removeClass('icon-shrink');
-        dom.addClass('icon-expand');
+        dom.classList.toggle('icon-shrink');
+        dom.classList.toggle('icon-expand');
     }
 
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
 <div id="odp-wrap" class="tree-wrap">
     <input id="odp-input-id" class="odp-input" type="text" placeholder="" value="odp-mvvm-id">
     <div id="odp-output-id" class="odp-output">odp-mvvm</div>
@@ -144,7 +167,6 @@
     <input id="odp-input-nodeId" class="odp-input" type="text" placeholder="" value="odp-mvvm-nodeId">
     <div id="odp-output-nodeId" class="odp-output">odp-mvvm</div>
 </div>
-
 <script>
 //    Object.defineProperty(obj, prop, descriptor)
 var xTestData = {};
@@ -207,8 +229,18 @@ nodeIdInput.addEventListener('click', function (e) {
 });
 
 
-
 </script>
+
+
+
+
+
+
+
+
+
+
+
 
 
 <div class="tree-wrap">
