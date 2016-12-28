@@ -4,6 +4,14 @@ body {
     word-break: break-all;
 }
 
+.hidden {visibility: hidden;}
+.visible {visibility: visible;}
+
+.hide {display: none;}
+.block {display: block;}
+.inline-block {display: inline-block;}
+.inline {display: inline;}
+
 .tree-wrap {
     display: inline-block;
     width: 360px;

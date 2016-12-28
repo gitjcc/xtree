@@ -11,27 +11,23 @@
 <script type="text/javascript" src="src/js/x-tree-closure.js"></script>
 
 
-<div class="tree-wrap">
-    <div id="x-tree-odp-1" class="tree-node-wrap">
-        <i class="iconfont icon-expand"></i>
+<!--接下来的是odp版的tree-->
+<div id="x-tree-root" class="tree-wrap">
+    <div id="x-tree-node-temp" class="tree-node-wrap">
+        <i id="x-tree-icon-temp" class="iconfont icon-expand"></i>
+        <i id="x-tree-checkbox-temp" class="iconfont icon-checked"></i>
+        <span id="x-tree-name-temp" class="tree-node-name">name</span>
     </div>
-    <div class="tree-node-wrap">
-        <i id="x-tree-odp-input" class="iconfont icon-expand"></i>
-        <i id="x-tree-odp-checkbox" class="iconfont icon-checked"></i>
-        <div class="tree-node-wrap">
-            <i id="x-tree-odp-input-2" class="iconfont icon-expand"></i>
-            <i id="x-tree-odp-checkbox-2" class="iconfont icon-checked"></i>
-        </div>
+    <div id="x-tree-node-1" class="tree-node-wrap">
+        <i id="x-tree-icon-2" class="iconfont icon-expand"></i>
+        <i id="x-tree-checkbox-3" class="iconfont icon-checked"></i>
+        <span id="x-tree-name-4" class="tree-node-name">name</span>
     </div>
-    <div class="tree-node-wrap">
-        <i id="x-tree-odp-output" class="iconfont icon-expand"></i>
-    </div>
+
 </div>
 
 <script>
-//    document.getElementById("MyElement").className =
-//        document.getElementById("MyElement").className.replace
-//        ( /(?:^|\s)MyClass(?!\S)/g , '' )
+//    document.getElementById("MyElement").className = document.getElementById("MyElement").className.replace( /(?:^|\s)MyClass(?!\S)/g , '' )
 //    document.getElementById("MyElement").className += " MyClass"
 
 ////H5
@@ -40,8 +36,10 @@
 //document.getElementById("MyElement").classList.remove('class');
 //
 //if ( document.getElementById("MyElement").classList.contains('class') )
-//
 //    document.getElementById("MyElement").classList.toggle('class');
+
+//空文档片段
+//var df = document.createDocumentFragment()
 
     var dataBase = [
         {id: 1, name: '行政部', nodeId: 0, is_node: true, is_check: false},
@@ -59,10 +57,10 @@
         {id: 4, name: '刘职员', nodeId: 3, is_node: false, is_check: false},
         {id: 9, name: '王经理', nodeId: 0, is_node: false, is_check: false}
     ];
-    var domBase = $('#x-tree-odp-1');
+    var domBase = document.getElementById("x-tree-root");
     var domTemp = {};
     var dataOdp = {};
-    var dataDes = {
+    var dataDescriptor = {
         get:function () {
             console.log('getdb',dataBase);
             return iconBase;
@@ -77,10 +75,10 @@
             console.log('setdb',dataOdp);
         }
     };
-    Object.defineProperty(dataOdp, 'data', dataDes);
-    domBase.on('click', function(e){
-        console.log('e.srcElement',e.target);
-        domTemp = e.target;
+    Object.defineProperty(dataOdp, 'data', dataDescriptor);
+    domBase.addEventListener('click', function(e){
+        console.log('e.srcElement',e);
+        domTemp = e.srcElement;
         dataOdp.data = dataBase;
     });
 
@@ -88,11 +86,10 @@
 
 
 
-    var domOutput = $('#x-tree-odp-output');
+    var domOutput = document.getElementById("x-tree-odp-output");
     var iconBase = true;
-    var dataDescriptor ={
+    var dataDes ={
         get:function () {
-            console.log('getdb',dataOdp);
             return iconBase;
         },
         set:function (value) {
@@ -104,18 +101,13 @@
                 toggleClass(domBase);
                 toggleClass(domOutput);
             }
-            console.log('setdb',dataOdp);
         }
     };
 
-    Object.defineProperty(dataOdp, 'icon', dataDescriptor);
+    Object.defineProperty(dataOdp, 'icon', dataDes);
     var icon = document.getElementById('x-tree-odp-input');
     icon.addEventListener('click', function (e) {
-        console.log('iconBase-1',iconBase);
-        console.log('dataOdp.is_expand-1',dataOdp.icon);
         dataOdp.icon = !iconBase;
-        console.log('iconBase-2',iconBase);
-        console.log('dataOdp.is_expand-2',dataOdp.icon);
     });
 
 //    for (var i = 0; i < data.length; i++) {
@@ -126,21 +118,11 @@
 ////        dataOdp[i].is_node = data[i].is_node;
 ////        dataOdp[i].is_check = data[i].is_check;
 //    }
-    function makeExpand() {
-        var html = '<i class="iconfont icon-expand"></i>';
-        return $(html).css({
-            'font-size': '14px',
-            'font-weight': 'bold',
-            'vertical-align': 'base-line',
-            'padding-right': '0px',
-            'cursor': 'pointer'
-        })[0].outerHTML;
-    }
 
-    function toggleClass(dom) {
-        console.log('toExpand',dom);
-        dom.classList.toggle('icon-shrink');
-        dom.classList.toggle('icon-expand');
+    function toggleClass(ele) {
+        console.log('toggleClass',ele);
+        ele.classList.toggle('icon-shrink');
+        ele.classList.toggle('icon-expand');
     }
 
 </script>
@@ -154,8 +136,7 @@
 
 
 
-
-git
+<!--接下来的是MVVM的Demo-->
 
 <div id="odp-wrap" class="tree-wrap">
     <input id="odp-input-id" class="odp-input" type="text" placeholder="" value="odp-mvvm-id">
@@ -242,6 +223,7 @@ nodeIdInput.addEventListener('click', function (e) {
 
 
 
+<!--接下来的是tree-->
 
 <div class="tree-wrap">
     <!--    <input class="test_tree1" placeholder="">-->
