@@ -32,7 +32,7 @@
 
     //空文档片段
     //var df = document.createDocumentFragment()
-    var dataBase = [
+    var dataReference = [
         {id: 1, name: '行政部', nodeId: 0, is_node: true, is_check: false},
         {id: 3, name: '财务部3', nodeId: 1, is_node: true, is_check: false},
         {id: 11, name: '财务部4', nodeId: 3, is_node: true, is_check: false},
@@ -49,10 +49,10 @@
         {id: 9, name: '王经理', nodeId: 0, is_node: false, is_check: false}
     ];
     var domRoot = document.getElementById("x-tree-root");
-    var domTemp = domRoot;
+    var domReference = domRoot;
 
 
-    observe(dataBase);
+    observe(dataReference);
 
     function observe(data) {
         if (!data || typeof data !== 'object') {
@@ -83,7 +83,7 @@
         });
     }
 
-    function makeNode(data) {
+    function makeNode(base,data) {
         var node = document.createElement("div");
         node.id = 'x-tree-node-' + data.id;
         node.classList.add('tree-node-wrap');
@@ -93,7 +93,7 @@
         node.appendChild(icon);
         node.appendChild(checkbox);
         node.appendChild(name);
-        return node;
+        base.appendChild(node);
     }
 
     function makeExpand(data) {
