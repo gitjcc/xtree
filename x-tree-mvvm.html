@@ -142,7 +142,12 @@
         var checkbox = document.createElement("i");
         checkbox.id = id;
     }
-    function makeName() {
+    function makeName(id,cls,str) {
+        var name = document.createElement("span");
+        name.id = id;
+        name.classList.add(cls);
+        var nameStr = document.createTextNode(str);
+        name.appendChild(nameStr);
 
     }
     function toggleClass(ele) {
