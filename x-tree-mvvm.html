@@ -18,10 +18,10 @@
         <i id="x-tree-checkbox-temp" class="iconfont icon-checked"></i>
         <span id="x-tree-name-temp" class="tree-node-name">name</span>
     </div>
-    <div id="x-tree-node-1" class="tree-node-wrap">
-        <i id="x-tree-icon-2" class="iconfont icon-expand"></i>
-        <i id="x-tree-checkbox-3" class="iconfont icon-checked"></i>
-        <span id="x-tree-name-4" class="tree-node-name">name</span>
+    <div id="x-tree-node-0" class="tree-node-wrap">
+        <i id="x-tree-icon-0" class="iconfont icon-expand"></i>
+        <i id="x-tree-checkbox-0" class="iconfont icon-checked"></i>
+        <span id="x-tree-name-0" class="tree-node-name">name</span>
     </div>
 
 </div>
@@ -57,8 +57,8 @@
         {id: 4, name: '刘职员', nodeId: 3, is_node: false, is_check: false},
         {id: 9, name: '王经理', nodeId: 0, is_node: false, is_check: false}
     ];
-    var domBase = document.getElementById("x-tree-root");
-    var domTemp = {};
+    var domRoot = document.getElementById("x-tree-root");
+    var domBase = domRoot;
     var dataOdp = {};
     var dataDescriptor = {
         get:function () {
@@ -75,50 +75,76 @@
             console.log('setdb',dataOdp);
         }
     };
-    Object.defineProperty(dataOdp, 'data', dataDescriptor);
-    domBase.addEventListener('click', function(e){
-        console.log('e.srcElement',e);
-        domTemp = e.srcElement;
-        dataOdp.data = dataBase;
-    });
+
+
+    for (var i = 0; i < dataBase.length; i++) {
+        Object.defineProperty(dataBase[i], 'name', dataDescriptor);
+        domBase = document.getElementById("x-tree-root");
+        domBase.addEventListener('click', function(e){
+            console.log('e.srcElement',e);
+            domBase = e.srcElement;
+            dataOdp.name = dataBase[i].name;
+        });
+//        dataOdp[i].id = data[i].id;
+//        dataOdp[i].name = data[i].name;
+//        dataOdp[i].nodeId = data[i].nodeId;
+//        dataOdp[i].is_node = data[i].is_node;
+//        dataOdp[i].is_check = data[i].is_check;
+    }
 
 
 
 
 
-    var domOutput = document.getElementById("x-tree-odp-output");
-    var iconBase = true;
-    var dataDes ={
-        get:function () {
-            return iconBase;
-        },
-        set:function (value) {
-            iconBase = value;
-            if(iconBase){
-                toggleClass(domBase);
-                toggleClass(domOutput);
-            }else{
-                toggleClass(domBase);
-                toggleClass(domOutput);
-            }
-        }
-    };
 
-    Object.defineProperty(dataOdp, 'icon', dataDes);
-    var icon = document.getElementById('x-tree-odp-input');
-    icon.addEventListener('click', function (e) {
-        dataOdp.icon = !iconBase;
-    });
+//    var domOutput = document.getElementById("x-tree-icon-0");
+//    var iconBase = true;
+//    var dataDes ={
+//        get:function () {
+//            return iconBase;
+//        },
+//        set:function (value) {
+//            iconBase = value;
+//            if(iconBase){
+//                toggleClass(domBase);
+//                toggleClass(domOutput);
+//            }else{
+//                toggleClass(domBase);
+//                toggleClass(domOutput);
+//            }
+//        }
+//    };
+//
+//    Object.defineProperty(dataOdp, 'icon', dataDes);
+//    var icon = document.getElementById('x-tree-icon-0');
+//    icon.addEventListener('click', function (e) {
+//        dataOdp.icon = !iconBase;
+//    });
 
-//    for (var i = 0; i < data.length; i++) {
-//        dataOdp[i] = data[i];
-////        dataOdp[i].id = data[i].id;
-////        dataOdp[i].name = data[i].name;
-////        dataOdp[i].nodeId = data[i].nodeId;
-////        dataOdp[i].is_node = data[i].is_node;
-////        dataOdp[i].is_check = data[i].is_check;
-//    }
 
+
+    function makeNode(data) {
+        var node = document.createDocumentFragment();
+        var icon = makeIcon();
+        var checkbox = makeCheckbox();
+        var name = makeName();
+        node.appendChild(icon);
+        node.appendChild(checkbox);
+        node.appendChild(name);
+        return node;
+    }
+
+    function makeIcon(id) {
+        var icon = document.createElement("i");
+        icon.id = id;
+    }
+    function makeCheckbox(id) {
+        var checkbox = document.createElement("i");
+        checkbox.id = id;
+    }
+    function makeName() {
+
+    }
     function toggleClass(ele) {
         console.log('toggleClass',ele);
         ele.classList.toggle('icon-shrink');
