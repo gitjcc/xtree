@@ -75,10 +75,25 @@
             set: function(newVal) {
                 console.log(data, key, 'change', val, ' --> ', newVal);
                 val = newVal;
+                if(key==='id'){
+                    console.log('key=id:',data);
+                    makeNode(key);
+                }
             }
         });
     }
 
+    function changeNode(){
+
+    }
+    function hideNode(item){
+        item.classList.remove('visible');
+        item.classList.add('hidden');
+    }
+    function showNode(item){
+        item.classList.remove('hidden');
+        item.classList.add('visible');
+    }
     function makeNode(base,data) {
         var node = document.createElement("div");
         node.id = 'x-tree-node-' + data.id;
