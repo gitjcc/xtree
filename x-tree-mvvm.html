@@ -133,19 +133,19 @@
 
     function makeExpand(data) {
         var icon = document.createElement("i");
-        icon.id = id;
+        icon.id = 'x-tree-icon-' + data.id;
         icon.classList.add('iconfont','icon-expand');
         return icon;
     }
     function makeCheckbox(data) {
         var checkbox = document.createElement("i");
-        checkbox.id = id;
+        checkbox.id = 'x-tree-checkbox-' + data.id;
         checkbox.classList.add('iconfont','icon-checked');
         return checkbox;
     }
     function makeName(data) {
         var name = document.createElement("span");
-        name.id = data.id;
+        name.id = 'x-tree-name-' + data.id;
         name.classList.add('tree-node-name');
         var nameStr = document.createTextNode(data.name);
         name.appendChild(nameStr);
