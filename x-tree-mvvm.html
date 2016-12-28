@@ -75,9 +75,21 @@
             set: function(newVal) {
                 console.log(data, key, 'change', val, ' --> ', newVal);
                 val = newVal;
-                if(key==='id'){
-                    console.log('key=id:',data);
-                    makeNode(key);
+                switch (key) {
+                    case 'id':
+                        console.log('key=id:',data);
+                        changeNode(key);
+                        break;
+                    case 'name':
+                        break;
+                    case 'nodeId':
+                        break;
+                    case 'is_node':
+                        break;
+                    case 'is_check':
+                        break;
+                    default:
+                        break;
                 }
             }
         });
