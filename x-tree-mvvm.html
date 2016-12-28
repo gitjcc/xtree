@@ -40,7 +40,6 @@
 
 //空文档片段
 //var df = document.createDocumentFragment()
-
     var dataBase = [
         {id: 1, name: '行政部', nodeId: 0, is_node: true, is_check: false},
         {id: 3, name: '财务部3', nodeId: 1, is_node: true, is_check: false},
@@ -68,9 +67,9 @@
         set:function (value) {
             iconBase = value;
             if(iconBase){
-                toggleClass(domTemp);
+                iconToggle(domTemp);
             }else{
-                toggleClass(domTemp);
+                iconToggle(domTemp);
             }
             console.log('setdb',dataOdp);
         }
@@ -106,11 +105,11 @@
 //        set:function (value) {
 //            iconBase = value;
 //            if(iconBase){
-//                toggleClass(domBase);
-//                toggleClass(domOutput);
+//                iconToggle(domBase);
+//                iconToggle(domOutput);
 //            }else{
-//                toggleClass(domBase);
-//                toggleClass(domOutput);
+//                iconToggle(domBase);
+//                iconToggle(domOutput);
 //            }
 //        }
 //    };
@@ -125,7 +124,7 @@
 
     function makeNode(data) {
         var node = document.createDocumentFragment();
-        var icon = makeIcon();
+        var icon = makeExpand();
         var checkbox = makeCheckbox();
         var name = makeName();
         node.appendChild(icon);
@@ -134,7 +133,7 @@
         return node;
     }
 
-    function makeIcon(id) {
+    function makeExpand(id) {
         var icon = document.createElement("i");
         icon.id = id;
     }
@@ -150,11 +149,18 @@
         name.appendChild(nameStr);
 
     }
-    function toggleClass(ele) {
-        console.log('toggleClass',ele);
+
+    function iconToggle(ele) {
+        console.log('iconToggle',ele);
         ele.classList.toggle('icon-shrink');
         ele.classList.toggle('icon-expand');
     }
+    function checkToggle(ele) {
+        console.log('checkToggle',ele);
+        ele.classList.toggle('icon-checked');
+        ele.classList.toggle('icon-unchecked');
+    }
+
 
 </script>
 
@@ -168,7 +174,6 @@
 
 
 <!--接下来的是MVVM的Demo-->
-
 <div id="odp-wrap" class="tree-wrap">
     <input id="odp-input-id" class="odp-input" type="text" placeholder="" value="odp-mvvm-id">
     <div id="odp-output-id" class="odp-output">odp-mvvm</div>
@@ -239,8 +244,6 @@ nodeIdInput.addEventListener('click', function (e) {
     nodeIdTemp += 1;
     xTestData.nodeId = nodeIdTemp;
 });
-
-
 </script>
 
 
@@ -255,7 +258,6 @@ nodeIdInput.addEventListener('click', function (e) {
 
 
 <!--接下来的是tree-->
-
 <div class="tree-wrap">
     <!--    <input class="test_tree1" placeholder="">-->
     <div class="test_tree1"></div>
