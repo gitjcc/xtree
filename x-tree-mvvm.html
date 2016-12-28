@@ -27,19 +27,11 @@
 </div>
 
 <script>
-//    document.getElementById("MyElement").className = document.getElementById("MyElement").className.replace( /(?:^|\s)MyClass(?!\S)/g , '' )
-//    document.getElementById("MyElement").className += " MyClass"
+    //    document.getElementById("MyElement").className = document.getElementById("MyElement").className.replace( /(?:^|\s)MyClass(?!\S)/g , '' )
+    //    document.getElementById("MyElement").className += " MyClass"
 
-////H5
-//document.getElementById("MyElement").classList.add('class');
-//
-//document.getElementById("MyElement").classList.remove('class');
-//
-//if ( document.getElementById("MyElement").classList.contains('class') )
-//    document.getElementById("MyElement").classList.toggle('class');
-
-//空文档片段
-//var df = document.createDocumentFragment()
+    //空文档片段
+    //var df = document.createDocumentFragment()
     var dataBase = [
         {id: 1, name: '行政部', nodeId: 0, is_node: true, is_check: false},
         {id: 3, name: '财务部3', nodeId: 1, is_node: true, is_check: false},
@@ -57,66 +49,39 @@
         {id: 9, name: '王经理', nodeId: 0, is_node: false, is_check: false}
     ];
     var domRoot = document.getElementById("x-tree-root");
-    var domBase = domRoot;
-    var dataOdp = {};
-    var dataDescriptor = {
-        get:function () {
-            console.log('getdb',dataBase);
-            return iconBase;
-        },
-        set:function (value) {
-            iconBase = value;
-            if(iconBase){
-                iconToggle(domTemp);
-            }else{
-                iconToggle(domTemp);
-            }
-            console.log('setdb',dataOdp);
+    var domTemp = domRoot;
+
+
+    observe(dataBase);
+
+    function observe(data) {
+        if (!data || typeof data !== 'object') {
+            return;
         }
-    };
-
-
-    for (var i = 0; i < dataBase.length; i++) {
-        Object.defineProperty(dataBase[i], 'name', dataDescriptor);
-        domBase = document.getElementById("x-tree-root");
-        domBase.addEventListener('click', function(e){
-            console.log('e.srcElement',e);
-            domBase = e.srcElement;
-//            dataOdp.name = dataBase[i].name;
+        // 取出所有节点遍历
+        data.forEach(function (item) {
+            // 取出所有属性遍历
+            Object.keys(item).forEach(function(key) {
+                ObjectDefineProperty(item, key, item[key]);
+            });
         });
-        makeNode(dataBase[i]);
+
     }
 
-
-
-
-
-
-//    var domOutput = document.getElementById("x-tree-icon-0");
-//    var iconBase = true;
-//    var dataDes ={
-//        get:function () {
-//            return iconBase;
-//        },
-//        set:function (value) {
-//            iconBase = value;
-//            if(iconBase){
-//                iconToggle(domBase);
-//                iconToggle(domOutput);
-//            }else{
-//                iconToggle(domBase);
-//                iconToggle(domOutput);
-//            }
-//        }
-//    };
-//
-//    Object.defineProperty(dataOdp, 'icon', dataDes);
-//    var icon = document.getElementById('x-tree-icon-0');
-//    icon.addEventListener('click', function (e) {
-//        dataOdp.icon = !iconBase;
-//    });
-
-
+    function ObjectDefineProperty(data, key, val) {
+        observe(val); // 监听子属性
+        Object.defineProperty(data, key, {
+            enumerable: true, // 可枚举
+            configurable: false, // 不能再define
+            get: function() {
+                return val;
+            },
+            set: function(newVal) {
+                console.log(data, key, 'change', val, ' --> ', newVal);
+                val = newVal;
+            }
+        });
+    }
 
     function makeNode(data) {
         var node = document.createElement("div");
@@ -134,13 +99,13 @@
     function makeExpand(data) {
         var icon = document.createElement("i");
         icon.id = 'x-tree-icon-' + data.id;
-        icon.classList.add('iconfont','icon-expand');
+        icon.classList.add('iconfont', 'icon-expand');
         return icon;
     }
     function makeCheckbox(data) {
         var checkbox = document.createElement("i");
         checkbox.id = 'x-tree-checkbox-' + data.id;
-        checkbox.classList.add('iconfont','icon-checked');
+        checkbox.classList.add('iconfont', 'icon-checked');
         return checkbox;
     }
     function makeName(data) {
@@ -152,28 +117,23 @@
         return name;
     }
 
+    function classToggle(ele) {
+        iconToggle(ele);
+        checkToggle(ele);
+    }
     function iconToggle(ele) {
-        console.log('iconToggle',ele);
+        console.log('iconToggle', ele);
         ele.classList.toggle('icon-shrink');
         ele.classList.toggle('icon-expand');
     }
-
     function checkToggle(ele) {
-        console.log('checkToggle',ele);
+        console.log('checkToggle', ele);
         ele.classList.toggle('icon-checked');
         ele.classList.toggle('icon-unchecked');
     }
 
 
 </script>
-
-
-
-
-
-
-
-
 
 
 <!--接下来的是MVVM的Demo-->
@@ -188,76 +148,64 @@
     <div id="odp-output-nodeId" class="odp-output">odp-mvvm</div>
 </div>
 <script>
-//    Object.defineProperty(obj, prop, descriptor)
-var xTestData = {};
-var idBase = '';
-var idDescriptor = {
-    get:function () {
-        console.log(idBase);
-    },
-    set:function (value) {
-        idBase = value;
-        document.getElementById('odp-input-id').value = idBase;
-        document.getElementById('odp-output-id').innerHTML = idBase;
-        console.log(idBase);
-    }
-};
-Object.defineProperty(xTestData, 'id', idDescriptor);
-var idInput = document.getElementById('odp-input-id');
-idInput.addEventListener('input', function (e) {
-    xTestData.id = e.srcElement.value;
-});
+    //    Object.defineProperty(obj, prop, descriptor)
+    var xTestData = {id:0,name:'test'};
+    var idBase = '';
+    Object.defineProperty(xTestData, 'id', {
+        get: function () {
+            console.log(idBase);
+        },
+        set: function (value) {
+            idBase = value;
+            document.getElementById('odp-input-id').value = idBase;
+            document.getElementById('odp-output-id').innerHTML = idBase;
+            console.log(idBase);
+        }
+    });
+    var idInput = document.getElementById('odp-input-id');
+    idInput.addEventListener('input', function (e) {
+        xTestData.id = e.srcElement.value;
+    });
 
 
-var nameBase = '';
-var nameDescriptor = {
-    get:function () {
-        console.log(nameBase);
-    },
-    set:function (value) {
-        nameBase = value;
-        document.getElementById('odp-input-name').value = nameBase;
-        document.getElementById('odp-output-name').innerHTML = nameBase;
-        console.log(nameBase);
-    }
-};
-Object.defineProperty(xTestData, 'name', nameDescriptor);
-var nameInput = document.getElementById('odp-input-name');
-nameInput.addEventListener('input', function (e) {
-    xTestData.name = e.srcElement.value;
-});
+    var nameBase = '';
+    Object.defineProperty(xTestData, 'name', {
+        get: function () {
+            console.log(nameBase);
+        },
+        set: function (value) {
+            nameBase = value;
+            document.getElementById('odp-input-name').value = nameBase;
+            document.getElementById('odp-output-name').innerHTML = nameBase;
+            console.log(nameBase);
+        }
+    });
+    var nameInput = document.getElementById('odp-input-name');
+    nameInput.addEventListener('input', function (e) {
+        xTestData.name = e.srcElement.value;
+    });
 
-var nodeIdBase = '';
-var nodeIdTemp = '';
-var nodeIdDescriptor = {
-    get:function () {
-        console.log(nodeIdBase);
-    },
-    set:function (value) {
-        nodeIdTemp = value;
-        nodeIdBase = value;
-        document.getElementById('odp-input-nodeId').value = nodeIdBase;
-        document.getElementById('odp-output-nodeId').innerHTML = nodeIdBase;
-        console.log(nodeIdBase);
-    }
-};
-Object.defineProperty(xTestData, 'nodeId', nodeIdDescriptor);
-var nodeIdInput = document.getElementById('odp-input-nodeId');
-nodeIdInput.addEventListener('click', function (e) {
-    nodeIdTemp += 1;
-    xTestData.nodeId = nodeIdTemp;
-});
+
+    var nodeIdBase = '';
+    var nodeIdTemp = '';
+    Object.defineProperty(xTestData, 'nodeId', {
+        get: function () {
+            console.log(nodeIdBase);
+        },
+        set: function (value) {
+            nodeIdBase = value;
+            nodeIdTemp = value;
+            document.getElementById('odp-input-nodeId').value = nodeIdBase;
+            document.getElementById('odp-output-nodeId').innerHTML = nodeIdBase;
+            console.log(nodeIdBase);
+        }
+    });
+    var nodeIdInput = document.getElementById('odp-input-nodeId');
+    nodeIdInput.addEventListener('click', function (e) {
+        nodeIdTemp += 1;
+        xTestData.nodeId = nodeIdTemp;
+    });
 </script>
-
-
-
-
-
-
-
-
-
-
 
 
 <!--接下来的是tree-->
@@ -304,13 +252,13 @@ nodeIdInput.addEventListener('click', function (e) {
             console.log(testTree1.getId());
         },
         onCheck: function (item, dom, childrenItem) {
-            console.log('check: ', this );
+            console.log('check: ', this);
             console.log(testTree1.getName());
             console.log(testTree1.getId());
             console.log(testTree1.getItem());
         },
         onCancel: function (item, dom, childrenItem) {
-            console.log('cancel: ', this );
+            console.log('cancel: ', this);
         }
     });
 </script>
