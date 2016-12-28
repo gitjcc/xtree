@@ -58,14 +58,10 @@
         if (!data || typeof data !== 'object') {
             return;
         }
-        // 取出所有节点遍历
-        data.forEach(function (item) {
-            // 取出所有属性遍历
-            Object.keys(item).forEach(function(key) {
-                ObjectDefineProperty(item, key, item[key]);
-            });
+        // 取出所有属性遍历
+        Object.keys(data).forEach(function(key) {
+            ObjectDefineProperty(data, key, data[key]);
         });
-
     }
 
     function ObjectDefineProperty(data, key, val) {
