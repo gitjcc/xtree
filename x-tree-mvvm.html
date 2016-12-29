@@ -143,7 +143,9 @@
     }
 
     function classToggle(ele) {
-        iconToggle(ele);
+        if(ele){
+            iconToggle(ele);
+        }
         checkToggle(ele);
     }
     function iconToggle(ele) {
