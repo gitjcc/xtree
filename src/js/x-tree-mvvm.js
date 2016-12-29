@@ -490,7 +490,6 @@
                 _opt.onCheck(item, dom, childItem);
             }
 
-
         }
 
         function _getChild(node, cont) {
