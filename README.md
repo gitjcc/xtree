@@ -13,3 +13,12 @@ xtree.js
 
 - todo  是否允许用户自定义 opt 的默认值
 - todo  是否需要用户提供 isnode 数据
+
+
+## demo
+
+- [x-tree](demo/x-tree.html)
+- [x-tree-prototype](demo/x-tree-prototype.html)
+- [x-tree-mvvm](demo/x-tree-mvvm.html)
+- [x-tree-closure](demo/x-tree-closure.html)
+- [x-mvvm-jsbin](demo/x-mvvm-jsbin.html)
