@@ -1,5 +1,5 @@
 # xtreejs
-- xtree.js
+xtree.js
 
 
 ## todo
