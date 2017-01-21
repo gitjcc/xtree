@@ -26,26 +26,25 @@
 
 ;(function ($) {
 
-    //todo 是否需要用户提供isnode？数据
-
     window.xTree = function (opt) {
         return new tree(opt);
     };
 
     var defOpt = {
         dom: '',  //jqueryDom
-        is_trigger: true,  //是否需要触发? 否则直接显示
+        is_trigger: false,  //是否需要触发? 否则直接显示
         has_search: false,
         only_child: true,//是否结果只要 child
         node_merge: true,//结果只显示最上层  比如   中国被选中  四川,成都则不会显示  否则 每个被勾选的节点都显示
         zIndex: 1,
         choose: false,  //哪些是选中的？优先级高于data  {nodeId:[1,2,3],id:[1,2,3]}
-        //node_first:false,//是否需要节点排在前面  否则按照data的顺序
+        // node_first:false,//是否需要节点排在前面  否则按照data的顺序
         is_multi: true,//是否多选
         expand: false, //是否展开，false、true、num  //todo expand
         width: null,
         maxHeight: null,
         data: [],//{id:1,name:'xx',nodeId:'0',is_node:true,is_check:false},
+        sel_ids: '',
         onInit: function () {
         },
         onOpen: function () {
@@ -61,6 +60,8 @@
             //childrenItem  所有影响的子节点
         },
         onCancel: function (item, dom, childrenItem) {
+        },
+        onChange: function (item, dom, childrenItem) {
         }
     };
 
@@ -96,7 +97,7 @@
         _init: function (opt) {
             this.opt = $.extend(true, {}, defOpt, opt);
             this.dom = this.opt.dom;
-            this.data = this.opt.data;
+            this.data = _selData(this.opt.data, this.opt.sel_ids);
             this.html = this._makePanel();
             this.rootId = 1314;
 
@@ -167,7 +168,6 @@
         end: function () {
             if (this._is_open) {
                 this.html.hide();
-                this.dom.val(this.getName());
                 var ids = this.getId();
 
                 this._is_open = false;
@@ -508,10 +508,10 @@
 
             if (!item.is_check) {
                 this.opt.onCancel(item, dom, childItem);
-
             } else {
                 this.opt.onCheck(item, dom, childItem);
             }
+            this.opt.onChange();
 
 
         },
@@ -725,8 +725,7 @@
         var html = '<i class="iconfont icon-jia1"></i>';
 
         return $(html).css({
-            'font-size': '14px',
-            'font-weight': 'bold',
+            'font-size': '12px',
             'vertical-align': 'base-line',
             'padding-right': '0px',
             'cursor': 'pointer'
@@ -749,6 +748,20 @@
             return typeof data[i] == 'object';
         }
         return false;
+    }
+
+    function _selData(data, selected){
+        var sel_ids_string_array = selected.split(',');
+        console.log('sel', sel_ids_string_array);
+        $.each(sel_ids_string_array, function(index,id){
+            $.each(data,function (index2,d) {
+                if(d.id == parseInt(id)){
+                    data[index2].is_check = true;
+                }
+            });
+        });
+
+        return data;
     }
 
     function _initNode(_data) {
