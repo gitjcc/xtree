@@ -97,7 +97,7 @@
         _init: function (opt) {
             this.opt = $.extend(true, {}, defOpt, opt);
             this.dom = this.opt.dom;
-            this.data = _selData(this.opt.data, this.opt.sel_ids);
+            this.data = this.opt.sel_ids ? _selData(this.opt.data, this.opt.sel_ids) : this.opt.data;
             this.html = this._makePanel();
             this.rootId = 1314;
 
@@ -750,19 +750,33 @@
         return false;
     }
 
-    function _selData(data, selected){
-        var sel_ids_string_array = selected.split(',');
-        console.log('sel', sel_ids_string_array);
-        $.each(sel_ids_string_array, function(index,id){
-            $.each(data,function (index2,d) {
-                if(d.id == parseInt(id)){
-                    data[index2].is_check = true;
+    function _selData(data, selected_ids){
+        var sel_ids = selected_ids.split(',');
+        console.log('sel', sel_ids);
+
+        $.each(sel_ids, function(i,id){
+            if(typeof id === "string"){
+                data[i].is_check = true;
+                console.log('check-ids', id);
+                _checkChildren(parseInt(id));
+            }
+        });
+
+        function _checkChildren(id){
+            $.each(data, function (i2, item) {
+                if(item.nodeId === id){
+                    data[i2].is_check = true;
+                    console.log('check', item.id);
+                    if(item.is_node){
+                        _checkChildren(item.id)
+                    }
                 }
             });
-        });
+        }
 
         return data;
     }
+
 
     function _initNode(_data) {
         var rootId = [];
