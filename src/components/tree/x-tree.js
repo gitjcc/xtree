@@ -97,6 +97,7 @@
         _init: function (opt) {
             this.opt = $.extend(true, {}, defOpt, opt);
             this.dom = this.opt.dom;
+            this.dom.css({'position':'relative'});
             this.data = this.opt.sel_ids ? _selData(this.opt.data, this.opt.sel_ids) : this.opt.data;
             this.html = this._makePanel();
             this.rootId = 1314;
@@ -385,20 +386,16 @@
         _showPanel: function () {
             if (this.opt.is_trigger) {
                 this.html.css({
-                    top: this.dom.position().top + this.dom.outerHeight(),
-                    left: this.dom.position().left,
+                    top: this.dom.outerHeight(),
+                    left: 0,
                     minWidth: this.opt.width ? this.opt.width : this.dom.outerWidth()
                 });
 
                 this.html.on('click', function (e) {
                     e.stopPropagation();
                 });
-
-                this.dom.after(this.html);
-
-            } else {
-                this.dom.append(this.html);
             }
+            this.dom.append(this.html);
 
         },
         _showData: function () {
