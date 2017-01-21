@@ -140,6 +140,7 @@
             if (this.opt.is_trigger) {
                 this.dom.off('click.xTree');
                 this.dom.on('click.xTree', function (e) {
+                    $('.xTreePanel').hide();
                     that.start();
                     e.stopPropagation();
                 });
@@ -390,6 +391,8 @@
                     left: 0,
                     minWidth: this.opt.width ? this.opt.width : this.dom.outerWidth()
                 });
+
+                this.html.addClass('xTreePanel');
 
                 this.html.on('click', function (e) {
                     e.stopPropagation();
