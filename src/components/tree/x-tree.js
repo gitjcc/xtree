@@ -111,28 +111,7 @@
 
             var that = this;
 
-            this.rootId = _initNode(that.data);
-
-            if (this.opt.choose) {
-                var choose = this.opt.choose;
-                $.each(choose.nodeId, function (i, n) {
-                    var item = {};
-                    $.each(that.data, function (i2, n2) {
-                        if (n2.id == n && n2.is_node == 1) {
-                            item = n2;
-                            item.is_check = true;
-                        }
-                    });
-                    that._chgAllChildren(item.id, item.is_check);
-                });
-                $.each(choose.id, function (i, n) {
-                    $.each(that.data, function (i2, n2) {
-                        if (n2.id == n && n2.is_node == false) {
-                            n2.is_check = true;
-                        }
-                    });
-                });
-            }
+            this.rootId = _getRootId(that.data);
 
             this._originId = this.getId();
 
@@ -228,7 +207,7 @@
             if (this.opt.only_child) {
                 $.each(data, function (i, n) {
                     if (n.is_check && !n.is_node) {
-                        id.push(data[i].id);
+                        id.push(n.id);
                     }
                 });
 
@@ -254,9 +233,9 @@
                     $.each(clone, function (i, n) {
                         if (n) {
                             if (n.is_node) {
-                                nodeId.push(data[i].id);
+                                nodeId.push(n.id);
                             } else {
-                                id.push(data[i].id);
+                                id.push(n.id);
                             }
                         }
                     });
@@ -264,9 +243,9 @@
                     $.each(data, function (i, n) {
                         if (n.is_check) {
                             if (n.is_node) {
-                                nodeId.push(data[i].id);
+                                nodeId.push(n.id);
                             } else {
-                                id.push(data[i].id);
+                                id.push(n.id);
                             }
                         }
                     });
@@ -752,33 +731,60 @@
 
     function _selData(data, selected_ids){
         var sel_ids = selected_ids.split(',');
-        console.log('sel', sel_ids);
-
-        $.each(sel_ids, function(i,id){
-            if(typeof id === "string"){
-                data[i].is_check = true;
-                console.log('check-ids', id);
-                _checkChildren(parseInt(id));
-            }
+        $.each(sel_ids, function (i,id) {
+            $.each(data, function (i2, item) {
+                if(item.id === parseInt(id)){
+                    item.is_check = true;
+                    _selParent(item.nodeId);
+                    if(item.is_node){
+                        _selChildren(item.id);
+                    }
+                }
+            });
         });
 
-        function _checkChildren(id){
-            $.each(data, function (i2, item) {
+        function _selParent(nid) {
+            if(!nid){
+                return false;
+            }
+            var selParent = true;
+            var sel_p = {};
+            $.each(data, function (index, item) {
+                if(item.id == nid){
+                    sel_p = item;
+                }
+                if(item.nodeId == nid && !item.is_check){
+                    selParent = false;
+                    return false;
+                }
+            });
+
+            if(selParent){
+                sel_p.is_check = true;
+                if(sel_p.nodeId){
+                    _selParent(sel_p.nodeId);
+                }
+            }
+        }
+
+        function _selChildren(id) {
+            if(!id){
+                return false;
+            }
+            $.each(data, function (i, item) {
                 if(item.nodeId === id){
-                    data[i2].is_check = true;
-                    console.log('check', item.id);
+                    item.is_check = true;
                     if(item.is_node){
-                        _checkChildren(item.id)
+                        _selChildren(item.id);
                     }
                 }
             });
         }
-
         return data;
     }
 
 
-    function _initNode(_data) {
+    function _getRootId(_data) {
         var rootId = [];
         var clone = $.extend(true, [], _data);
         for (var i = 0, len = _data.length; i < len; i++) {
@@ -821,7 +827,6 @@
         //     return r;
         // }
         // rootId = unique(rootId);
-        // console.log(rootId);
 
         return rootId[0];
     }
