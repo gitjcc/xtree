@@ -57,14 +57,16 @@
             this.opt = $.extend(true, {}, this._defOpt, opt);
             this.state = $.extend(true, {}, this._state);
 
+            this.opt.data = this.opt.sel_ids ? this._selData(this.opt.data, this.opt.sel_ids) : this.opt.data;
+
+            this.data = this._arrayToTree(this.opt.data);
+            console.log(this.data);
+
+
             this.dom = this.opt.dom;
             this.dom.css({'position': 'relative'});
 
             // this.html = this._makePanel();
-
-            this.opt.data = this.opt.sel_ids ? this._selData(this.opt.data, this.opt.sel_ids) : this.opt.data;
-
-            this._arrayToTree(this.opt.data);
 
             var that = this;
 
@@ -87,7 +89,7 @@
             var sel_ids = selected.split(',');
             for (var i = 0; i < sel_ids.length; i++) {
                 for (var j = 0; j < data.length; j++) {
-                    if( data[j].id === parseInt(sel_ids[i]) ){
+                    if (data[j].id === parseInt(sel_ids[i])) {
                         data[j].is_check = true;
                         this._selParent(data, data[j].nodeId);
                         if (data[j].is_node) {
@@ -142,15 +144,16 @@
         },
 
         _arrayToTree: function (arrayIn) {
-            this.root = this._getTreeRoot(arrayIn);
-            this.data = {
-                id: this.root,
+            var rootId = this._getTreeRoot(arrayIn);
+            var treeData = {
+                id: rootId,
                 name: 'root',
-                parent: null
+                parent: null,
+                level: 0
             };
-            this.data.children = this._getSubTree(arrayIn, this.data);
-            console.log(this.data);
-            window.tree = this.data;
+            treeData.children = this._getSubTree(arrayIn, treeData);
+            treeData.treeDepth = this._getTreeDepth(treeData);
+            return treeData;
         },
 
         _getTreeRoot: function (arrayIn) {
@@ -227,24 +230,52 @@
                         is_check: arrayIn[i].is_check
                     }; //copy
                     temp.parent = parent;
+                    temp.level = parent.level + 1;
                     if (arrayIn[i].is_node) {
-                        temp.children = this._getSubTree(arrayIn, arrayIn[i]);
+                        temp.children = this._getSubTree(arrayIn, temp);
                     }
                     result.push(temp);
                 }
             }
             return result;
         },
-        
-        _getItemById: function (tree, id) {
-            if(tree.id == id){
-                return tree;
-            }
-            if(tree.children){
+
+        _getTreeDepth: function (tree, level) {
+            var maxDepth = level;
+            if (tree.children) {
                 for (var i = 0; i < tree.children.length; i++) {
-                    this._getItemById(tree.children[i]);
+                    this._getTreeDepth(tree.children[i], maxDepth);
                 }
             }
+            return maxDepth;
+        },
+        _getTreeLeaves: function (tree) {
+            var leaves = [];
+            for (var i = 0; i < tree.children.length; i++) {
+                if(tree.is_node){
+                    leaves = this._getTreeLeaves(tree.children[i]);
+                }else{
+                    leaves.push(tree);
+                }
+            }
+            return leaves;
+        },
+
+        _getItemById: function (tree, id) {
+            var item = {};
+            if (tree.id == id) {
+                return tree;
+            } else {
+                if (tree.children) {
+                    for (var i = 0; i < tree.children.length; i++) {
+                        item = this._getItemById(tree.children[i], id);
+                        if (item) {
+                            return item;
+                        }
+                    }
+                }
+            }
+            return false;
         }
     }
 

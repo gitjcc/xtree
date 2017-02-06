@@ -58,6 +58,15 @@
         sel_ids: '2,3,11,12,13',
         expand: 6,
         data: [
+            {id: 26, name: '成都', nodeId: 7, is_node: false, is_check: false},
+            {id: 27, name: '泸州', nodeId: 7, is_node: false, is_check: false},
+            {id: 28, name: '昆明', nodeId: 7, is_node: false, is_check: false},
+            {id: 29, name: '大理', nodeId: 7, is_node: true, is_check: false},
+            {id: 30, name: '贵阳', nodeId: 29, is_node: false, is_check: false},
+            {id: 31, name: '遵义', nodeId: 29, is_node: false, is_check: false},
+            {id: 32, name: '南宁', nodeId: 29, is_node: false, is_check: false},
+            {id: 33, name: '桂林', nodeId: 29, is_node: false, is_check: false},
+
             {id: 1, name: '中国', nodeId: 99, is_node: true, is_check: false},
             {id: 110, name: '大陆', nodeId: 99, is_node: true, is_check: false},
             {id: 111, name: '大陆', nodeId: 110, is_node: false, is_check: false},
@@ -75,14 +84,6 @@
             {id: 12, name: '南宁', nodeId: 5, is_node: false, is_check: false},
             {id: 13, name: '桂林', nodeId: 5, is_node: false, is_check: false},
 
-            {id: 26, name: '成都', nodeId: 7, is_node: false, is_check: false},
-            {id: 27, name: '泸州', nodeId: 7, is_node: false, is_check: false},
-            {id: 28, name: '昆明', nodeId: 7, is_node: false, is_check: false},
-            {id: 29, name: '大理', nodeId: 7, is_node: true, is_check: false},
-            {id: 30, name: '贵阳', nodeId: 29, is_node: false, is_check: false},
-            {id: 31, name: '遵义', nodeId: 29, is_node: false, is_check: false},
-            {id: 32, name: '南宁', nodeId: 29, is_node: false, is_check: false},
-            {id: 33, name: '桂林', nodeId: 29, is_node: false, is_check: false}
         ],
         //        choose:{
         //            nodeId:[1],
@@ -109,7 +110,7 @@
 </script>
 
 <script>
-    var testTree2 = areeTree({
+    var testTree2 = treeTree({
         dom: $('.test_tree2'),
         only_child: false,
         is_multi: true,
@@ -158,7 +159,7 @@
 </script>
 
 <script>
-    var testTree3 = areeTree({
+    var testTree3 = treeTree({
         dom: $('.test_tree3'),
         only_child: false,
         is_multi: true,
@@ -206,16 +207,7 @@
 </script>
 
 <script>
-    function _getItemById(tree, id) {
-        if(tree.id == id){
-            return tree;
-        }
-        if(tree.children){
-            for (var i = 0; i < tree.children.length; i++) {
-                _getItemById(tree.children[i]);
-            }
-        }
-    }
+//test
 </script>
 
 </body>
