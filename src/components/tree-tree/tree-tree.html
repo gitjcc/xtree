@@ -108,9 +108,8 @@
     });
 </script>
 
-
 <script>
-    var testTree2 = treeTree({
+    var testTree2 = areeTree({
         dom: $('.test_tree2'),
         only_child: false,
         is_multi: true,
@@ -158,10 +157,8 @@
     });
 </script>
 
-
-
 <script>
-    var testTree3 = treeTree({
+    var testTree3 = areeTree({
         dom: $('.test_tree3'),
         only_child: false,
         is_multi: true,
@@ -206,6 +203,19 @@
             testTree3.dom.val(testTree3.getName());
         }
     });
+</script>
+
+<script>
+    function _getItemById(tree, id) {
+        if(tree.id == id){
+            return tree;
+        }
+        if(tree.children){
+            for (var i = 0; i < tree.children.length; i++) {
+                _getItemById(tree.children[i]);
+            }
+        }
+    }
 </script>
 
 </body>

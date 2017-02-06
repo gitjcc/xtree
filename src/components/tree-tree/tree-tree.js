@@ -25,7 +25,7 @@
             is_multi: true,//是否多选
             expand: false, //是否展开，false、true、num  //todo expand
             width: null,
-            maxHeight: null,
+            maxHeight: 300,
             data: [],//{id:1,name:'xx',nodeId:'0',is_node:true,is_check:false},
             sel_ids: '',
             onOpen: function () {
@@ -45,13 +45,14 @@
             onChange: function (item, dom, childrenItem) {
             }
         },
+
         _state: {
             _isFirst: true,  //是不是第一次打开
             _isOpen: false,  //是否open
             _searchTimer: '',   //搜索框的定时器
-            _rootId: 1314,
             _originId: {nodeId: [], id: []}  //上次打开时候选中了哪一些id
         },
+
         _init: function (opt) {
             this.opt = $.extend(true, {}, this._defOpt, opt);
             this.state = $.extend(true, {}, this._state);
@@ -61,7 +62,9 @@
 
             // this.html = this._makePanel();
 
-            this._arrayToTree();
+            this.opt.data = this.opt.sel_ids ? this._selData(this.opt.data, this.opt.sel_ids) : this.opt.data;
+
+            this._arrayToTree(this.opt.data);
 
             var that = this;
 
@@ -79,28 +82,88 @@
                 this.start();
             }
         },
-        _arrayToTree: function () {
-            this.root = this._getRoot(this.opt.data);
+
+        _selData: function (data, selected) {
+            var sel_ids = selected.split(',');
+            for (var i = 0; i < sel_ids.length; i++) {
+                for (var j = 0; j < data.length; j++) {
+                    if( data[j].id === parseInt(sel_ids[i]) ){
+                        data[j].is_check = true;
+                        this._selParent(data, data[j].nodeId);
+                        if (data[j].is_node) {
+                            this._selChildren(data, data[j].id);
+                        }
+                    }
+                }
+            }
+
+            return data;
+        },
+
+        _selParent: function (data, nid) {
+            if (!nid) {
+                return false;
+            }
+            var selParent = true;
+            var sel_p = {};
+
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].id == nid) {
+                    sel_p = data[i];
+                }
+                if (data[i].nodeId == nid && !data[i].is_check) {
+                    selParent = false;
+                    return false;
+                }
+
+            }
+
+            if (selParent) {
+                sel_p.is_check = true;
+                if (sel_p.nodeId) {
+                    this._selParent(data, sel_p.nodeId);
+                }
+            }
+        },
+
+        _selChildren: function (data, id) {
+            if (!id) {
+                return false;
+            }
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].nodeId === id) {
+                    data[i].is_check = true;
+                    if (data[i].is_node) {
+                        this._selChildren(data, data[i].id);
+                    }
+                }
+
+            }
+        },
+
+        _arrayToTree: function (arrayIn) {
+            this.root = this._getTreeRoot(arrayIn);
             this.data = {
                 id: this.root,
                 name: 'root',
                 parent: null
             };
-            this.data.children = this._getChildren(this.opt.data, this.data);
+            this.data.children = this._getSubTree(arrayIn, this.data);
             console.log(this.data);
+            window.tree = this.data;
         },
 
-        _getRoot: function (dataIn) {
+        _getTreeRoot: function (arrayIn) {
             var rootId = [];
-            var clone = $.extend(true, [], dataIn);
-            for (var i = 0, len = dataIn.length; i < len; i++) {
+            var clone = $.extend(true, [], arrayIn);
+            for (var i = 0, len = arrayIn.length; i < len; i++) {
                 for (var j = i; j < len; j++) {
-                    if (dataIn[i].id === dataIn[j].nodeId) {
-                        // dataIn[i].is_node = true;
+                    if (arrayIn[i].id === arrayIn[j].nodeId) {
+                        // arrayIn[i].is_node = true;
                         clone[j] = null;
                     }
-                    if (dataIn[i].nodeId === dataIn[j].id) {
-                        // dataIn[j].is_node = true;
+                    if (arrayIn[i].nodeId === arrayIn[j].id) {
+                        // arrayIn[j].is_node = true;
                         clone[i] = null;
                     }
                 }
@@ -112,6 +175,7 @@
             });
 
             // 去除数组重复值
+            // 方法一
             // function unique(array) {
             //     var n = [];
             //     for (var i = 0; i < array.length; i++) {
@@ -120,6 +184,7 @@
             //     return n;
             // }
 
+            // 方法二
             function unique(array) {
                 var r = [];
                 for (var i = 0, len = array.length; i < len; i++) {
@@ -149,7 +214,7 @@
             return rootId[0];
         },
 
-        _getChildren: function (arrayIn, parent) {
+        _getSubTree: function (arrayIn, parent) {
             var result = [];
             var temp = {};
             for (var i = 0; i < arrayIn.length; i++) {
@@ -163,12 +228,23 @@
                     }; //copy
                     temp.parent = parent;
                     if (arrayIn[i].is_node) {
-                        temp.children = this._getChildren(arrayIn, arrayIn[i]);
+                        temp.children = this._getSubTree(arrayIn, arrayIn[i]);
                     }
                     result.push(temp);
                 }
             }
             return result;
+        },
+        
+        _getItemById: function (tree, id) {
+            if(tree.id == id){
+                return tree;
+            }
+            if(tree.children){
+                for (var i = 0; i < tree.children.length; i++) {
+                    this._getItemById(tree.children[i]);
+                }
+            }
         }
     }
 

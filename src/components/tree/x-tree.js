@@ -42,7 +42,7 @@
         is_multi: true,//是否多选
         expand: false, //是否展开，false、true、num  //todo expand
         width: null,
-        maxHeight: null,
+        maxHeight: 300,
         data: [],//{id:1,name:'xx',nodeId:'0',is_node:true,is_check:false},
         sel_ids: '',
         onInit: function () {
@@ -729,60 +729,61 @@
         return false;
     }
 
-    function _selData(data, selected_ids){
-        var sel_ids = selected_ids.split(',');
-        $.each(sel_ids, function (i,id) {
-            $.each(data, function (i2, item) {
-                if(item.id === parseInt(id)){
-                    item.is_check = true;
-                    _selParent(item.nodeId);
-                    if(item.is_node){
-                        _selChildren(item.id);
+    function _selData(data, selected){
+        var sel_ids = selected.split(',');
+        for (var i = 0; i < sel_ids.length; i++) {
+            for (var j = 0; j < data.length; j++) {
+                if( data[j].id === parseInt(sel_ids[i]) ){
+                    data[j].is_check = true;
+                    _selParent(data, data[j].nodeId);
+                    if (data[j].is_node) {
+                        _selChildren(data, data[j].id);
                     }
                 }
-            });
-        });
-
-        function _selParent(nid) {
-            if(!nid){
-                return false;
             }
-            var selParent = true;
-            var sel_p = {};
-            $.each(data, function (index, item) {
-                if(item.id == nid){
-                    sel_p = item;
-                }
-                if(item.nodeId == nid && !item.is_check){
-                    selParent = false;
-                    return false;
-                }
-            });
-
-            if(selParent){
-                sel_p.is_check = true;
-                if(sel_p.nodeId){
-                    _selParent(sel_p.nodeId);
-                }
-            }
-        }
-
-        function _selChildren(id) {
-            if(!id){
-                return false;
-            }
-            $.each(data, function (i, item) {
-                if(item.nodeId === id){
-                    item.is_check = true;
-                    if(item.is_node){
-                        _selChildren(item.id);
-                    }
-                }
-            });
         }
         return data;
     }
 
+    function _selParent(data, nid) {
+        if(!nid){
+            return false;
+        }
+        var selParent = true;
+        var sel_p = {};
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].id == nid) {
+                sel_p = data[i];
+            }
+            if (data[i].nodeId == nid && !data[i].is_check) {
+                selParent = false;
+                return false;
+            }
+
+        }
+
+        if(selParent){
+            sel_p.is_check = true;
+            if(sel_p.nodeId){
+                _selParent(data, sel_p.nodeId);
+            }
+        }
+    }
+
+    function _selChildren(data, id) {
+        if(!id){
+            return false;
+        }
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].nodeId === id) {
+                data[i].is_check = true;
+                if (data[i].is_node) {
+                    _selChildren(data, data[i].id);
+                }
+            }
+
+        }
+    }
 
     function _getRootId(_data) {
         var rootId = [];
