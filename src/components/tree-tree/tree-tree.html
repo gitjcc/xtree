@@ -58,7 +58,10 @@
         sel_ids: '2,3,11,12,13',
         expand: 6,
         data: [
-            {id: 1, name: '中国', nodeId: 0, is_node: true, is_check: false},
+            {id: 1, name: '中国', nodeId: 99, is_node: true, is_check: false},
+            {id: 110, name: '大陆', nodeId: 99, is_node: true, is_check: false},
+            {id: 111, name: '大陆', nodeId: 110, is_node: false, is_check: false},
+
             {id: 2, name: '四川', nodeId: 1, is_node: true, is_check: false},
             {id: 3, name: '云南', nodeId: 1, is_node: true, is_check: false},
             {id: 4, name: '贵州', nodeId: 1, is_node: true, is_check: false},
@@ -204,7 +207,6 @@
         }
     });
 </script>
-
 
 </body>
 </html>
