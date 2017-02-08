@@ -295,25 +295,27 @@
 
         _checkItemsByIds: function (item, selected) {
             var sel_ids = selected || this.opt.sel_ids;
+            if(!sel_ids.length){
+                return false;
+            }
             for (var i = 0; i < sel_ids.length; i++) {
                 if (item.id == sel_ids[i]) {
-
+                    this._changeItem(item, true);
+                    sel_ids.splice(i,1);
+                    break;
                 }
-
             }
-            if (tree.id in sel_ids) {
-                this._changeItem(tree, true);
-            }
-            if (tree.children) {
-
-            }
+            return sel_ids.length;
         },
 
         _traverseTree: function (tree, fn) {
             if (!tree) {
                 return false;
             }
-            fn(tree);
+            var end = fn(tree);
+            if(end){
+                return true;
+            }
             if (tree.children) {
                 for (var i = 0; i < tree.children.length; i++) {
                     this._traverseTree(tree.children[i], fn);
