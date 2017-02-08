@@ -253,62 +253,31 @@
             }
         },
 
-
-        _checkItem: function (item) {
-            if (!item) {
-                return false;
-            }
-            item.is_check = true;
-            if (item.children) {
-                this._checkChildren(item.children);
-            }
-            if (item.parent) {
-                this._checkParent(item.parent);
-            }
-        },
-
-        _cancelItem: function (item) {
-            if(!item){
-                return false;
-            }
-            item.is_check = false;
-            if(item.children){
-                this._changeChildren(item.children);
-            }
-            if(item.parent){
-                this._cancelParent(item.parent);
-            }
-        },
-
         _changeChildren: function (children, change) {
             if (!children) {
                 return false;
             }
             for (var i = 0; i < children.length; i++) {
-                children[i].is_check = change;
-                if (children[i].children) {
-                    this._changeChildren(children[i], change);
+                if (children[i].is_check != change) {
+                    children[i].is_check = change;
+                    if (children[i].children) {
+                        this._changeChildren(children[i], change);
+                    }
                 }
             }
         },
 
         _changeParent: function (parent, change) {
-            if (!parent) {
+            if (!parent || parent.is_check == change) {
                 return false;
             }
-
-            if(change){
+            if (change) {
                 for (var i = 0; i < parent.children.length; i++) {
                     if (!parent.children[i].is_check) {
                         return false;
                     }
                 }
-            }else{
-               if(parent.is_check == change){
-                   return false;
-               }
             }
-
             parent.is_check = change;
             if (parent.parent) {
                 this._changeParent(parent.parent, change);
@@ -316,32 +285,29 @@
         },
 
 
-        _checkParent: function (parent) {
-            if (!parent) {
-                return false;
+        _checkTreeByIds: function (tree, selected) {
+            var sel_ids = selected.split(',');
+            for (var i = 0; i < $.length; i++) {
+                sel_ids[i] = parseInt(sel_ids[i]);
             }
-            for (var i = 0; i < parent.children.length; i++) {
-                if (!parent.children[i].is_check) {
-                    return false;
+            this._traverseTree(tree, this._checkItemsByIds);
+        },
+
+        _checkItemsByIds: function (item, selected) {
+            var sel_ids = selected || this.opt.sel_ids;
+            for (var i = 0; i < sel_ids.length; i++) {
+                if (item.id == sel_ids[i]) {
+
                 }
+
             }
-            parent.is_check = true;
-            if (parent.parent) {
-                this._checkParent(parent.parent);
+            if (tree.id in sel_ids) {
+                this._changeItem(tree, true);
+            }
+            if (tree.children) {
+
             }
         },
-
-
-        _cancelParent: function (parent) {
-            if(!parent){
-                return false;
-            }
-            parent.is_check = false;
-            if(parent.parent.is_check){
-                this._cancelParent(parent.parent);
-            }
-        },
-
 
         _traverseTree: function (tree, fn) {
             if (!tree) {
@@ -354,30 +320,6 @@
                 }
             }
         },
-
-        _checkTreeByIds: function (tree, selected) {
-            var sel_ids = selected.split(',');
-            for (var i = 0; i < $.length; i++) {
-                sel_ids[i] = parseInt(sel_ids[i]);
-            }
-            this._traverseTree(tree, this._checkItemsByIds);
-        },
-
-        _checkItemsByIds: function (item, sel_ids) {
-            for (var i = 0; i < sel_ids.length; i++) {
-                if (item.id == sel_ids[i]) {
-
-                }
-
-            }
-            if (tree.id in sel_ids) {
-                this._checkItem(tree);
-            }
-            if (tree.children) {
-
-            }
-        },
-
 
 
     }
