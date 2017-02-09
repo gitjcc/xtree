@@ -66,8 +66,7 @@
 
             this.dom = this.opt.dom;
             this.dom.css({'position': 'relative'});
-
-            // this.html = this._makePanel();
+            this.html = this._makePanel();
 
             var that = this;
 
@@ -85,8 +84,31 @@
                 this.start();
             }
         },
+        
+        //方法
+        start: function () {
+            this.opt.onBeforeOpen();
+            this._showPanel();
+            this._showData();
+            this._expand();
+            this.state._is_open = true;
 
+            this.html.find('.x-tree-search').focus();
+            this.opt.onOpen();
+            return this;
+        },
+        end: function () {
+            if (this.state._is_open) {
+                this.html.hide();
+                var ids = this.getId();
 
+                this.state._is_open = false;
+                this.opt.onClose(JSON.stringify(ids) !== JSON.stringify(this.state._originId));
+                this.state._originId = ids;
+            }
+        },
+
+        // 数据方法
         _arrayToTree: function (arrayIn) {
             var rootId = this._getTreeRoot(arrayIn);
             var treeData = {
@@ -324,6 +346,61 @@
             return tree;
         },
 
+
+        //html方法
+        _makePanel: function () {
+            var html = '<div></div>';
+
+            if (this.opt.has_search) {
+                html = this._makeSearch(html);
+            }
+
+            var css;
+            if (this.opt.is_trigger) {
+                css = {
+                    'font-family': 'Microsoft YaHei',
+                    'z-index': this.opt.zIndex,
+                    border: '1px solid #5d5d5d',
+                    'background': '#fff',
+                    position: 'absolute',
+                    maxHeight: this.opt.maxHeight,
+                    'white-space': 'nowrap',
+                    'overflow': 'auto'
+                };
+            } else {
+                css = {
+                    'font-family': 'Microsoft YaHei',
+                    'background': '#fff',
+                    maxHeight: this.opt.maxHeight,
+                    'white-space': 'nowrap',
+                    'overflow': 'auto'
+                };
+            }
+            
+            return $(html).css(css);
+        },
+
+        _makeSearch: function (html) {
+            var search = '<input class="x-tree-search" type="text" placeholder="搜索"/></div>';
+            search = $(search).css({
+                'border': 'none',
+                'padding': '4px 0',
+                'margin': '5px auto 0 auto',
+                'display': 'block'
+            });
+
+            var obj = this;
+            $(search).on('keyup paste', function () {
+                var dom = this;
+                clearTimeout(obj._searchTimer);
+                obj._searchTimer = setTimeout(function () {
+                    obj.search(dom.value);
+                }, 100);
+            });
+
+            return $(html).append(search);
+
+        },
 
     }
 
