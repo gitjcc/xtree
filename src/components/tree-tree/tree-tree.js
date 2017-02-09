@@ -205,6 +205,7 @@
         //     return leaves;
         // },
 
+
         _getItemById: function (tree, id) {
             var item = {};
             if (tree.id == id) {
@@ -222,22 +223,25 @@
             return false;
         },
 
-        // _getItemsByIds: function (tree, ids) {
-        //     var item = {};
-        //     if (tree.id in id) {
-        //         return tree;
-        //     } else {
-        //         if (tree.children) {
-        //             for (var i = 0; i < tree.children.length; i++) {
-        //                 item = this._getItemById(tree.children[i], id);
-        //                 if (item) {
-        //                     return item;
-        //                 }
-        //             }
-        //         }
-        //     }
-        //     return false;
-        // },
+        _getItemsByIds: function (tree, ids) {
+            var items = [];
+            this._traverseTree(tree, this._getItemsByIdsFn, ids, items);
+            return items;
+        },
+
+        _getItemsByIdsFn: function (item, ids, items) {
+            if (!ids.length) {
+                return false;
+            }
+            for (var i = 0; i < ids.length; i++) {
+                if (item.id == ids[i]) {
+                    items.push(item);
+                    ids.splice(i, 1);
+                    break;
+                }
+            }
+            return ids.length;
+        },
 
 
         _changeItem: function (item, change) {
@@ -285,42 +289,39 @@
         },
 
 
-        _checkTreeByIds: function (tree, selected) {
-            var sel_ids = selected.split(',');
+        _checkTreeByIds: function (tree, sel_ids) {
+            var ids = sel_ids.split(',');
             for (var i = 0; i < $.length; i++) {
-                sel_ids[i] = parseInt(sel_ids[i]);
+                ids[i] = parseInt(ids[i]);
             }
-            this._traverseTree(tree, this._checkItemsByIds);
+            this._traverseTree(tree, this._checkTreeByIdsFn, ids);
         },
 
-        _checkItemsByIds: function (item, selected) {
-            var sel_ids = selected || this.opt.sel_ids;
-            if(!sel_ids.length){
+        _checkTreeByIdsFn: function (item, ids) {
+            if (!ids.length) {
                 return false;
             }
-            for (var i = 0; i < sel_ids.length; i++) {
-                if (item.id == sel_ids[i]) {
+            for (var i = 0; i < ids.length; i++) {
+                if (item.id == ids[i]) {
                     this._changeItem(item, true);
-                    sel_ids.splice(i,1);
+                    ids.splice(i, 1);
                     break;
                 }
             }
-            return sel_ids.length;
+            return ids.length;
         },
 
-        _traverseTree: function (tree, fn) {
+        _traverseTree: function (tree, fn, input, output) {
             if (!tree) {
                 return false;
             }
-            var end = fn(tree);
-            if(end){
-                return true;
-            }
-            if (tree.children) {
+            var _continue = fn(tree, input, output);//是否继续遍历
+            if (_continue && tree.children) {
                 for (var i = 0; i < tree.children.length; i++) {
-                    this._traverseTree(tree.children[i], fn);
+                    this._traverseTree(tree.children[i], fn, input, output);
                 }
             }
+            return tree;
         },
 
 
