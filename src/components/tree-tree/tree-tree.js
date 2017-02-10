@@ -149,6 +149,66 @@
 
             return text.join();
         },
+
+        getCheckedItems: function () {
+            var items = [];
+            if (this.opt.only_child) {
+                this._traverseTree(this.data, this._getCheckedItemsFnOnlyChild, undefined, items);
+            } else if (this.opt.node_merge) {
+                this._traverseTree(this.data, this._getCheckedItemsFnNodeMerge, undefined, items);
+            } else {
+                this._traverseTree(this.data, this._getCheckedNameFn, undefined, items);
+            }
+            return items;
+        },
+
+        _getCheckedItemsFnOnlyChild: function (item, input, items) {
+            if (item.is_check && !item.is_node) {
+                items.push(item);
+            }
+        },
+        _getCheckedItemsFnNodeMerge: function (item, input, items) {
+            if (item.is_check && !item.is_node) {
+                items.push(item);
+            }
+        },
+        _getCheckedNameFn: function (item, input, names) {
+            if (this.opt.only_child) {
+                $.each(data, function (i, n) {
+                    if (n.is_check && !n.is_node) {
+                        names.push(n.name);
+                    }
+                });
+            } else {
+                if (this.opt.node_merge) {
+                    var nodes = [];
+                    $.each(data, function (i, n) {
+                        if (n.is_check && n.is_node) {
+                            nodes.push(n.id);
+                        }
+                    });
+
+                    var clone = $.extend(true, [], data); //直接赋值传的是引用
+                    $.each(clone, function (i, n) {
+                        if ((n.is_check && $.inArray(n.nodeId, nodes) != -1) || !n.is_check) {
+                            clone[i] = null;
+                        }
+                    });
+
+                    $.each(clone, function (i, n) {
+                        if (n) {
+                            names.push(n.name);
+                        }
+                    });
+                } else {
+                    $.each(data, function (i, n) {
+                        if (n.is_check) {
+                            names.push(n.name);
+                        }
+                    });
+                }
+            }
+        },
         getId: function () {
             var id = [];
             var nodeId = [];
@@ -536,15 +596,21 @@
 
         _traverseTree: function (tree, fn, input, output) {
             if (!tree) {
-                return false;
+                return {
+                    children: false,
+                    brother: false
+                };
             }
             var _continue = fn.call(this, tree, input, output);//是否继续遍历
-            if (_continue && tree.children) {
+            if (_continue.children && tree.children) {
                 for (var i = 0; i < tree.children.length; i++) {
-                    this._traverseTree(tree.children[i], fn, input, output);
+                    var brother = this._traverseTree(tree.children[i], fn, input, output);
+                    if (brother) {
+                        break;
+                    }
                 }
             }
-            return tree;
+            return _continue.brother;
         },
 
 
