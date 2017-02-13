@@ -57,11 +57,11 @@
             this.opt = $.extend(true, {}, this._defOpt, opt);
             this.state = $.extend(true, {}, this._state);
 
-            this.data = this._arrayToTree(this.opt.data);
-            console.log(this.data);
+            this.tree = this._arrayToTree(this.opt.data);
+            console.log(this.tree);
 
-            this._checkTreeByIds(this.data, this.opt.sel_ids);
-            console.log(this.data);
+            this._checkTreeByIds(this.tree, this.opt.sel_ids);
+            console.log(this.tree);
 
 
             this.dom = this.opt.dom;
@@ -110,7 +110,7 @@
 
         getName: function () {
             var text = [];
-            var data = this.data;
+            var data = this.tree;
             if (this.opt.only_child) {
                 $.each(data, function (i, n) {
                     if (n.is_check && !n.is_node) {
@@ -153,11 +153,11 @@
         getCheckedItems: function () {
             var items = [];
             if (this.opt.only_child) {
-                this._traverseTree(this.data, this._getCheckedItemsFnOnlyChild, undefined, items);
+                this._traverseTree(this.tree, this._getCheckedItemsFnOnlyChild, undefined, items);
             } else if (this.opt.node_merge) {
-                this._traverseTree(this.data, this._getCheckedItemsFnNodeMerge, undefined, items);
+                this._traverseTree(this.tree, this._getCheckedItemsFnNodeMerge, undefined, items);
             } else {
-                this._traverseTree(this.data, this._getCheckedNameFn, undefined, items);
+                this._traverseTree(this.tree, this._getCheckedNameFn, undefined, items);
             }
             return items;
         },
@@ -212,7 +212,7 @@
         getId: function () {
             var id = [];
             var nodeId = [];
-            var data = this.data;
+            var data = this.tree;
 
             if (this.opt.only_child) {
                 $.each(data, function (i, n) {
@@ -269,7 +269,7 @@
         cancelItem: function (id, type) {
             var item = {};
             var dom = this.html.find('input[data-isNode="' + parseInt(type) + '"][data-id="' + id + '"]').prop('checked', false);
-            $.each(this.data, function (i, n) {
+            $.each(this.tree, function (i, n) {
                 if (n.id == id && n.is_node == type) {
                     item = n;
                     item.is_check = false;
@@ -280,7 +280,7 @@
 
         },
         cancelAll: function () {
-            $.each(this.data, function (index, item) {
+            $.each(this.tree, function (index, item) {
                 item.is_check = false;
             });
             this.html.find('input').prop("checked", false);
@@ -289,7 +289,7 @@
         checkItem: function (id, type) {
             var item = {};
             var dom = this.html.find('input[data-isNode="' + parseInt(type) + '"][data-i="' + id + '"]').prop('checked', true);
-            $.each(this.data, function (i, n) {
+            $.each(this.tree, function (i, n) {
                 if (n.id == id && n.is_node == type) {
                     item = n;
                     item.is_check = true;
@@ -301,7 +301,7 @@
         },
         checkAll: function () {
             if (this.opt.is_multi) {
-                $.each(this.data, function (index, item) {
+                $.each(this.tree, function (index, item) {
                     item.is_check = true;
                 });
                 this.html.find('input').prop("checked", true);
@@ -310,7 +310,7 @@
         },
         getItem: function () {
             var arr = [];
-            var data = this.data;
+            var data = this.tree;
             if (this.opt.only_child) {
                 $.each(data, function (i, n) {
                     if (n.is_check && !n.is_node) {
@@ -360,9 +360,9 @@
                 this.html.find('div[node-id="' + this.rootId + '"]').remove();
                 this._showLayer(this.rootId);
             } else {
-                for (var i in this.data) {
-                    if (!this.data[i].is_node && this.data[i].name.indexOf(val) != -1) {
-                        this.html.find('div[node-id="' + this.rootId + '"]').append(this._makeItem(this.data[i]));
+                for (var i in this.tree) {
+                    if (!this.tree[i].is_node && this.tree[i].name.indexOf(val) != -1) {
+                        this.html.find('div[node-id="' + this.rootId + '"]').append(this._makeItem(this.tree[i]));
                     }
                 }
             }
@@ -375,8 +375,11 @@
             var treeData = {
                 amount: arrayIn.length,
                 id: rootId,
+                dom: this.dom,
                 name: 'root',
                 parent: null,
+                children: [],
+                expand: true,
                 level: 0
             };
             treeData.children = this._getSubTree(arrayIn, treeData);
@@ -459,6 +462,7 @@
                     temp.parent = parent;
                     temp.level = parent.level + 1;
                     if (arrayIn[i].is_node) {
+                        temp.expand = false;
                         temp.children = this._getSubTree(arrayIn, temp);
                     }
                     result.push(temp);
@@ -686,7 +690,7 @@
 
         },
 
-        _showData: function () {
+        _showTree: function () {
             if (this._is_first) {
                 this._showLayer(this.rootId);
                 this._is_first = false;
@@ -695,35 +699,80 @@
             }
         },
 
-        _expand: function () {
-            var obj = this;
-            if (obj.opt.expand === true) {
-                $.each(obj.data, function (index, item) {
-                    if (item.is_node) {
-                        obj.html.find('i').filter('.icon-jia1').click();
-                    }
-                });
-            } else if (obj.opt.expand) {
-                var expandId = [];
-                expandId.push(obj.rootId);
-                for (var i = 0; i < obj.opt.expand; i++) {
-                    expandId = obj._expandLevel(expandId);
+        _makeTree: function (tree) {
+            if (!tree) {
+                return false;
+            }
+
+            tree.dom = this._makeItem(tree);
+
+            this._bindEvent(tree);
+
+            if (tree.children) {
+                tree.childrenDom = this._makeLayer();
+                for (var i = 0; i < tree.children.length; i++) {
+                    var $item = this._makeTree(tree.children[i]);
+                    tree.childrenDom.append($item);
                 }
             }
+            return tree.dom;
         },
 
-        _expandLevel: function (id) {
+        _makeItem: function (item) {
+
+            var $item = this._makeItemWrap();
+
+            var $expand = this._makeExpand(item.is_node);
+
+            var $checkbox = this._makeCheckbox();
+
+            var $text = this._makeText(item);
+
+            $item.append($expand);
+            $item.append($checkbox);
+            $item.append($text);
+
+            return $item;
+        },
+
+        _bindEvent: function (item) {
+            var $item = item.dom;
             var obj = this;
-            var expandId = [];
-            $.each(id, function (index, item) {
-                $.each(obj.data, function (index2, item2) {
-                    if (item2.nodeId === item) {
-                        expandId.push(item2.id);
-                        obj.html.find('div[node-id="' + item2.nodeId + '"] > i').filter('.icon-jia1').click();
-                    }
-                });
+            $item.find('input').on('click', function () {
+                if (obj.opt.is_multi) {
+                    item.is_check = !item.is_check;
+                } else {
+                    $.each(obj.data, function (index, item) {
+                        item.is_check = false;
+                    });
+                    item.is_check = true;
+                }
+
+
+                obj._chgItem(item, $(this));
+
             });
-            return expandId;
+        },
+        _makeItemWrap: function () {
+            var html = '<div></div>';
+
+            return $(html);
+        },
+
+        _makeExpand: function () {
+            var html = '<i class="iconfont icon-expand"></i>';
+
+            return $(html).css({
+                'font-size': '12px',
+                'vertical-align': 'base-line',
+                'padding-right': '0px',
+                'cursor': 'pointer'
+            })[0].outerHTML;
+        },
+
+        _makeCheckbox: function () {
+            var html = '<input type="checkbox"/>';
+            return $(html);
         },
 
         _makeNode: function (item) {
@@ -759,14 +808,10 @@
             });
             return $html;
         },
-        _makeChild: function (item) {
+        _makeText: function (item) {
             var $html;
-            if (this.opt.is_multi) {
-                $html = $('<div><span></span><label><input type="checkbox" data-id="' + item.id + '" data-isNode="0" data-name="' + item.name + '" ' + (item.is_check ? 'checked' : '') + '/>' + item.name + '</label></div>');
-            }
-            else {
-                $html = $('<div>' + (this.opt.only_child ? '' : '<span></span>') + '<label><input type="radio" name="' + this.dom.selector + '" data-id="' + item.id + '" data-isNode="0" data-name="' + item.name + '" />' + item.name + '</label></div>');
-            }
+            $html = $('<span>' + item.name + '</span>');
+
             $html.find('span').css({
                 'width': '16px',
                 'user-select': 'none',
@@ -780,33 +825,6 @@
             });
             return $html;
         },
-        _makeItem: function (item) {
-            var $html;
-            if (item.is_node) {
-                $html = this._makeNode(item);
-            } else {
-                $html = this._makeChild(item);
-            }
-
-            var obj = this;
-            $html.find('input').on('click', function () {
-                if (obj.opt.is_multi) {
-                    item.is_check = !item.is_check;
-                } else {
-                    $.each(obj.data, function (index, item) {
-                        item.is_check = false;
-                    });
-                    item.is_check = true;
-                }
-
-
-                obj._chgItem(item, $(this));
-
-            });
-
-            return $html;
-        },
-
 
         _makeLayer: function () {
             var html = '<div></div>';
@@ -815,6 +833,45 @@
                 'margin-left': '13px'
             });
         },
+
+
+
+        _expandItem: function () {
+
+        },
+
+
+        _expand: function () {
+            var obj = this;
+            if (obj.opt.expand === true) {
+                $.each(obj.data, function (index, item) {
+                    if (item.is_node) {
+                        obj.html.find('i').filter('.icon-jia1').click();
+                    }
+                });
+            } else if (obj.opt.expand) {
+                var expandId = [];
+                expandId.push(obj.rootId);
+                for (var i = 0; i < obj.opt.expand; i++) {
+                    expandId = obj._expandLevel(expandId);
+                }
+            }
+        },
+
+        _expandLevel: function (id) {
+            var obj = this;
+            var expandId = [];
+            $.each(id, function (index, item) {
+                $.each(obj.data, function (index2, item2) {
+                    if (item2.nodeId === item) {
+                        expandId.push(item2.id);
+                        obj.html.find('div[node-id="' + item2.nodeId + '"] > i').filter('.icon-jia1').click();
+                    }
+                });
+            });
+            return expandId;
+        },
+
 
         _showLayer: function (layerId) {
             var showData = this._getLayerData(layerId);
@@ -843,26 +900,14 @@
         },
 
 
-        _makeExpand: function () {
-            // var html='<span data-icon="expand">＋</span>';
-            var html = '<i class="iconfont icon-jia1"></i>';
-
-            return $(html).css({
-                'font-size': '12px',
-                'vertical-align': 'base-line',
-                'padding-right': '0px',
-                'cursor': 'pointer'
-            })[0].outerHTML;
-        },
-
         _toShrink: function (dom) {
-            dom.removeClass('icon-jia1');
-            dom.addClass('icon-jian1');
+            dom.removeClass('icon-expand');
+            dom.addClass('icon-shrink');
         },
 
         _toExpand: function (dom) {
-            dom.removeClass('icon-jian1');
-            dom.addClass('icon-jia1');
+            dom.removeClass('icon-shrink');
+            dom.addClass('icon-expand');
         }
 
     }

@@ -21,7 +21,21 @@
 <body>
 <script type="text/javascript" src="../../base/jquery-3.1.1.min.js"></script>
 <script type="text/javascript" src="tree-tree.js"></script>
+<div class="pandakill">
+    121231
+    <span class="ppkill"></span>
+    <input type="checkbox" id="ccc"/> <label for="ccc">ccc</label>
+</div>
+<script>
+    var $node = $('<div>node_a</div>');
+    console.log('$node111',$node);
+    var b = {a:$node[0]};
+    $('.pandakill').append($node);
+    $('.ppkill').append($node);
+    console.log('$node222',$node);
+    console.log('b',b);
 
+</script>
 <div class="tree-box">
     <div class="tree-wrap">
         <!--    <input class="test_tree1" placeholder="">-->
