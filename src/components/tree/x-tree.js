@@ -95,26 +95,27 @@
         _searchTimer: '',   //搜索框的定时器
         _is_first: true,  //是不是第一次打开
         _init: function (opt) {
-            this.opt = $.extend(true, {}, defOpt, opt);
-            this.dom = this.opt.dom;
-            this.dom.css({'position':'relative'});
-            this.data = this.opt.sel_ids ? _selData(this.opt.data, this.opt.sel_ids) : this.opt.data;
-            this.html = this._makePanel();
-            this.rootId = 1314;
-
-            var res = checkData(this.data);
+            var res = checkData(opt.data);
             if (!res) {
                 return false;
             }
 
-            this.opt.onInit();
-
-            var that = this;
-
-            this.rootId = _getRootId(that.data);
+            this.opt = $.extend(true, {}, defOpt, opt);
+            this.data = _initData(this.opt.data);
+            this.rootId = _getRootId(this.data);
+            if (this.opt.sel_ids) {
+                _selData(this.data, this.opt.sel_ids);
+            }
 
             this._originId = this.getId();
 
+            this.dom = this.opt.dom;
+            this.dom.css({'position': 'relative'});
+            this.html = this._makePanel();
+
+            this.opt.onInit();
+
+            var that = this;
 
             if (this.opt.is_trigger) {
                 this.dom.off('click.xTree');
@@ -156,7 +157,6 @@
                 this._originId = ids;
             }
         },
-
 
         getName: function () {
             var text = [];
@@ -359,9 +359,6 @@
         },
 
 
-
-
-
         /**
          *      数据方法
          */
@@ -414,12 +411,12 @@
 
         },
         _getChild: function (node, cont) {
-            if (node.is_node) {
+            if (node.is_node && node.has_children) {
                 var that = this;
                 $.each(that.data, function (i, n) {
                     if (n.nodeId == node.id) {
                         cont.push(n);
-                        if (n.is_node) {
+                        if (n.is_node && node.has_children) {
                             that._getChild(n, cont);
                         }
                     }
@@ -458,7 +455,7 @@
             $.each($.extend(true, [], this.data), function (i, n) {   //这句话 看起来 好像 不用 extend
                 if (n.nodeId == nodeid) {
                     obj.data[i].is_check = bol;
-                    if (n.is_node) {
+                    if (n.is_node && n.has_children) {
                         obj._chgAllChildren(n.id, bol);
                     }
                 }
@@ -485,7 +482,7 @@
                     'background': '#fff',
                     position: 'absolute',
                     maxHeight: this.opt.maxHeight,
-                    padding:'0 1%',
+                    padding: '0 1%',
                     'white-space': 'nowrap',
                     'overflow': 'auto'
                 };
@@ -494,7 +491,7 @@
                     'font-family': 'Microsoft YaHei',
                     'background': '#fff',
                     maxHeight: this.opt.maxHeight,
-                    padding:'0 1%',
+                    padding: '0 1%',
                     'white-space': 'nowrap',
                     'overflow': 'auto'
                 };
@@ -509,7 +506,7 @@
                 'border': 'none',
                 'padding': '4px 0',
                 'margin': '5px auto 0 auto',
-                'width':'98%',
+                'width': '98%',
                 'display': 'block'
             });
 
@@ -581,7 +578,7 @@
         },
         _makeItem: function (item) {
             var $html;
-            if (item.is_node) {
+            if (item.is_node && item.has_children) {
                 $html = this._makeNode(item);
             } else {
                 $html = this._makeChild(item);
@@ -614,7 +611,7 @@
                 this.html.css({
                     top: this.dom.outerHeight(),
                     left: 0,
-                    minWidth: this.opt.width ? this.opt.width : this.dom.outerWidth()*0.98
+                    minWidth: this.opt.width ? this.opt.width : this.dom.outerWidth() * 0.98
                 });
 
                 this.html.addClass('xTreePanel');
@@ -638,7 +635,7 @@
             var obj = this;
             if (obj.opt.expand === true) {
                 $.each(obj.data, function (index, item) {
-                    if (item.is_node) {
+                    if (item.is_node && item.has_children) {
                         obj.html.find('i').filter('.icon-jia1').click();
                     }
                 });
@@ -730,11 +727,33 @@
         return false;
     }
 
-    function _selData(data, selected){
+    function _initData(data) {
+        var clone = $.extend(true, [], data);
+        var len = clone.length;
+
+        for (var k = 0; k < len; k++) {
+            clone[k].has_children = false;
+        }
+
+        for (var i = 0; i < len; i++) {
+            for (var j = i; j < len; j++) {
+                if (clone[i].is_node && clone[i].id === clone[j].nodeId) {
+                    clone[i].has_children = true;
+                }
+                if (clone[i].nodeId === clone[j].id && clone[j].is_node) {
+                    clone[j].has_children = true;
+                }
+            }
+        }
+
+        return clone;
+    }
+
+    function _selData(data, selected) {
         var sel_ids = selected.split(',');
         for (var i = 0; i < sel_ids.length; i++) {
             for (var j = 0; j < data.length; j++) {
-                if( data[j].id === parseInt(sel_ids[i]) ){
+                if (data[j].id === parseInt(sel_ids[i])) {
                     data[j].is_check = true;
                     _selParent(data, data[j].nodeId);
                     if (data[j].is_node) {
@@ -747,7 +766,7 @@
     }
 
     function _selParent(data, nid) {
-        if(!nid){
+        if (!nid) {
             return false;
         }
         var selParent = true;
@@ -763,16 +782,16 @@
 
         }
 
-        if(selParent){
+        if (selParent) {
             sel_p.is_check = true;
-            if(sel_p.nodeId){
+            if (sel_p.nodeId) {
                 _selParent(data, sel_p.nodeId);
             }
         }
     }
 
     function _selChildren(data, id) {
-        if(!id){
+        if (!id) {
             return false;
         }
         for (var i = 0; i < data.length; i++) {
@@ -792,11 +811,9 @@
         for (var i = 0, len = _data.length; i < len; i++) {
             for (var j = i; j < len; j++) {
                 if (_data[i].id === _data[j].nodeId) {
-                    // _data[i].is_node = true;
                     clone[j] = null;
                 }
                 if (_data[i].nodeId === _data[j].id) {
-                    // _data[j].is_node = true;
                     clone[i] = null;
                 }
             }
@@ -834,7 +851,7 @@
     }
 
 
-})($);
+})(jQuery);
 
 
 
