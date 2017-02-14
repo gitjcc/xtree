@@ -10,7 +10,8 @@
             display: block;
             overflow: auto;
         }
-        .tree-box {height: 600px;
+        .tree-box {
+            height: 600px;
             overflow: auto;
         }
         .box-block {
@@ -25,14 +26,14 @@
 <div class="tree-box">
     <div class="tree-wrap">
         <!--    <input class="test_tree1" placeholder="">-->
-        <div class="test_tree1"></div>
+        <div id="tree1" class="test_tree"></div>
     </div>
 
     <div class="tree-wrap">
         <div class="box-block">
         </div>
 
-        <div class="test_tree2">
+        <div id="tree2" class="test_tree">
             <input class="" placeholder="">
         </div>
 
@@ -41,7 +42,7 @@
     </div>
 
     <div class="tree-wrap">
-        <div class="test_tree3">
+        <div id="tree3" class="test_tree">
             <input class="" placeholder="">
         </div>
     </div>
@@ -49,7 +50,7 @@
 
 <script>
     var testTree1 = xTree({
-        dom: $('.test_tree1'),
+        dom: $('#tree1'),
         only_child: false,
         is_multi: true,
         is_trigger: false,
@@ -108,7 +109,7 @@
 
 <script>
     var testTree2 = xTree({
-        dom: $('.test_tree2'),
+        dom: $('#tree2'),
         only_child: false,
         is_multi: true,
         is_trigger: true,
@@ -159,7 +160,7 @@
 
 <script>
     var testTree3 = xTree({
-        dom: $('.test_tree3'),
+        dom: $('#tree3'),
         only_child: false,
         is_multi: true,
         is_trigger: true,

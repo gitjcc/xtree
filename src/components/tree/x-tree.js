@@ -359,88 +359,7 @@
         },
 
 
-        /**
-         *      视图方法
-         */
 
-        _showPanel: function () {
-            if (this.opt.is_trigger) {
-                this.html.css({
-                    top: this.dom.outerHeight(),
-                    left: 0,
-                    minWidth: this.opt.width ? this.opt.width : this.dom.outerWidth()
-                });
-
-                this.html.addClass('xTreePanel');
-
-                this.html.on('click', function (e) {
-                    e.stopPropagation();
-                });
-            }
-            this.dom.append(this.html);
-
-        },
-        _showData: function () {
-            if (this._is_first) {
-                this._showLayer(this.rootId);
-                this._is_first = false;
-            } else {
-                this.html.show();
-            }
-        },
-        _expand: function () {
-            var obj = this;
-            if (obj.opt.expand === true) {
-                $.each(obj.data, function (index, item) {
-                    if (item.is_node) {
-                        obj.html.find('i').filter('.icon-jia1').click();
-                    }
-                });
-            } else if (obj.opt.expand) {
-                var expandId = [];
-                expandId.push(obj.rootId);
-                for (var i = 0; i < obj.opt.expand; i++) {
-                    expandId = obj._expandLevel(expandId);
-                }
-            }
-        },
-        _expandLevel: function (id) {
-            var obj = this;
-            var expandId = [];
-            $.each(id, function (index, item) {
-                $.each(obj.data, function (index2, item2) {
-                    if (item2.nodeId === item) {
-                        expandId.push(item2.id);
-                        obj.html.find('div[node-id="' + item2.nodeId + '"] > i').filter('.icon-jia1').click();
-                    }
-                });
-            });
-            return expandId;
-        },
-        _showLayer: function (layerId) {
-            var showData = this._getLayerData(layerId);
-            var itemDiv = makeLayer();
-
-
-            //这里 0节点的结构 和 子节点的结构 没有处理好    以后尽量让node-id 和  itemdiv 分开
-            if (layerId === this.rootId) {
-                itemDiv = $(itemDiv).attr('node-id', this.rootId);
-                this.html.append(itemDiv);
-                //itemDiv.parent().attr('node-id',0);
-
-            } else {
-                toShrink(this.html.find('div[node-id="' + layerId + '"] i'));
-                this.html.find('div[node-id="' + layerId + '"]').append(itemDiv);
-            }
-
-            for (var i in showData) {
-                itemDiv.append(this._makeItem(showData[i]));
-            }
-        },
-        _removeLayer: function (layerId) {
-            this.html.find('div[node-id="' + layerId + '"]>div').remove();
-            toExpand(this.html.find('div[node-id="' + layerId + '"] i'));
-        },
 
 
         /**
@@ -550,9 +469,6 @@
         /**
          * 构造html内部方法
          */
-
-
-
         _makePanel: function () {
             var html = '<div></div>';
 
@@ -569,6 +485,7 @@
                     'background': '#fff',
                     position: 'absolute',
                     maxHeight: this.opt.maxHeight,
+                    padding:'0 1%',
                     'white-space': 'nowrap',
                     'overflow': 'auto'
                 };
@@ -577,6 +494,7 @@
                     'font-family': 'Microsoft YaHei',
                     'background': '#fff',
                     maxHeight: this.opt.maxHeight,
+                    padding:'0 1%',
                     'white-space': 'nowrap',
                     'overflow': 'auto'
                 };
@@ -591,6 +509,7 @@
                 'border': 'none',
                 'padding': '4px 0',
                 'margin': '5px auto 0 auto',
+                'width':'98%',
                 'display': 'block'
             });
 
@@ -685,7 +604,89 @@
             });
 
             return $html;
-        }
+        },
+        /**
+         *      视图方法
+         */
+
+        _showPanel: function () {
+            if (this.opt.is_trigger) {
+                this.html.css({
+                    top: this.dom.outerHeight(),
+                    left: 0,
+                    minWidth: this.opt.width ? this.opt.width : this.dom.outerWidth()*0.98
+                });
+
+                this.html.addClass('xTreePanel');
+
+                this.html.on('click', function (e) {
+                    e.stopPropagation();
+                });
+            }
+            this.dom.append(this.html);
+
+        },
+        _showData: function () {
+            if (this._is_first) {
+                this._showLayer(this.rootId);
+                this._is_first = false;
+            } else {
+                this.html.show();
+            }
+        },
+        _expand: function () {
+            var obj = this;
+            if (obj.opt.expand === true) {
+                $.each(obj.data, function (index, item) {
+                    if (item.is_node) {
+                        obj.html.find('i').filter('.icon-jia1').click();
+                    }
+                });
+            } else if (obj.opt.expand) {
+                var expandId = [];
+                expandId.push(obj.rootId);
+                for (var i = 0; i < obj.opt.expand; i++) {
+                    expandId = obj._expandLevel(expandId);
+                }
+            }
+        },
+        _expandLevel: function (id) {
+            var obj = this;
+            var expandId = [];
+            $.each(id, function (index, item) {
+                $.each(obj.data, function (index2, item2) {
+                    if (item2.nodeId === item) {
+                        expandId.push(item2.id);
+                        obj.html.find('div[node-id="' + item2.nodeId + '"] > i').filter('.icon-jia1').click();
+                    }
+                });
+            });
+            return expandId;
+        },
+        _showLayer: function (layerId) {
+            var showData = this._getLayerData(layerId);
+            var itemDiv = makeLayer();
+
+
+            //这里 0节点的结构 和 子节点的结构 没有处理好    以后尽量让node-id 和  itemdiv 分开
+            if (layerId === this.rootId) {
+                itemDiv = $(itemDiv).attr('node-id', this.rootId);
+                this.html.append(itemDiv);
+                //itemDiv.parent().attr('node-id',0);
+
+            } else {
+                toShrink(this.html.find('div[node-id="' + layerId + '"] i'));
+                this.html.find('div[node-id="' + layerId + '"]').append(itemDiv);
+            }
+
+            for (var i in showData) {
+                itemDiv.append(this._makeItem(showData[i]));
+            }
+        },
+        _removeLayer: function (layerId) {
+            this.html.find('div[node-id="' + layerId + '"]>div').remove();
+            toExpand(this.html.find('div[node-id="' + layerId + '"] i'));
+        },
 
 
     };
