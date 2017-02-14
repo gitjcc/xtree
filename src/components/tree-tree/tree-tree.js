@@ -354,11 +354,11 @@
             return arr;
         },
         search: function (val) {
-            this._removeLayer(this.rootId);
+            this._hideChildren(this.rootId);
 
             if (val === '') {
                 this.html.find('div[node-id="' + this.rootId + '"]').remove();
-                this._showLayer(this.rootId);
+                this._showChildren(this.rootId);
             } else {
                 for (var i in this.tree) {
                     if (!this.tree[i].is_node && this.tree[i].name.indexOf(val) != -1) {
@@ -618,7 +618,7 @@
         },
 
 
-        //html方法
+        //html方法,构造
         _makePanel: function () {
             var html = '<div class="xTreePanel"></div>';
 
@@ -673,31 +673,7 @@
 
         },
 
-        _showPanel: function () {
-            if (this.opt.is_trigger) {
-                this.html.css({
-                    top: this.dom.outerHeight(),
-                    left: 0,
-                    minWidth: this.opt.width ? this.opt.width : this.dom.outerWidth()
-                });
 
-
-                this.html.on('click', function (e) {
-                    e.stopPropagation();
-                });
-            }
-            this.dom.append(this.html);
-
-        },
-
-        _showTree: function () {
-            if (this._is_first) {
-                this._showLayer(this.rootId);
-                this._is_first = false;
-            } else {
-                this.html.show();
-            }
-        },
 
         _makeTree: function (tree) {
             if (!tree) {
@@ -728,11 +704,60 @@
 
             var $text = this._makeText(item);
 
+            var $children = this._makeChildrenWrap();
+
+
             $item.append($expand);
             $item.append($checkbox);
             $item.append($text);
+            $item.append($children);
 
             return $item;
+        },
+
+        _makeItemWrap: function () {
+            var html = '<div></div>';
+
+            return $(html);
+        },
+        _makeExpand: function () {
+            var html = '<i class="iconfont icon-expand"></i>';
+
+            return $(html).css({
+                'font-size': '12px',
+                'vertical-align': 'base-line',
+                'padding-right': '0px',
+                'cursor': 'pointer'
+            })[0].outerHTML;
+        },
+        _makeCheckbox: function () {
+            var $html = $('<i class="iconfont icon-unchecked"></i>');
+            $html.css({
+                'vertical-align': 'middle'
+            });
+            return $html;
+        },
+        _makeText: function (item) {
+            var $html;
+            $html = $('<span>' + item.name + '</span>');
+
+            $html.find('span').css({
+                'width': '16px',
+                'user-select': 'none',
+                '-webkit-user-select': 'none',
+                '-moz-user-select': 'none',
+                '-ms-user-select': 'none',
+                'display': 'inline-block'
+            });
+
+            return $html;
+        },
+        _makeChildrenWrap: function () {
+            var html = '<div></div>';
+
+            return $(html).css({
+                'margin-left': '13px'
+            });
         },
 
         _bindEvent: function (item) {
@@ -753,27 +778,44 @@
 
             });
         },
-        _makeItemWrap: function () {
-            var html = '<div></div>';
 
-            return $(html);
+
+
+
+
+        //html方法,更改
+
+        _changeItemDom:function (item) {
+            this._changeExpand(item);
+            this._changeCheckbox(item);
+            this._changeText(item);
         },
 
-        _makeExpand: function () {
-            var html = '<i class="iconfont icon-expand"></i>';
-
-            return $(html).css({
-                'font-size': '12px',
-                'vertical-align': 'base-line',
-                'padding-right': '0px',
-                'cursor': 'pointer'
-            })[0].outerHTML;
+        _changeExpand:function (item) {
+            if(item.expand){
+                item.dom.removeClass('icon-expand');
+                item.dom.addClass('icon-shrink');
+            }else{
+                item.dom.removeClass('icon-shrink');
+                item.dom.addClass('icon-expand');
+            }
+        },
+        _changeCheckbox:function (item) {
+            if(item.is_check){
+                item.dom.removeClass('icon-unchecked');
+                item.dom.addClass('icon-checked');
+            }else{
+                item.dom.removeClass('icon-checked');
+                item.dom.addClass('icon-unchecked');
+            }
+        },
+        _changeText: function (item) {
+            item.dom = item.name;
         },
 
-        _makeCheckbox: function () {
-            var html = '<input type="checkbox"/>';
-            return $(html);
-        },
+
+
+
 
         _makeNode: function (item) {
             var $html;
@@ -801,46 +843,42 @@
             var obj = this;
             $html.find('i').on('click', function (e) {
                 if ($(this).hasClass('icon-jia1')) {
-                    obj._showLayer(item.id);
+                    obj._showChildren(item.id);
                 } else {
-                    obj._removeLayer(item.id);
+                    obj._hideChildren(item.id);
                 }
             });
             return $html;
         },
-        _makeText: function (item) {
-            var $html;
-            $html = $('<span>' + item.name + '</span>');
-
-            $html.find('span').css({
-                'width': '16px',
-                'user-select': 'none',
-                '-webkit-user-select': 'none',
-                '-moz-user-select': 'none',
-                '-ms-user-select': 'none',
-                'display': 'inline-block'
-            });
-            $html.find('input').css({
-                'vertical-align': 'middle'
-            });
-            return $html;
-        },
-
-        _makeLayer: function () {
-            var html = '<div></div>';
-
-            return $(html).css({
-                'margin-left': '13px'
-            });
-        },
 
 
+        //html方法,显示
+        _showPanel: function () {
+            if (this.opt.is_trigger) {
+                this.html.css({
+                    top: this.dom.outerHeight(),
+                    left: 0,
+                    minWidth: this.opt.width ? this.opt.width : this.dom.outerWidth()
+                });
 
-        _expandItem: function () {
+
+                this.html.on('click', function (e) {
+                    e.stopPropagation();
+                });
+            }
+            this.dom.append(this.html);
 
         },
 
-
+        _showTree: function () {
+            if (this._is_first) {
+                this._showChildren(this.rootId);
+                this._is_first = false;
+            } else {
+                this.html.show();
+            }
+        },
+        
         _expand: function () {
             var obj = this;
             if (obj.opt.expand === true) {
@@ -863,7 +901,7 @@
             var expandId = [];
             $.each(id, function (index, item) {
                 $.each(obj.data, function (index2, item2) {
-                    if (item2.nodeId === item) {
+                    if (item.is_node && item2.nodeId === item) {
                         expandId.push(item2.id);
                         obj.html.find('div[node-id="' + item2.nodeId + '"] > i').filter('.icon-jia1').click();
                     }
@@ -872,8 +910,7 @@
             return expandId;
         },
 
-
-        _showLayer: function (layerId) {
+        _showChildren: function (item) {
             var showData = this._getLayerData(layerId);
             var itemDiv = makeLayer();
 
@@ -894,22 +931,10 @@
             }
         },
 
-        _removeLayer: function (layerId) {
+        _hideChildren: function (item) {
             this.html.find('div[node-id="' + layerId + '"]>div').remove();
             this._toExpand(this.html.find('div[node-id="' + layerId + '"] i'));
-        },
-
-
-        _toShrink: function (dom) {
-            dom.removeClass('icon-expand');
-            dom.addClass('icon-shrink');
-        },
-
-        _toExpand: function (dom) {
-            dom.removeClass('icon-shrink');
-            dom.addClass('icon-expand');
         }
-
     }
 
 

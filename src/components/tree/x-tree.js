@@ -750,13 +750,13 @@
     }
 
     function _selData(data, selected) {
-        var sel_ids = selected.split(',');
+        var sel_ids = seleced.split(',');
         for (var i = 0; i < sel_ids.length; i++) {
             for (var j = 0; j < data.length; j++) {
                 if (data[j].id === parseInt(sel_ids[i])) {
                     data[j].is_check = true;
                     _selParent(data, data[j].nodeId);
-                    if (data[j].is_node) {
+                    if (data[j].is_node && data[i].has_children) {
                         _selChildren(data, data[j].id);
                     }
                 }
@@ -797,7 +797,7 @@
         for (var i = 0; i < data.length; i++) {
             if (data[i].nodeId === id) {
                 data[i].is_check = true;
-                if (data[i].is_node) {
+                if (data[i].is_node && data[i].has_children) {
                     _selChildren(data, data[i].id);
                 }
             }
