@@ -814,9 +814,6 @@
         },
 
 
-
-
-
         _makeNode: function (item) {
             var $html;
             if (this.opt.is_multi) {
