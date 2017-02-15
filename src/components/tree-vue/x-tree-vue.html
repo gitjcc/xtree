@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <title>xTreeVue.js</title>
     <link rel="stylesheet" href="../../base/fonts/iconfont.css">
-    <link rel="stylesheet" href="../../base/xtree.css">
-    <style>
 
-    </style>
+    <link rel="stylesheet" href="./font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="./css/x-tree-vue.css">
 </head>
 <body>
 <script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
@@ -82,16 +81,16 @@
 <!-- item template -->
 <script type="text/x-template" id="x-tree-item-template">
     <div class="x-tree-item">
-        <i v-if="isNode" class="iconfont" :class="open ? 'icon-shrink' : 'icon-expand'" @click="expand"></i>
+        <i v-if="isNode" class="fa" :class="open ? 'fa-minus' : 'fa-plus'" @click="expand"></i>
         <span v-else class="icon-blank"></span>
-        <i class="iconfont" :class="checked ? 'icon-checked' : 'icon-unchecked'" @click="check"></i>
+        <i class="fa" :class="checked ? 'fa-check-square-o' : 'fa-square-o'" @click="check"></i>
         <span @dblclick="changeType">{{model.name}}</span>
-        <i class="iconfont icon-edit"></i>
+        <i class="fa fa-edit" @click="edit"></i>
 
         <div class='x-tree-item-children' v-show="open" v-if="isNode">
             <x-tree-item class="x-tree-item" v-for="model in model.children" :model="model">
             </x-tree-item>
-            <i class="iconfont icon-expand" @click="addChild"></i>
+            <span class="bold" @click="addChild">[+]</span>
         </div>
     </div>
 </script>
@@ -203,7 +202,7 @@
         },
         data: function () {
             return {
-                open: false,
+                open: true,
                 checked: false
             }
         },
@@ -227,7 +226,12 @@
                     Vue.set(this.model, 'children', []);
                     this.addChild();
                     this.open = true;
+                }else{
+                    this.open=false;
                 }
+            },
+            edit:function () {
+                console.log('method:edit now is not available');
             },
             addChild: function () {
                 this.model.children.push({

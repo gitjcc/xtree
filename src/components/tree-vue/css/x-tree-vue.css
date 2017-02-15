@@ -4,13 +4,33 @@ body {
     word-break: break-all;
 }
 
-.hidden {visibility: hidden;}
-.visible {visibility: visible;}
+.block {
+    display: block;
+}
 
-.hide {display: none;}
-.block {display: block;}
-.inline-block {display: inline-block;}
-.inline {display: inline;}
+.inline-block {
+    display: inline-block;
+}
+
+.inline {
+    display: inline;
+}
+
+.hide {
+    display: none;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+.visible {
+    visibility: visible;
+}
+
+.bold {
+    font-weight: bold;
+}
 
 .tree-wrap {
     display: inline-block;
@@ -24,16 +44,20 @@ body {
 
 .tree-node-wrap {
     margin: 0 0 0 22px;
-    line-height:1.42;
+    line-height: 1.42;
 }
 
 .x-tree-item {
     font-size: 14px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
     cursor: pointer;
 }
 
 .x-tree-item-children {
-    padding-left: 1em;
+    padding-left: 1.5em;
     line-height: 1.5em;
 }
 
@@ -41,12 +65,8 @@ body {
     font-size: 14px;
 }
 
-.iconfont {
-    padding-right: 0;
-    font-size: 14px;
-    line-height:1.42;
-    vertical-align: baseline;
-    cursor: pointer;
+.fa {
+    width: 14px;
 }
 
 .icon-blank {
@@ -54,6 +74,25 @@ body {
     font-size: 14px;
     width: 1em;
 }
+
+
+
+
+
+
+
+
+
+
+
+.iconfont {
+    padding-right: 0;
+    font-size: 14px;
+    line-height: 1.42;
+    vertical-align: baseline;
+    cursor: pointer;
+}
+
 
 .icon-expand:before {
     content: "\e61d";
