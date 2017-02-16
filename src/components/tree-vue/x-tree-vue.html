@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>xTreeVue.js</title>
-    <link rel="stylesheet" href="../../base/fonts/iconfont.css">
-
     <link rel="stylesheet" href="./font-awesome-4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="./css/x-tree-vue.css">
 </head>
@@ -13,81 +11,16 @@
 <script type="text/javascript" src="js/vue.js"></script>
 <script type="text/javascript" src="js/x-tree-vue.js"></script>
 
-<div class="tree-wrap">
-    <div class="test_tree1"></div>
-</div>
-
-<script>
-
-
-    var xTreeOption = {
-        dom: $('.test_tree1'),
-        only_child: false,
-        is_multi: true,
-        is_trigger: false,
-        node_merge: false,
-        has_search: false,
-        sel_ids: '2,3,11,12,13',
-        expand: 6,
-        data: [
-            {id: 1, name: '中国', nodeId: 0, is_node: true, is_check: false},
-            {id: 2, name: '四川', nodeId: 1, is_node: true, is_check: false},
-            {id: 3, name: '云南', nodeId: 1, is_node: true, is_check: false},
-            {id: 4, name: '贵州', nodeId: 1, is_node: true, is_check: false},
-            {id: 5, name: '广西', nodeId: 1, is_node: true, is_check: false},
-            {id: 6, name: '成都', nodeId: 2, is_node: false, is_check: false},
-            {id: 7, name: '泸州', nodeId: 2, is_node: true, is_check: false},
-            {id: 8, name: '昆明', nodeId: 3, is_node: false, is_check: false},
-            {id: 9, name: '大理', nodeId: 3, is_node: false, is_check: false},
-            {id: 10, name: '贵阳', nodeId: 4, is_node: false, is_check: false},
-            {id: 11, name: '遵义', nodeId: 4, is_node: false, is_check: false},
-            {id: 12, name: '南宁', nodeId: 5, is_node: false, is_check: false},
-            {id: 13, name: '桂林', nodeId: 5, is_node: false, is_check: false},
-
-            {id: 26, name: '成都', nodeId: 7, is_node: false, is_check: false},
-            {id: 27, name: '泸州', nodeId: 7, is_node: false, is_check: false},
-            {id: 28, name: '昆明', nodeId: 7, is_node: false, is_check: false},
-            {id: 29, name: '大理', nodeId: 7, is_node: true, is_check: false},
-            {id: 30, name: '贵阳', nodeId: 29, is_node: false, is_check: false},
-            {id: 31, name: '遵义', nodeId: 29, is_node: false, is_check: false},
-            {id: 32, name: '南宁', nodeId: 29, is_node: false, is_check: false},
-            {id: 33, name: '桂林', nodeId: 29, is_node: false, is_check: false}
-        ],
-        //        choose:{
-        //            nodeId:[1],
-        //            id:[1]
-        //        },
-        onInit: function () {
-        },
-        onOpen: function () {
-        },
-        onBeforeOpen: function () {
-        },
-        onClose: function (hasChange) {
-            console.log(testTree1.getId());
-        },
-        onCheck: function (item, dom, childrenItem) {
-//            console.log(this);
-//            console.log(this.getId());
-//            console.log(testTree1);
-//            应该是  this.getId()比较规范  还是 testTree1.getId()比较规范   this可以做到 只暴漏该暴漏的方法
-        },
-        onCancel: function (item, dom, childrenItem) {
-        }
-    };
-    var testTree1 = xTree(xTreeOption);
-</script>
-
 <!-- item template -->
 <script type="text/x-template" id="x-tree-item-template">
     <div class="x-tree-item">
-        <i v-if="isNode" class="fa" :class="open ? 'fa-minus' : 'fa-plus'" @click="expand"></i>
+        <i v-if="hasChildren" class="fa" :class="model.expand ? 'fa-minus' : 'fa-plus'" @click="expand"></i>
         <span v-else class="icon-blank"></span>
-        <i class="fa" :class="checked ? 'fa-check-square-o' : 'fa-square-o'" @click="check"></i>
+        <i class="fa" :class="model.is_check ? 'fa-check-square-o' : 'fa-square-o'" @click="check"></i>
         <span @dblclick="changeType">{{model.name}}</span>
         <i class="fa fa-edit" @click="edit"></i>
 
-        <div class='x-tree-item-children' v-show="open" v-if="isNode">
+        <div class='x-tree-item-children' v-show="model.expand" v-if="hasChildren">
             <x-tree-item class="x-tree-item" v-for="model in model.children" :model="model">
             </x-tree-item>
             <span class="bold" @click="addChild">[+]</span>
@@ -109,90 +42,42 @@
 
 <script>
     // demo data
-    var treeDataVue = {
-        name: '中国',
-        children: [
-            {
-                name: '四川',
-                children: [
-                    {name: '成都'},
-                    {
-                        name: '泸州',
-                        children: [
-                            {
-                                name: '四川',
-                                children: [
-                                    {name: '成都'},
-                                    {
-                                        name: '泸州', children: [
-                                        {name: '成都'},
-                                        {
-                                            name: '泸州', children: [
-                                            {name: '成都'},
-                                            {
-                                                name: '泸州', children: [
-                                                {name: '成都'},
-                                                {name: '泸州'},
-                                            ]
-                                            },
-                                        ]
-                                        },
-                                    ]
-                                    },
-                                ]
-                            },
 
-                            {
-                                name: '云南',
-                                children: [
-                                    {name: '昆明'},
-                                    {name: '大理'},
-                                ]
-                            },
-                            {
-                                name: '贵州',
-                                children: [
-                                    {name: '贵阳'},
-                                    {name: '遵义'},
-                                ]
-                            },
-                            {
-                                name: '广西',
-                                children: [
-                                    {name: '南宁'},
-                                    {name: '桂林'},
-                                ]
-                            },
-                            {name: '重庆'},
-                        ]
-                    },
-                ]
-            },
+    var arrayData = [
+        {id: 26, name: '成都', nodeId: 7, is_node: false, is_check: false},
+        {id: 27, name: '泸州', nodeId: 7, is_node: false, is_check: false},
+        {id: 28, name: '昆明', nodeId: 7, is_node: false, is_check: false},
+        {id: 29, name: '大理', nodeId: 7, is_node: true, is_check: false},
+        {id: 30, name: '贵阳', nodeId: 29, is_node: false, is_check: false},
+        {id: 31, name: '遵义', nodeId: 29, is_node: false, is_check: false},
+        {id: 32, name: '南宁', nodeId: 29, is_node: false, is_check: false},
+        {id: 33, name: '桂林', nodeId: 29, is_node: false, is_check: false},
 
-            {
-                name: '云南',
-                children: [
-                    {name: '昆明'},
-                    {name: '大理'},
-                ]
-            },
-            {
-                name: '贵州',
-                children: [
-                    {name: '贵阳'},
-                    {name: '遵义'},
-                ]
-            },
-            {
-                name: '广西',
-                children: [
-                    {name: '南宁'},
-                    {name: '桂林'},
-                ]
-            },
-            {name: '重庆'},
-        ]
-    };
+        {id: 1, name: '中国', nodeId: 99, is_node: true, is_check: false},
+        {id: 110, name: '大陆', nodeId: 99, is_node: true, is_check: false},
+        {id: 111, name: '大陆', nodeId: 110, is_node: false, is_check: false},
+
+        {id: 2, name: '四川', nodeId: 1, is_node: true, is_check: false},
+        {id: 3, name: '云南', nodeId: 1, is_node: true, is_check: false},
+        {id: 4, name: '贵州', nodeId: 1, is_node: true, is_check: false},
+        {id: 5, name: '广西', nodeId: 1, is_node: true, is_check: false},
+        {id: 6, name: '成都', nodeId: 2, is_node: false, is_check: false},
+        {id: 7, name: '泸州', nodeId: 2, is_node: true, is_check: false},
+        {id: 8, name: '昆明', nodeId: 3, is_node: false, is_check: false},
+        {id: 9, name: '大理', nodeId: 3, is_node: false, is_check: false},
+        {id: 10, name: '贵阳', nodeId: 4, is_node: false, is_check: false},
+        {id: 11, name: '遵义', nodeId: 4, is_node: false, is_check: false},
+        {id: 12, name: '南宁', nodeId: 5, is_node: false, is_check: false},
+        {id: 13, name: '桂林', nodeId: 5, is_node: false, is_check: false},
+
+    ];
+
+    var treeData = _arrayToTree(arrayData);
+
+    var sel_ids = '2,3,11,12,13';
+
+    var treeDataVue = _checkTreeByIds(treeData, sel_ids);
+
 
     // define the item component
     Vue.component('x-tree-item', {
@@ -201,45 +86,44 @@
             model: Object
         },
         data: function () {
-            return {
-                open: true,
-                checked: false
-            }
+            return {};
         },
         computed: {
-            isNode: function () {
-                return this.model.children &&
+            hasChildren: function () {
+                return this.model.is_node && this.model.children &&
                     this.model.children.length
             }
         },
         methods: {
             expand: function () {
-                if (this.isNode) {
-                    this.open = !this.open;
+                if (this.hasChildren) {
+                    this.model.expand = !this.model.expand;
                 }
             },
             check: function () {
-                this.checked = !this.checked;
+                _changeItem(this.model, !this.model.is_check);
             },
             changeType: function () {
-                if (!this.isNode) {
+                if (!this.model.is_node) {
                     Vue.set(this.model, 'children', []);
                     this.addChild();
-                    this.open = true;
-                }else{
-                    this.open=false;
+                    this.model.expand = true;
+                } else {
+                    this.model.expand = false;
                 }
             },
-            edit:function () {
-                console.log('method:edit now is not available');
+            edit: function () {
+                alert('method edit() now is not available');
             },
             addChild: function () {
-                this.model.children.push({
+                var temp = this.model.children;
+                temp.push({
                     name: 'new item'
-                })
+                });
+                this.model.children = temp;
             }
         }
-    })
+    });
 
     // boot up the demo
     var xTreeDemo = new Vue({
@@ -247,7 +131,8 @@
         data: {
             treeData: treeDataVue
         }
-    })
+    });
+    console.log('xTreeDemo: ', xTreeDemo);
 </script>
 
 </body>
