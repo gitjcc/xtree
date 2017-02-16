@@ -34,17 +34,12 @@ body {
 
 .tree-wrap {
     display: inline-block;
-    width: 360px;
-    height: 555px;
+    /*width: 360px;*/
+    /*height: 555px;*/
     padding: 5px;
     border: 1px solid #02B;
     vertical-align: bottom;
     background: #fff;
-}
-
-.tree-node-wrap {
-    margin: 0 0 0 22px;
-    line-height: 1.42;
 }
 
 .x-tree-item {
@@ -61,7 +56,7 @@ body {
     line-height: 1.5em;
 }
 
-.x-tree-add-item {
+.x-tree-item-editor {
     font-size: 14px;
 }
 

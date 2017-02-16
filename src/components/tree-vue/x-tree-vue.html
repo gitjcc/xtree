@@ -14,16 +14,33 @@
 <!-- item template -->
 <script type="text/x-template" id="x-tree-item-template">
     <div class="x-tree-item">
-        <i v-if="hasChildren" class="fa" :class="model.expand ? 'fa-minus' : 'fa-plus'" @click="expand"></i>
-        <span v-else class="icon-blank"></span>
-        <i class="fa" :class="model.is_check ? 'fa-check-square-o' : 'fa-square-o'" @click="check"></i>
-        <span @dblclick="changeType">{{model.name}}</span>
-        <i class="fa fa-edit" @click="edit"></i>
+        <div class="x-tree-item-item">
+            <i v-if="hasChildren" class="fa" :class="model.expand ? 'fa-minus' : 'fa-plus'" @click="expandFn"></i>
+            <span v-else class="icon-blank"></span>
+            <i class="fa" :class="model.is_check ? 'fa-check-square-o' : 'fa-square-o'" @click="checkFn"></i>
+            <span @dblclick="editFn">{{model.name}}</span>
+            <i class="fa fa-edit" @click="deleteFn"></i>
+        </div>
 
         <div class='x-tree-item-children' v-show="model.expand" v-if="hasChildren">
             <x-tree-item class="x-tree-item" v-for="model in model.children" :model="model">
             </x-tree-item>
-            <span class="bold" @click="addChild">[+]</span>
+            <span class="bold" @click="newChildFn">[+]</span>
+        </div>
+
+        <div class="x-tree-item-editor" v-show="showEditor">
+            <form id="x-tree-item-editor" @submit.prevent="{{editOrAdd ? updateItemFn : addChildFn}}">
+                <input type="text" v-model="newChild.id" placeholder="id">
+                <input type="text" v-model="newChild.name" placeholder="name">
+                <input type="text" v-model="newChild.is_node" placeholder="is_node">
+                <input type="text" v-model="newChild.is_check" placeholder="is_check">
+                <input type="submit" v-show="editOrAdd" value="UpdateItem">
+                <input type="submit" v-show="!editOrAdd" value="Add Child">
+            </form>
+            <ul class="errors">
+                <li v-show="!validation.name">Name cannot be empty.</li>
+                <li v-show="!validation.email">Please provide a valid email address.</li>
+            </ul>
         </div>
     </div>
 </script>
@@ -37,6 +54,7 @@
         <x-tree-item class="x-tree-item" :model="treeData">
         </x-tree-item>
     </div>
+
 </div>
 
 
@@ -86,41 +104,95 @@
             model: Object
         },
         data: function () {
-            return {};
+            return {
+                showEditor: false,
+                editOrAdd: false,
+                newChild: {
+                    id: '',
+                    name: '',
+                    is_node: '',
+                    is_check: '',
+                },
+                idRE: /^(\w+|[\u4e00-\u9fa5]+)$/,
+                nameRE: /^(\w+|[\u4e00-\u9fa5]+)$/,
+                nodeRE: /^(\w+|[\u4e00-\u9fa5]+)$/,
+                checkRE: /^(\w+|[\u4e00-\u9fa5]+)$/,
+            };
         },
         computed: {
             hasChildren: function () {
                 return this.model.is_node && this.model.children &&
                     this.model.children.length
+            },
+            validation: function () {
+                return {
+                    id: !!this.newChild.name.trim(),
+                    name: !!this.newChild.name.trim(),
+                    node: this.nodeRE.test(this.newChild.is_node),
+                    check: this.checkRE.test(this.newChild.is_check),
+                }
+            },
+            isValid: function () {
+                var validation = this.validation
+                return Object.keys(validation).every(function (key) {
+                    return validation[key]
+                })
             }
         },
         methods: {
-            expand: function () {
+            expandFn: function () {
                 if (this.hasChildren) {
                     this.model.expand = !this.model.expand;
                 }
             },
-            check: function () {
+            checkFn: function () {
                 _changeItem(this.model, !this.model.is_check);
             },
-            changeType: function () {
-                if (!this.model.is_node) {
-                    Vue.set(this.model, 'children', []);
-                    this.addChild();
-                    this.model.expand = true;
-                } else {
-                    this.model.expand = false;
-                }
+
+            editFn: function () {
+                this.editOrAdd = true;
+                this.newChild = {
+                    id: this.model.id,
+                    name: this.model.name,
+                    is_node: this.model.is_node,
+                    is_check: this.model.is_check,
+                };
+                this.showEditor = !this.showEditor;
             },
-            edit: function () {
-                alert('method edit() now is not available');
+
+
+            updateItemFn: function () {
+                this.showEditor = !this.showEditor;
+                this.model.id = this.newChild.id;
+                this.model.name = this.newChild.name;
+                this.model.is_node = this.newChild.is_node;
+                this.model.is_check = this.newChild.is_check;
             },
-            addChild: function () {
-                var temp = this.model.children;
-                temp.push({
-                    name: 'new item'
-                });
-                this.model.children = temp;
+
+            deleteFn: function () {
+                var index = this.model.parent.children.indexOf(this.model);
+                this.model.parent.children.splice(index ,1);
+            },
+
+            newChildFn: function () {
+                this.editOrAdd = false;
+                this.showEditor = !this.showEditor;
+            },
+
+            addChildFn: function () {
+                this.showEditor = !this.showEditor;
+                var newChildTemp = {
+                    id: this.newChild.id,
+                    name: this.newChild.name,
+                    nodeId: '',
+                    is_node: this.newChild.is_node,
+                    is_check: this.newChild.is_check,
+                    expand: '',
+                    level: '',
+                    parent: '',
+                    children: '',
+                };
+                this.model.children.push(newChildTemp);
             }
         }
     });

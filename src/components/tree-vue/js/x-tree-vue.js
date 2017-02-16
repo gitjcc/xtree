@@ -113,10 +113,8 @@ function _checkTreeByIdsFn(item, ids) {
             brother: false
         };
     }
-    console.log('item', item, 'ids', ids);
     for (var i = 0; i < ids.length; i++) {
         if (item.id == ids[i]) {
-            console.log('item.id', item.id, 'ids[i]', ids[i]);
             _changeItem(item, true);
             ids.splice(i, 1);
             break;
