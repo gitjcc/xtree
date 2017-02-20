@@ -14,12 +14,12 @@
 <!-- item template -->
 <script type="text/x-template" id="x-tree-item-template">
     <div class="x-tree-item">
-        <div class="x-tree-item-item">
+        <div class="x-tree-item-item" draggable='true'>
             <i v-if="hasChildren" class="fa" :class="model.expand ? 'fa-minus' : 'fa-plus'" @click="expandFn"></i>
             <span v-else class="icon-blank"></span>
             <i class="fa" :class="model.is_check ? 'fa-check-square-o' : 'fa-square-o'" @click="checkFn"></i>
-            <span @dblclick="editFn">{{model.name}}</span>
-            <i class="fa fa-edit" @click="deleteFn"></i>
+            <span>{{model.name}}</span>
+            <i class="fa fa-edit" @click="editFn"></i>
         </div>
 
         <div class='x-tree-item-children' v-show="model.expand" v-if="hasChildren">
@@ -37,6 +37,7 @@
                 <input type="submit" v-show="editOrAdd" value="UpdateItem">
                 <input type="submit" v-show="!editOrAdd" value="Add Child">
             </form>
+            <i class="fa fa-edit" @click="deleteFn"></i>
             <ul class="errors">
                 <li v-show="!validation.name">Name cannot be empty.</li>
                 <li v-show="!validation.email">Please provide a valid email address.</li>
