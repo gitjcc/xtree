@@ -32,6 +32,9 @@
             width: 298px;
             height: 18px;
             border: 1px solid deepskyblue;
+            overflow: hidden;
+            text-overflow:ellipsis;
+            white-space: nowrap;
         }
     </style>
 </head>
@@ -50,7 +53,7 @@
         </div>
 
         <div id="tree2" class="test_tree">
-            <input class="tree_input_tip" placeholder="">
+            <span class="tree_input_tip"></span>
         </div>
 
         <div class="box-block">
@@ -59,7 +62,7 @@
 
     <div class="tree-wrap">
         <div id="tree3" class="test_tree">
-            <input class="tree_input_tip" placeholder="">
+            <span class="tree_input_tip"></span>
         </div>
     </div>
 </div>
@@ -99,26 +102,23 @@
             {id: 32, name: '南宁', nodeId: 29, is_node: false, is_check: false},
             {id: 33, name: '桂林', nodeId: 29, is_node: false, is_check: false}
         ],
-        //        choose:{
-        //            nodeId:[1],
-        //            id:[1]
-        //        },
         onInit: function () {
+            this.dom.find('.tree_input_tip').text(this.getName());
         },
         onOpen: function () {
         },
         onBeforeOpen: function () {
         },
-        onClose: function (hasChange) {
-            console.log(testTree1.getId());
+        onClose: function () {
+            console.log(this.getId());
         },
-        onCheck: function (item, dom, childrenItem) {
-//            console.log(this);
-//            console.log(this.getId());
-//            console.log(testTree1);
-//            应该是  this.getId()比较规范  还是 testTree1.getId()比较规范   this可以做到 只暴漏该暴漏的方法
+        onCheck: function () {
+
         },
-        onCancel: function (item, dom, childrenItem) {
+        onChange: function () {
+            this.dom.find('.tree_input_tip').text(this.getName());
+        },
+        onCancel: function () {
         }
     });
 </script>
@@ -151,26 +151,22 @@
         ],
 
         onInit: function () {
+            this.dom.find('.tree_input_tip').text(this.getName());
         },
         onOpen: function () {
         },
         onBeforeOpen: function () {
         },
-        onClose: function (hasChange) {
-            console.log(testTree2.getId());
-            console.log(testTree2._makeSearch);
+        onClose: function () {
+            console.log(this.getId());
         },
-        onCheck: function (item, dom, childrenItem) {
-//            console.log(this);
-//            console.log(this.getId());
-//            console.log(testTree);
-//            应该是  this.getId()比较规范  还是 testTree.getId()比较规范   this可以做到 只暴漏该暴漏的方法
-        },
-        onCancel: function (item, dom, childrenItem) {
+        onCheck: function () {
+
         },
         onChange: function () {
-            testTree2.dom.val(testTree2.getName());
-            console.log(testTree2.getName());
+            this.dom.find('.tree_input_tip').text(this.getName());
+        },
+        onCancel: function () {
         }
     });
 </script>
@@ -196,30 +192,23 @@
             {id: 4, name: '刘职员', nodeId: 3, is_node: false, is_check: false},
             {id: 1, name: '王经理', nodeId: 0, is_node: false, is_check: false}
         ],
-        //        choose:{
-        //            nodeId:[1],
-        //            id:[1]
-        //        },
         onInit: function () {
+            this.dom.find('.tree_input_tip').text(this.getName());
         },
         onOpen: function () {
         },
         onBeforeOpen: function () {
         },
-        onClose: function (hasChange) {
-            console.log(testTree3.getId());
-            console.log(testTree3._makeSearch);
+        onClose: function () {
+            console.log(this.getId());
         },
-        onCheck: function (item, dom, childrenItem) {
-//            console.log(this);
-//            console.log(this.getId());
-//            console.log(testTree);
-//            应该是  this.getId()比较规范  还是 testTree.getId()比较规范   this可以做到 只暴漏该暴漏的方法
-        },
-        onCancel: function (item, dom, childrenItem) {
+        onCheck: function () {
+
         },
         onChange: function () {
-            testTree3.dom.val(testTree3.getName());
+            this.dom.find('.tree_input_tip').text(this.getName());
+        },
+        onCancel: function () {
         }
     });
 </script>
@@ -252,30 +241,23 @@
             {id: 4, name: '刘职员', nodeId: 3, is_node: false, is_check: false},
             {id: 1, name: '王经理', nodeId: 0, is_node: false, is_check: false}
         ],
-        //        choose:{
-        //            nodeId:[1],
-        //            id:[1]
-        //        },
         onInit: function () {
+            this.dom.find('.tree_input_tip').text(this.getName());
         },
         onOpen: function () {
         },
         onBeforeOpen: function () {
         },
-        onClose: function (hasChange) {
-            console.log(testTree4.getId());
-            console.log(testTree4._makeSearch);
+        onClose: function () {
+            console.log(this.getId());
         },
-        onCheck: function (item, dom, childrenItem) {
-//            console.log(this);
-//            console.log(this.getId());
-//            console.log(testTree);
-//            应该是  this.getId()比较规范  还是 testTree.getId()比较规范   this可以做到 只暴漏该暴漏的方法
-        },
-        onCancel: function (item, dom, childrenItem) {
+        onCheck: function () {
+
         },
         onChange: function () {
-            testTree4.dom.find('.tree_input_tip').val(testTree4.getName());
+            this.dom.find('.tree_input_tip').text(this.getName());
+        },
+        onCancel: function () {
         }
     });
 </script>
