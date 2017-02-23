@@ -113,7 +113,10 @@
             this.dom.css({'position': 'relative'});
             this.html = this._makePanel();
 
-            this.opt.onInit();
+
+            this.dom.find('.tree_input_tip').html(this.getName());
+
+            this.opt.onInit.apply(this);
 
             var that = this;
 
@@ -150,6 +153,7 @@
         end: function () {
             if (this._is_open) {
                 this.html.hide();
+                this.dom.find('.tree_input_tip').text(this.getName());
                 var ids = this.getId();
 
                 this._is_open = false;
