@@ -611,7 +611,8 @@
                 this.html.css({
                     top: this.dom.outerHeight(),
                     left: 0,
-                    minWidth: this.opt.width ? this.opt.width : this.dom.outerWidth() * 0.98
+                    minWidth: 200
+                    // minWidth: this.opt.width ? this.opt.width : this.dom.outerWidth() * 0.98
                 });
 
                 this.html.addClass('xTreePanel');
@@ -750,7 +751,7 @@
     }
 
     function _selData(data, selected) {
-        var sel_ids = seleced.split(',');
+        var sel_ids = selected.split(',');
         for (var i = 0; i < sel_ids.length; i++) {
             for (var j = 0; j < data.length; j++) {
                 if (data[j].id === parseInt(sel_ids[i])) {
