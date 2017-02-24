@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>xTreeVue.js</title>
-    <link rel="stylesheet" href="./font-awesome-4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="./css/x-tree-vue.css">
+    <link rel="stylesheet" href="../font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/x-tree-vue.css">
 </head>
 <body>
-<script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
-<script type="text/javascript" src="js/vue.js"></script>
-<script type="text/javascript" src="js/x-tree-vue.js"></script>
+<script type="text/javascript" src="../lib/jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="../lib/vue.js"></script>
+<script type="text/javascript" src="x-tree-edit.js"></script>
 
 <!-- item template -->
 <script type="text/x-template" id="x-tree-item-template">
@@ -20,12 +20,14 @@
             <i class="fa" :class="model.is_check ? 'fa-check-square-o' : 'fa-square-o'" @click="checkFn"></i>
             <span>{{model.name}}</span>
             <i class="fa fa-edit" @click="editFn"></i>
+            <i class="fa fa-edit" @click="deleteFn"></i>
+            <span class="bold" @click="newChildFn">[+]</span>
         </div>
 
         <div class='x-tree-item-children' v-show="model.expand" v-if="hasChildren">
             <x-tree-item class="x-tree-item" v-for="model in model.children" :model="model">
             </x-tree-item>
-            <span class="bold" @click="newChildFn">[+]</span>
+
         </div>
 
         <div class="x-tree-item-editor" v-show="showEditor">
@@ -37,7 +39,6 @@
                 <input type="submit" v-show="editOrAdd" value="UpdateItem">
                 <input type="submit" v-show="!editOrAdd" value="Add Child">
             </form>
-            <i class="fa fa-edit" @click="deleteFn"></i>
             <ul class="errors">
                 <li v-show="!validation.name">Name cannot be empty.</li>
                 <li v-show="!validation.email">Please provide a valid email address.</li>
