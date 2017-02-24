@@ -171,16 +171,16 @@
         onBeforeOpen: function () {
         },
         onClose: function () {
-            console.log(this.getId());
+            console.log(JSON.stringify(this.getId()) !== JSON.stringify(this._originId));
         },
         onCheck: function () {
-
+        },
+        onCancel: function () {
         },
         onChange: function () {
             this.dom.find('.tree_input_tip').text(this.getName());
         },
-        onCancel: function () {
-        }
+
     });
 </script>
 
