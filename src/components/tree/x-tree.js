@@ -748,7 +748,7 @@
         var sel_ids = selected.split(',');
         for (var i = 0; i < sel_ids.length; i++) {
             for (var j = 0; j < data.length; j++) {
-                if (data[j].id === parseInt(sel_ids[i])) {
+                if (data[j].id === sel_ids[i]) {
                     data[j].is_check = true;
                     _selParent(data, data[j].nodeId);
                     if (data[j].is_node && data[i].has_children) {
