@@ -98,7 +98,7 @@
             this.data = _initData(this.opt.data);
             this.rootId = _getRootId(this.data);
             if (this.opt.sel_ids) {
-                _selData(this.data, this.opt.sel_ids);
+                _selData(this.data, this.opt);
             }
 
             this._originId = this.getId();
@@ -744,11 +744,14 @@
         return clone;
     }
 
-    function _selData(data, selected) {
-        var sel_ids = selected.split(',');
+    function _selData(data, opt) {
+        var sel_ids = opt.sel_ids.split(',');
         for (var i = 0; i < sel_ids.length; i++) {
             for (var j = 0; j < data.length; j++) {
-                if (data[j].id === sel_ids[i]) {
+                if(opt.only_child && data[j].is_node){
+                    continue;
+                }
+                if (data[j].id == sel_ids[i]) {
                     data[j].is_check = true;
                     _selParent(data, data[j].nodeId);
                     if (data[j].is_node && data[i].has_children) {
