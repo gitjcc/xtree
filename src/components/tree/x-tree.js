@@ -155,7 +155,7 @@
             }
         },
 
-        getName: function () {
+        getName: function (only,merge) {
             var text = [];
             var data = this.data;
             if (this.opt.only_child) {
