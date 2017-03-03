@@ -748,10 +748,7 @@
         var sel_ids = opt.sel_ids.split(',');
         for (var i = 0; i < sel_ids.length; i++) {
             for (var j = 0; j < data.length; j++) {
-                if(opt.only_child && data[j].is_node){
-                    continue;
-                }
-                if (data[j].id == sel_ids[i]) {
+                if (opt.only_child && data[j].is_node  && data[j].id == sel_ids[i]) {
                     data[j].is_check = true;
                     _selParent(data, data[j].nodeId);
                     if (data[j].is_node && data[i].has_children) {
