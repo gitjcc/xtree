@@ -155,7 +155,7 @@
             }
         },
 
-        getName: function (only,merge) {
+        getName: function (only, merge) {
             var text = [];
             var data = this.data;
             if (this.opt.only_child) {
@@ -748,11 +748,21 @@
         var sel_ids = opt.sel_ids.split(',');
         for (var i = 0; i < sel_ids.length; i++) {
             for (var j = 0; j < data.length; j++) {
-                if (opt.only_child && !data[j].is_node  && data[j].id == sel_ids[i]) {
-                    data[j].is_check = true;
-                    _selParent(data, data[j].nodeId);
-                    if (data[j].is_node && data[i].has_children) {
-                        _selChildren(data, data[j].id);
+                if (opt.only_child) {
+                    if (!data[j].is_node && data[j].id == sel_ids[i]) {
+                        data[j].is_check = true;
+                        _selParent(data, data[j].nodeId);
+                        if (data[j].is_node && data[i].has_children) {
+                            _selChildren(data, data[j].id);
+                        }
+                    }
+                } else {
+                    if (data[j].id == sel_ids[i]) {
+                        data[j].is_check = true;
+                        _selParent(data, data[j].nodeId);
+                        if (data[j].is_node && data[i].has_children) {
+                            _selChildren(data, data[j].id);
+                        }
                     }
                 }
             }
