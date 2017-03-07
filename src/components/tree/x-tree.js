@@ -723,7 +723,7 @@
                 $html = $('<div>' + (this.opt.only_child ? '' : '<span></span>') + '<label><input type="radio" name="' + this.dom.selector + '" data-id="' + item.id + '" data-isNode=false data-name="' + item.name + '" />' + item.name + '</label></div>');
             }
             $html.find('span').css({
-                'width': '0.8em',
+                'width': '12px',
                 'user-select': 'none',
                 '-webkit-user-select': 'none',
                 '-moz-user-select': 'none',
@@ -852,7 +852,7 @@
             var html = '<div></div>';
 
             return $(html).css({
-                'margin-left': '1em'
+                'margin-left': '16px'
             });
         },
 
@@ -861,7 +861,7 @@
             var html = '<i class="iconfont icon-jia1"></i>';
 
             return $(html).css({
-                'font-size': '0.8em',
+                'font-size': '12px',
                 'vertical-align': 'base-line',
                 'padding-right': '0px',
                 'cursor': 'pointer'
