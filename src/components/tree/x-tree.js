@@ -190,7 +190,21 @@
 
             return text.join();
         },
+
         getId: function (only, merge) {
+            var ids = [];
+            var data = this.data;
+
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].is_check) {
+                    ids.push(data[i].id);
+                }
+            }
+
+            return ids;
+        },
+
+        getIdss: function (only, merge) {
             var id = [];
             var nodeId = [];
             var data = this.data;
@@ -201,9 +215,7 @@
                         id.push(n.id);
                     }
                 });
-
             } else {
-
                 if (this.opt.node_merge) {
                     var node = [];
                     $.each(data, function (i, n) {
@@ -212,15 +224,12 @@
 //                            text.push( n.name);  //nodefirst
                         }
                     });
-
                     var clone = $.extend(true, [], data);
                     $.each(clone, function (i, n) {
                         if ((n.is_check && $.inArray(n.nodeId, node) != -1) || !n.is_check) {
                             clone[i] = null;
                         }
                     });
-
-
                     $.each(clone, function (i, n) {
                         if (n) {
                             if (n.is_node) {
@@ -241,15 +250,13 @@
                         }
                     });
                 }
-
-
                 id = {'id': id, 'nodeId': nodeId};
             }
             return id;
         },
 
         cancelItem: function (ids, isNode) {
-            if(!Array.isArray(ids)){
+            if (!Array.isArray(ids)) {
                 return "checkItem(),参数ids不是数组";
             }
             isNode = !!isNode;
@@ -267,7 +274,7 @@
             }
         },
         checkItem: function (ids, isNode) {
-            if(!Array.isArray(ids)){
+            if (!Array.isArray(ids)) {
                 return "checkItem(),参数ids不是数组";
             }
             isNode = !!isNode;
@@ -804,8 +811,8 @@
                 var expandId = [];
                 expandId.push(obj.rootId);
                 for (var i = 0; i < obj.opt.expand + 1; i++) {
-                    console.log("i",i);
-                    console.log("expandId",expandId);
+                    console.log("i", i);
+                    console.log("expandId", expandId);
                     expandId = obj._expandLevel(expandId);
                 }
             }
