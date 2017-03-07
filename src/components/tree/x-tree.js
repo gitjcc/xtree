@@ -34,10 +34,10 @@
         dom: '',  //jqueryDom
         is_trigger: false,  //是否需要触发? 否则直接显示
         has_search: false,
-        only_child: true,//是否结果只要 child
-        node_merge: true,//结果只显示最上层  比如   中国被选中  四川,成都则不会显示  否则 每个被勾选的节点都显示
-        zIndex: 1,
-        choose: false,  //哪些是选中的？优先级高于data  {nodeId:[1,2,3],id:[1,2,3]}
+        only_child: false,//是否结果只要 child
+        node_merge: false,//结果只显示最上层  比如   中国被选中  四川,成都则不会显示  否则 每个被勾选的节点都显示
+        zIndex: 99,
+        // choose: false,  //哪些是选中的？优先级高于data  {nodeId:[1,2,3],id:[1,2,3]}
         // node_first:false,//是否需要节点排在前面  否则按照data的顺序
         is_multi: true,//是否多选
         expand: false, //是否展开，false、true、num, (0、1、false,都展开一级。true,完全展开。num>=2时，展开到对应级）
@@ -190,7 +190,7 @@
 
             return text.join();
         },
-        getId: function () {
+        getId: function (only, merge) {
             var id = [];
             var nodeId = [];
             var data = this.data;
@@ -247,11 +247,11 @@
             }
             return id;
         },
-        cancelItem: function (id, type) {
+        cancelItem: function (id, isNode) {
             var item = {};
-            var dom = this.html.find('input[data-isNode="' + parseInt(type) + '"][data-id="' + id + '"]').prop('checked', false);
+            var dom = this.html.find('input[data-isNode=' + !!isNode + '][data-id="' + id + '"]').prop('checked', false);
             $.each(this.data, function (i, n) {
-                if (n.id == id && n.is_node == type) {
+                if (n.id == id && n.is_node == isNode) {
                     item = n;
                     item.is_check = false;
                 }
@@ -267,19 +267,22 @@
             this.html.find('input').prop("checked", false);
             this.opt.onCancel.apply(this);
         },
-        checkItem: function (id, type) {
+        checkItem: function (ids, isNode) {
             var item = {};
-            var dom = this.html.find('input[data-isNode="' + parseInt(type) + '"][data-id="' + id + '"]').prop('checked', true);
-            $.each(this.data, function (i, n) {
-                if (n.id == id && n.is_node == type) {
-                    item = n;
-                    item.is_check = true;
+            var dom;
+            for (var i = 0; i < ids.length; i++) {
+                console.log(ids[i]);
+                for (var j = 0; j < this.data.length; j++) {
+                    if (this.data[j].id == ids[i] && this.data[j].is_node == isNode) {
+                        item = this.data[j];
+                        item.is_check = true;
+                        dom = this.html.find('input[data-isNode=' + !!isNode + '][data-id="' + ids[i] + '"]').prop('checked', true);
+                        this._chgItem(item, dom);
+                    }
                 }
-            });
-
-            this._chgItem(item, dom);
-
+            }
         },
+
         checkAll: function () {
             if (this.opt.is_multi) {
                 $.each(this.data, function (index, item) {
@@ -418,7 +421,7 @@
             $.each(obj.data, function (i, n) {
                 if (n.id == id && n.is_node && n.is_check) {
                     n.is_check = false;
-                    obj.html.find('input[data-isNode="1"][data-id="' + id + '"]').prop('checked', false);
+                    obj.html.find('input[data-isNode=true][data-id="' + id + '"]').prop('checked', false);
                     obj._cancelParentNode(n.nodeId);
                 }
             })
@@ -434,7 +437,7 @@
             $.each(obj.data, function (i, n) {
                 if (n.id == id && n.is_node && !n.is_check && allChildrenChecked) {
                     n.is_check = true;
-                    obj.html.find('input[data-isNode="1"][data-id="' + id + '"]').prop('checked', true);
+                    obj.html.find('input[data-isNode=true][data-id="' + id + '"]').prop('checked', true);
                     obj._checkParentNode(n.nodeId);
                 }
             });
@@ -514,14 +517,14 @@
         _makeNode: function (item) {
             var $html;
             if (this.opt.is_multi) {
-                $html = $('<div node-id="' + item.id + '">' + this._makeExpand() + '<label><input type="checkbox" data-isNode="1" data-id="' + item.id + '" ' + (item.is_check ? 'checked' : '') + ' data-name="' + item.name + '"/><span>' + item.name + '</span></label></div>');
+                $html = $('<div node-id="' + item.id + '">' + this._makeExpand() + '<label><input type="checkbox" data-isNode=true data-id="' + item.id + '" ' + (item.is_check ? 'checked' : '') + ' data-name="' + item.name + '"/><span>' + item.name + '</span></label></div>');
             }
             else {
                 if (this.opt.only_child) {
                     $html = $('<div node-id="' + item.id + '">' + this._makeExpand() + '<span>' + item.name + '</span></div>');
                 }
                 else {
-                    $html = $('<div node-id="' + item.id + '">' + this._makeExpand() + '<label><input type="radio" name="' + this.dom.selector + '" data-isNode="1" data-id="' + item.id + '" ' + (item.is_check ? 'checked' : '') + ' data-name="' + item.name + '"/><span>' + item.name + '</span></label></div>');
+                    $html = $('<div node-id="' + item.id + '">' + this._makeExpand() + '<label><input type="radio" name="' + this.dom.selector + '" data-isNode=true data-id="' + item.id + '" ' + (item.is_check ? 'checked' : '') + ' data-name="' + item.name + '"/><span>' + item.name + '</span></label></div>');
                 }
             }
             $html.find('span').css({
@@ -547,10 +550,10 @@
         _makeChild: function (item) {
             var $html;
             if (this.opt.is_multi) {
-                $html = $('<div><span></span><label><input type="checkbox" data-id="' + item.id + '" data-isNode="0" data-name="' + item.name + '" ' + (item.is_check ? 'checked' : '') + '/>' + item.name + '</label></div>');
+                $html = $('<div><span></span><label><input type="checkbox" data-id="' + item.id + '" data-isNode=false data-name="' + item.name + '" ' + (item.is_check ? 'checked' : '') + '/>' + item.name + '</label></div>');
             }
             else {
-                $html = $('<div>' + (this.opt.only_child ? '' : '<span></span>') + '<label><input type="radio" name="' + this.dom.selector + '" data-id="' + item.id + '" data-isNode="0" data-name="' + item.name + '" />' + item.name + '</label></div>');
+                $html = $('<div>' + (this.opt.only_child ? '' : '<span></span>') + '<label><input type="radio" name="' + this.dom.selector + '" data-id="' + item.id + '" data-isNode=false data-name="' + item.name + '" />' + item.name + '</label></div>');
             }
             $html.find('span').css({
                 'width': '16px',
