@@ -256,7 +256,6 @@
             var item = {};
             var dom;
             for (var i = 0; i < ids.length; i++) {
-                console.log(ids[i]);
                 for (var j = 0; j < this.data.length; j++) {
                     if (this.data[j].id == ids[i] && this.data[j].is_node == isNode) {
                         item = this.data[j];
@@ -277,7 +276,6 @@
             var item = {};
             var dom;
             for (var i = 0; i < ids.length; i++) {
-                console.log(ids[i]);
                 for (var j = 0; j < this.data.length; j++) {
                     if (this.data[j].id == ids[i] && this.data[j].is_node == isNode) {
                         item = this.data[j];
@@ -328,7 +326,7 @@
 
         _checkData: function (data) {
             for (var i in data) {
-                return typeof data[i] == 'object';
+                return typeof data[i] === 'object';
             }
             return false;
         },
@@ -343,10 +341,10 @@
 
             for (var i = 0; i < len; i++) {
                 for (var j = i; j < len; j++) {
-                    if (clone[i].is_node && clone[i].id === clone[j].nodeId) {
+                    if (clone[i].is_node && clone[i].id == clone[j].nodeId) {
                         clone[i].has_children = true;
                     }
-                    if (clone[i].nodeId === clone[j].id && clone[j].is_node) {
+                    if (clone[i].nodeId == clone[j].id && clone[j].is_node) {
                         clone[j].has_children = true;
                     }
                 }
@@ -411,7 +409,7 @@
                 return false;
             }
             for (var i = 0; i < data.length; i++) {
-                if (data[i].nodeId === id) {
+                if (data[i].nodeId == id) {
                     data[i].is_check = true;
                     if (data[i].is_node && data[i].has_children) {
                         this._selChildren(data, data[i].id);
@@ -426,10 +424,10 @@
             var clone = $.extend(true, [], _data);
             for (var i = 0, len = _data.length; i < len; i++) {
                 for (var j = i; j < len; j++) {
-                    if (_data[i].id === _data[j].nodeId) {
+                    if (_data[i].id == _data[j].nodeId) {
                         clone[j] = null;
                     }
-                    if (_data[i].nodeId === _data[j].id) {
+                    if (_data[i].nodeId == _data[j].id) {
                         clone[i] = null;
                     }
                 }
@@ -453,7 +451,7 @@
             //     var r = [];
             //     for(var i = 0, l = array.length; i < l; i++) {
             //         for(var j = i + 1; j < l; j++){
-            //             if (array[i] === array[j]) {
+            //             if (array[i] == array[j]) {
             //                 j = ++i;
             //             }
             //         }
@@ -725,7 +723,7 @@
                 $html = $('<div>' + (this.opt.only_child ? '' : '<span></span>') + '<label><input type="radio" name="' + this.dom.selector + '" data-id="' + item.id + '" data-isNode=false data-name="' + item.name + '" />' + item.name + '</label></div>');
             }
             $html.find('span').css({
-                'width': '16px',
+                'width': '0.8em',
                 'user-select': 'none',
                 '-webkit-user-select': 'none',
                 '-moz-user-select': 'none',
@@ -805,7 +803,9 @@
             } else if (obj.opt.expand) {
                 var expandId = [];
                 expandId.push(obj.rootId);
-                for (var i = 0; i < obj.opt.expand; i++) {
+                for (var i = 0; i < obj.opt.expand + 1; i++) {
+                    console.log("i",i);
+                    console.log("expandId",expandId);
                     expandId = obj._expandLevel(expandId);
                 }
             }
@@ -814,10 +814,10 @@
             var obj = this;
             var expandId = [];
             $.each(id, function (index, item) {
+                obj.html.find('div[node-id="' + item + '"] > i').filter('.icon-jia1').click();
                 $.each(obj.data, function (index2, item2) {
-                    if (item2.nodeId === item) {
+                    if (item2.nodeId == item && item2.is_node) {
                         expandId.push(item2.id);
-                        obj.html.find('div[node-id="' + item2.nodeId + '"] > i').filter('.icon-jia1').click();
                     }
                 });
             });
@@ -829,7 +829,7 @@
 
 
             //这里 0节点的结构 和 子节点的结构 没有处理好    以后尽量让node-id 和  itemdiv 分开
-            if (layerId === this.rootId) {
+            if (layerId == this.rootId) {
                 itemDiv = $(itemDiv).attr('node-id', this.rootId);
                 this.html.append(itemDiv);
                 //itemDiv.parent().attr('node-id',0);
@@ -852,7 +852,7 @@
             var html = '<div></div>';
 
             return $(html).css({
-                'margin-left': '13px'
+                'margin-left': '1em'
             });
         },
 
@@ -861,7 +861,7 @@
             var html = '<i class="iconfont icon-jia1"></i>';
 
             return $(html).css({
-                'font-size': '12px',
+                'font-size': '0.8em',
                 'vertical-align': 'base-line',
                 'padding-right': '0px',
                 'cursor': 'pointer'
