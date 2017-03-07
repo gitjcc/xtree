@@ -194,13 +194,19 @@
         getId: function (only, merge) {
             var ids = [];
             var data = this.data;
-
-            for (var i = 0; i < data.length; i++) {
-                if (data[i].is_check) {
-                    ids.push(data[i].id);
+            if (this.opt.only_child) {
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].is_check && !data[i].is_node) {
+                        ids.push(data[i].id);
+                    }
+                }
+            } else {
+                for (var j = 0; j < data.length; j++) {
+                    if (data[j].is_check) {
+                        ids.push(data[j].id);
+                    }
                 }
             }
-
             return ids;
         },
 
