@@ -92,7 +92,11 @@
             this.data = this._initData(this.opt.data);
             this.rootId = this._getRootId(this.data);
             if (this.opt.sel_ids) {
-                this._selData(this.data, this.opt);
+                if (this.opt.is_multi) {
+                    this._selData(this.data, this.opt);
+                } else {
+                    this._selDataRadio(this.data, this.opt);
+                }
             }
 
             this._originId = this.getId();
@@ -389,6 +393,18 @@
                     }
                 }
             }
+            return data;
+        },
+
+        _selDataRadio: function (data, opt) {
+            var sel_ids = opt.sel_ids;
+            for (var j = 0; j < data.length; j++) {
+                if (data[j].id == sel_ids) {
+                    data[j].is_check = true;
+                }
+            }
+            console.log(sel_ids);
+            console.log(data);
             return data;
         },
 
@@ -733,7 +749,7 @@
                 $html = $('<div><span></span><label><input type="checkbox" data-id="' + item.id + '" data-isNode=false data-name="' + item.name + '" ' + (item.is_check ? 'checked' : '') + '/>' + item.name + '</label></div>');
             }
             else {
-                $html = $('<div>' + (this.opt.only_child ? '' : '<span></span>') + '<label><input type="radio" name="' + this.dom.selector + '" data-id="' + item.id + '" data-isNode=false data-name="' + item.name + '" />' + item.name + '</label></div>');
+                $html = $('<div>' + (this.opt.only_child ? '' : '<span></span>') + '<label><input type="radio"'+(item.is_check ? 'checked' : '') + ' name="' + this.dom.selector + '" data-id="' + item.id + '" data-isNode=false data-name="' + item.name + '" />' + item.name + '</label></div>');
             }
             $html.find('span').css({
                 'width': '12px',
@@ -817,8 +833,6 @@
                 var expandId = [];
                 expandId.push(obj.rootId);
                 for (var i = 0; i < obj.opt.expand + 1; i++) {
-                    console.log("i", i);
-                    console.log("expandId", expandId);
                     expandId = obj._expandLevel(expandId);
                 }
             }
