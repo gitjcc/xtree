@@ -247,9 +247,11 @@
             }
             return id;
         },
+
         cancelItem: function (id, isNode) {
+            isNode = !!isNode;
             var item = {};
-            var dom = this.html.find('input[data-isNode=' + !!isNode + '][data-id="' + id + '"]').prop('checked', false);
+            var dom = this.html.find('input[data-isNode=' + isNode + '][data-id="' + id + '"]').prop('checked', false);
             $.each(this.data, function (i, n) {
                 if (n.id == id && n.is_node == isNode) {
                     item = n;
@@ -267,7 +269,12 @@
             this.html.find('input').prop("checked", false);
             this.opt.onCancel.apply(this);
         },
+
         checkItem: function (ids, isNode) {
+            if(!Array.isArray(ids)){
+                return "checkItem(),参数ids不是数组";
+            }
+            isNode = !!isNode;
             var item = {};
             var dom;
             for (var i = 0; i < ids.length; i++) {
@@ -276,13 +283,12 @@
                     if (this.data[j].id == ids[i] && this.data[j].is_node == isNode) {
                         item = this.data[j];
                         item.is_check = true;
-                        dom = this.html.find('input[data-isNode=' + !!isNode + '][data-id="' + ids[i] + '"]').prop('checked', true);
+                        dom = this.html.find('input[data-isNode=' + isNode + '][data-id="' + ids[i] + '"]').prop('checked', true);
                         this._chgItem(item, dom);
                     }
                 }
             }
         },
-
         checkAll: function () {
             if (this.opt.is_multi) {
                 $.each(this.data, function (index, item) {
@@ -292,6 +298,7 @@
                 this.opt.onCheck.apply(this);
             }
         },
+
         getItem: function () {
             var arr = [];
             var data = this.data;
