@@ -7,47 +7,53 @@
     <link rel="stylesheet" href="../../base/fonts/iconfont.css">
     <style>
         .tree-wrap {
-            display: block;
+            display: inline-block;
             overflow: auto;
         }
-        .tree-box {height: 600px;
+
+        .tree-box {
+            height: 600px;
             overflow: auto;
         }
+
         .box-block {
             height: 600px;
+        }
+
+        .tree-span {
+            display: inline-block;
+            width: 300px;
+            height: 20px;
+            border: 1px solid orangered;
+        }
+
+        .tree_input_tip {
+            display: inline-block;
+            width: 298px;
+            height: 18px;
+            border: 1px solid deepskyblue;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
     </style>
 </head>
 <body>
 <script type="text/javascript" src="../../base/jquery-3.1.1.min.js"></script>
-<script type="text/javascript" src="tree-tree.js"></script>
-<div class="pandakill">
-    121231
-    <span class="ppkill"></span>
-    <input type="checkbox" id="ccc"/> <label for="ccc">ccc</label>
-</div>
-<script>
-    var $node = $('<div>node_a</div>');
-    console.log('$node111',$node);
-    var b = {a:$node[0]};
-    $('.pandakill').append($node);
-    $('.ppkill').append($node);
-    console.log('$node222',$node);
-    console.log('b',b);
+<script type="text/javascript" src="x-tree-tree.js"></script>
 
-</script>
 <div class="tree-box">
     <div class="tree-wrap">
         <!--    <input class="test_tree1" placeholder="">-->
-        <div class="test_tree1"></div>
+        <div id="tree1" class="test_tree"></div>
     </div>
 
     <div class="tree-wrap">
         <div class="box-block">
         </div>
 
-        <div class="test_tree2">
-            <input class="" placeholder="">
+        <div id="tree2" class="test_tree">
+            <span class="tree_input_tip"></span>
         </div>
 
         <div class="box-block">
@@ -55,36 +61,25 @@
     </div>
 
     <div class="tree-wrap">
-        <div class="test_tree3">
-            <input class="" placeholder="">
+        <div id="tree3" class="test_tree">
+            <span class="tree_input_tip"></span>
         </div>
     </div>
 </div>
 
+
 <script>
-    var testTree1 = treeTree({
-        dom: $('.test_tree1'),
-        only_child: false,
+    var testTree1 = xTree({
+        dom: $('#tree1'),
+        only_child: true,
         is_multi: true,
         is_trigger: false,
         node_merge: false,
         has_search: false,
-        sel_ids: '2,3,11,12,13',
-        expand: 6,
+        sel_ids: '1,2,3,4,5,7',
+        expand: true,
         data: [
-            {id: 26, name: '成都', nodeId: 7, is_node: false, is_check: false},
-            {id: 27, name: '泸州', nodeId: 7, is_node: false, is_check: false},
-            {id: 28, name: '昆明', nodeId: 7, is_node: false, is_check: false},
-            {id: 29, name: '大理', nodeId: 7, is_node: true, is_check: false},
-            {id: 30, name: '贵阳', nodeId: 29, is_node: false, is_check: false},
-            {id: 31, name: '遵义', nodeId: 29, is_node: false, is_check: false},
-            {id: 32, name: '南宁', nodeId: 29, is_node: false, is_check: false},
-            {id: 33, name: '桂林', nodeId: 29, is_node: false, is_check: false},
-
-            {id: 1, name: '中国', nodeId: 99, is_node: true, is_check: false},
-            {id: 110, name: '大陆', nodeId: 99, is_node: true, is_check: false},
-            {id: 111, name: '大陆', nodeId: 110, is_node: false, is_check: false},
-
+            {id: 1, name: '中国', nodeId: 0, is_node: true, is_check: false},
             {id: 2, name: '四川', nodeId: 1, is_node: true, is_check: false},
             {id: 3, name: '云南', nodeId: 1, is_node: true, is_check: false},
             {id: 4, name: '贵州', nodeId: 1, is_node: true, is_check: false},
@@ -98,131 +93,219 @@
             {id: 12, name: '南宁', nodeId: 5, is_node: false, is_check: false},
             {id: 13, name: '桂林', nodeId: 5, is_node: false, is_check: false},
 
+            {id: 1, name: '大陆', nodeId: 0, is_node: false, is_check: false},
+            {id: 2, name: '台湾', nodeId: 0, is_node: false, is_check: false},
+            {id: 3, name: '香港', nodeId: 1, is_node: false, is_check: false},
+            {id: 4, name: '澳门', nodeId: 1, is_node: false, is_check: false},
+            {id: 5, name: '北京', nodeId: 1, is_node: false, is_check: false},
+            {id: 7, name: '上海', nodeId: 1, is_node: false, is_check: false},
+
+            {id: 26, name: '成都', nodeId: 7, is_node: false, is_check: false},
+            {id: 27, name: '泸州', nodeId: 7, is_node: false, is_check: false},
+            {id: 28, name: '昆明', nodeId: 7, is_node: false, is_check: false},
+            {id: 29, name: '大理', nodeId: 7, is_node: true, is_check: false},
+            {id: 30, name: '贵阳', nodeId: 29, is_node: false, is_check: false},
+            {id: 31, name: '遵义', nodeId: 29, is_node: false, is_check: false},
+            {id: 32, name: '南宁', nodeId: 29, is_node: false, is_check: false},
+            {id: 33, name: '桂林', nodeId: 29, is_node: false, is_check: false}
         ],
-        //        choose:{
-        //            nodeId:[1],
-        //            id:[1]
-        //        },
         onInit: function () {
+            this.dom.find('.tree_input_tip').text(this.getName());
         },
         onOpen: function () {
         },
         onBeforeOpen: function () {
         },
-        onClose: function (hasChange) {
-            console.log(testTree1.getId());
+        onClose: function () {
+            console.log(this.getId());
         },
-        onCheck: function (item, dom, childrenItem) {
-//            console.log(this);
-//            console.log(this.getId());
-//            console.log(testTree1);
-//            应该是  this.getId()比较规范  还是 testTree1.getId()比较规范   this可以做到 只暴漏该暴漏的方法
+        onCheck: function () {
+
         },
-        onCancel: function (item, dom, childrenItem) {
+        onChange: function () {
+            this.dom.find('.tree_input_tip').text(this.getName());
+        },
+        onCancel: function () {
         }
     });
 </script>
 
+
 <script>
-    var testTree2 = treeTree({
-        dom: $('.test_tree2'),
+    var testTree2 = xTree({
+        dom: $('#tree2'),
         only_child: false,
         is_multi: true,
         is_trigger: true,
         node_merge: false,
         has_search: true,
-        sel_ids: '2,3,4',
+        sel_ids: '3,11,12,13,30,31,32,33',
         expand: 3,
         data: [
-            {id: 1, name: '行政部', nodeId: 0, is_node: true, is_check: false},
-            {id: 3, name: '财务部', nodeId: 1, is_node: true, is_check: false},
-            {id: 8, name: '财务部2', nodeId: 3, is_node: true, is_check: false},
-            {id: 5, name: '李职员', nodeId: 8, is_node: false, is_check: false},
-            {id: 6, name: '孙职员', nodeId: 8, is_node: false, is_check: false},
-            {id: 2, name: '张部长', nodeId: 1, is_node: false, is_check: false},
-            {id: 4, name: '刘职员', nodeId: 3, is_node: false, is_check: false},
-            {id: 1, name: '王经理', nodeId: 0, is_node: false, is_check: false}
+            {id: 1, name: '中国', nodeId: 0, is_node: true, is_check: false},
+            {id: 2, name: '四川', nodeId: 1, is_node: true, is_check: false},
+            {id: 3, name: '云南', nodeId: 1, is_node: true, is_check: false},
+            {id: 4, name: '贵州', nodeId: 1, is_node: true, is_check: false},
+            {id: 5, name: '广西', nodeId: 1, is_node: true, is_check: false},
+            {id: 6, name: '成都', nodeId: 2, is_node: false, is_check: false},
+            {id: 7, name: '泸州', nodeId: 2, is_node: true, is_check: false},
+            {id: 8, name: '昆明', nodeId: 3, is_node: false, is_check: false},
+            {id: 9, name: '大理', nodeId: 3, is_node: false, is_check: false},
+            {id: 10, name: '贵阳', nodeId: 4, is_node: false, is_check: false},
+            {id: 11, name: '遵义', nodeId: 4, is_node: false, is_check: false},
+            {id: 12, name: '南宁', nodeId: 5, is_node: false, is_check: false},
+            {id: 13, name: '桂林', nodeId: 5, is_node: false, is_check: false},
+
+            {id: 26, name: '成都', nodeId: 7, is_node: false, is_check: false},
+            {id: 27, name: '泸州', nodeId: 7, is_node: false, is_check: false},
+            {id: 28, name: '昆明', nodeId: 7, is_node: false, is_check: false},
+            {id: 29, name: '大理', nodeId: 7, is_node: true, is_check: false},
+            {id: 30, name: '贵阳', nodeId: 29, is_node: false, is_check: false},
+            {id: 31, name: '遵义', nodeId: 29, is_node: false, is_check: false},
+            {id: 32, name: '南宁', nodeId: 29, is_node: false, is_check: false},
+            {id: 33, name: '桂林', nodeId: 29, is_node: false, is_check: false}
         ],
-        //        choose:{
-        //            nodeId:[1],
-        //            id:[1]
-        //        },
+
         onInit: function () {
+            this.dom.find('.tree_input_tip').text(this.getName());
         },
         onOpen: function () {
         },
         onBeforeOpen: function () {
         },
-        onClose: function (hasChange) {
-            console.log(testTree2.getId());
-            console.log(testTree2._makeSearch);
+        onClose: function () {
+            console.log(JSON.stringify(this.getId()) !== JSON.stringify(this._originId));
         },
-        onCheck: function (item, dom, childrenItem) {
-//            console.log(this);
-//            console.log(this.getId());
-//            console.log(testTree);
-//            应该是  this.getId()比较规范  还是 testTree.getId()比较规范   this可以做到 只暴漏该暴漏的方法
+        onCheck: function () {
         },
-        onCancel: function (item, dom, childrenItem) {
+        onCancel: function () {
         },
         onChange: function () {
-            testTree2.dom.val(testTree2.getName());
-            console.log(testTree2.getName());
-        }
+            this.dom.find('.tree_input_tip').text(this.getName());
+        },
+
     });
 </script>
 
+
 <script>
-    var testTree3 = treeTree({
-        dom: $('.test_tree3'),
+    var testTree3 = xTree({
+        dom: $('#tree3'),
         only_child: false,
         is_multi: true,
         is_trigger: true,
         node_merge: false,
         has_search: true,
-        sel_ids: '1,2,3',
+        sel_ids: '3,11,12,13,30,31,32,33',
         expand: 3,
         data: [
-            {id: 1, name: '行政部', nodeId: 0, is_node: true, is_check: false},
-            {id: 3, name: '财务部', nodeId: 1, is_node: true, is_check: false},
-            {id: 8, name: '财务部2', nodeId: 3, is_node: true, is_check: false},
-            {id: 5, name: '李职员', nodeId: 8, is_node: false, is_check: false},
-            {id: 6, name: '孙职员', nodeId: 8, is_node: false, is_check: false},
-            {id: 2, name: '张部长', nodeId: 1, is_node: false, is_check: false},
-            {id: 4, name: '刘职员', nodeId: 3, is_node: false, is_check: false},
-            {id: 1, name: '王经理', nodeId: 0, is_node: false, is_check: false}
+            {id: 1, name: '中国', nodeId: 0, is_node: true, is_check: false},
+            {id: 2, name: '四川', nodeId: 1, is_node: true, is_check: false},
+            {id: 3, name: '云南', nodeId: 1, is_node: true, is_check: false},
+            {id: 4, name: '贵州', nodeId: 1, is_node: true, is_check: false},
+            {id: 5, name: '广西', nodeId: 1, is_node: true, is_check: false},
+            {id: 6, name: '成都', nodeId: 2, is_node: false, is_check: false},
+            {id: 7, name: '泸州', nodeId: 2, is_node: true, is_check: false},
+            {id: 8, name: '昆明', nodeId: 3, is_node: false, is_check: false},
+            {id: 9, name: '大理', nodeId: 3, is_node: false, is_check: false},
+            {id: 10, name: '贵阳', nodeId: 4, is_node: false, is_check: false},
+            {id: 11, name: '遵义', nodeId: 4, is_node: false, is_check: false},
+            {id: 12, name: '南宁', nodeId: 5, is_node: false, is_check: false},
+            {id: 13, name: '桂林', nodeId: 5, is_node: false, is_check: false},
+
+            {id: 26, name: '成都', nodeId: 7, is_node: false, is_check: false},
+            {id: 27, name: '泸州', nodeId: 7, is_node: false, is_check: false},
+            {id: 28, name: '昆明', nodeId: 7, is_node: false, is_check: false},
+            {id: 29, name: '大理', nodeId: 7, is_node: true, is_check: false},
+            {id: 30, name: '贵阳', nodeId: 29, is_node: false, is_check: false},
+            {id: 31, name: '遵义', nodeId: 29, is_node: false, is_check: false},
+            {id: 32, name: '南宁', nodeId: 29, is_node: false, is_check: false},
+            {id: 33, name: '桂林', nodeId: 29, is_node: false, is_check: false}
         ],
-        //        choose:{
-        //            nodeId:[1],
-        //            id:[1]
-        //        },
         onInit: function () {
+            this.dom.find('.tree_input_tip').text(this.getName());
         },
         onOpen: function () {
         },
         onBeforeOpen: function () {
         },
-        onClose: function (hasChange) {
-            console.log(testTree3.getId());
-            console.log(testTree3._makeSearch);
+        onClose: function () {
+            console.log(this.getId());
         },
-        onCheck: function (item, dom, childrenItem) {
-//            console.log(this);
-//            console.log(this.getId());
-//            console.log(testTree);
-//            应该是  this.getId()比较规范  还是 testTree.getId()比较规范   this可以做到 只暴漏该暴漏的方法
-        },
-        onCancel: function (item, dom, childrenItem) {
+        onCheck: function () {
+
         },
         onChange: function () {
-            testTree3.dom.val(testTree3.getName());
+            this.dom.find('.tree_input_tip').text(this.getName());
+        },
+        onCancel: function () {
         }
     });
 </script>
 
+
+<div class="tree-wrap">
+    <span id="tree-span" class="tree-span">
+        <span class="tree_input_tip"></span>
+    </span>
+</div>
+
+
 <script>
-//test
+    var testTree4 = xTree({
+        dom: $('#tree-span'),
+        only_child: false,
+        is_multi: true,
+        is_trigger: true,
+        node_merge: false,
+        has_search: true,
+        sel_ids: '3,11,12,13,30,31,32,33',
+        expand: 3,
+        data: [
+            {id: 1, name: '中国', nodeId: 0, is_node: true, is_check: false},
+            {id: 2, name: '四川', nodeId: 1, is_node: true, is_check: false},
+            {id: 3, name: '云南', nodeId: 1, is_node: true, is_check: false},
+            {id: 4, name: '贵州', nodeId: 1, is_node: true, is_check: false},
+            {id: 5, name: '广西', nodeId: 1, is_node: true, is_check: false},
+            {id: 6, name: '成都', nodeId: 2, is_node: false, is_check: false},
+            {id: 7, name: '泸州', nodeId: 2, is_node: true, is_check: false},
+            {id: 8, name: '昆明', nodeId: 3, is_node: false, is_check: false},
+            {id: 9, name: '大理', nodeId: 3, is_node: false, is_check: false},
+            {id: 10, name: '贵阳', nodeId: 4, is_node: false, is_check: false},
+            {id: 11, name: '遵义', nodeId: 4, is_node: false, is_check: false},
+            {id: 12, name: '南宁', nodeId: 5, is_node: false, is_check: false},
+            {id: 13, name: '桂林', nodeId: 5, is_node: false, is_check: false},
+
+            {id: 26, name: '成都', nodeId: 7, is_node: false, is_check: false},
+            {id: 27, name: '泸州', nodeId: 7, is_node: false, is_check: false},
+            {id: 28, name: '昆明', nodeId: 7, is_node: false, is_check: false},
+            {id: 29, name: '大理', nodeId: 7, is_node: true, is_check: false},
+            {id: 30, name: '贵阳', nodeId: 29, is_node: false, is_check: false},
+            {id: 31, name: '遵义', nodeId: 29, is_node: false, is_check: false},
+            {id: 32, name: '南宁', nodeId: 29, is_node: false, is_check: false},
+            {id: 33, name: '桂林', nodeId: 29, is_node: false, is_check: false}
+        ],
+        onInit: function () {
+            this.dom.find('.tree_input_tip').text(this.getName());
+        },
+        onOpen: function () {
+        },
+        onBeforeOpen: function () {
+        },
+        onClose: function () {
+            console.log(this.getId());
+        },
+        onCheck: function () {
+
+        },
+        onChange: function () {
+            this.dom.find('.tree_input_tip').text(this.getName());
+        },
+        onCancel: function () {
+        }
+    });
 </script>
+
 
 </body>
 </html>
