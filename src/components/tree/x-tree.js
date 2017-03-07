@@ -65,12 +65,6 @@
     var tree = function (opt) {
         this._init(opt);
         return this;
-        /**
-         * return {
-         *     'start':this.start,
-         *     'end':this.end
-         * };  //todo  这样会导致 this 没有 别的方法 到底 还是不能正常使用
-         */
     };
 
 
@@ -89,16 +83,16 @@
         _searchTimer: '',   //搜索框的定时器
         _is_first: true,  //是不是第一次打开
         _init: function (opt) {
-            var res = checkData(opt.data);
+            var res = this._checkData(opt.data);
             if (!res) {
                 return false;
             }
 
             this.opt = $.extend(true, {}, defOpt, opt);
-            this.data = _initData(this.opt.data);
-            this.rootId = _getRootId(this.data);
+            this.data = this._initData(this.opt.data);
+            this.rootId = this._getRootId(this.data);
             if (this.opt.sel_ids) {
-                _selData(this.data, this.opt);
+                this._selData(this.data, this.opt);
             }
 
             this._originId = this.getId();
@@ -275,7 +269,7 @@
         },
         checkItem: function (id, type) {
             var item = {};
-            var dom = this.html.find('input[data-isNode="' + parseInt(type) + '"][data-i="' + id + '"]').prop('checked', true);
+            var dom = this.html.find('input[data-isNode="' + parseInt(type) + '"][data-id="' + id + '"]').prop('checked', true);
             $.each(this.data, function (i, n) {
                 if (n.id == id && n.is_node == type) {
                     item = n;
@@ -520,14 +514,14 @@
         _makeNode: function (item) {
             var $html;
             if (this.opt.is_multi) {
-                $html = $('<div node-id="' + item.id + '">' + makeExpand() + '<label><input type="checkbox" data-isNode="1" data-id="' + item.id + '" ' + (item.is_check ? 'checked' : '') + ' data-name="' + item.name + '"/><span>' + item.name + '</span></label></div>');
+                $html = $('<div node-id="' + item.id + '">' + this._makeExpand() + '<label><input type="checkbox" data-isNode="1" data-id="' + item.id + '" ' + (item.is_check ? 'checked' : '') + ' data-name="' + item.name + '"/><span>' + item.name + '</span></label></div>');
             }
             else {
                 if (this.opt.only_child) {
-                    $html = $('<div node-id="' + item.id + '">' + makeExpand() + '<span>' + item.name + '</span></div>');
+                    $html = $('<div node-id="' + item.id + '">' + this._makeExpand() + '<span>' + item.name + '</span></div>');
                 }
                 else {
-                    $html = $('<div node-id="' + item.id + '">' + makeExpand() + '<label><input type="radio" name="' + this.dom.selector + '" data-isNode="1" data-id="' + item.id + '" ' + (item.is_check ? 'checked' : '') + ' data-name="' + item.name + '"/><span>' + item.name + '</span></label></div>');
+                    $html = $('<div node-id="' + item.id + '">' + this._makeExpand() + '<label><input type="radio" name="' + this.dom.selector + '" data-isNode="1" data-id="' + item.id + '" ' + (item.is_check ? 'checked' : '') + ' data-name="' + item.name + '"/><span>' + item.name + '</span></label></div>');
                 }
             }
             $html.find('span').css({
@@ -658,7 +652,7 @@
         },
         _showLayer: function (layerId) {
             var showData = this._getLayerData(layerId);
-            var itemDiv = makeLayer();
+            var itemDiv = this._makeLayer();
 
 
             //这里 0节点的结构 和 子节点的结构 没有处理好    以后尽量让node-id 和  itemdiv 分开
@@ -668,7 +662,7 @@
                 //itemDiv.parent().attr('node-id',0);
 
             } else {
-                toShrink(this.html.find('div[node-id="' + layerId + '"] i'));
+                this._toShrink(this.html.find('div[node-id="' + layerId + '"] i'));
                 this.html.find('div[node-id="' + layerId + '"]').append(itemDiv);
             }
 
@@ -678,183 +672,180 @@
         },
         _removeLayer: function (layerId) {
             this.html.find('div[node-id="' + layerId + '"]>div').remove();
-            toExpand(this.html.find('div[node-id="' + layerId + '"] i'));
+            this._toExpand(this.html.find('div[node-id="' + layerId + '"] i'));
         },
 
 
-    };
+        _makeLayer: function () {
+            var html = '<div></div>';
 
+            return $(html).css({
+                'margin-left': '13px'
+            });
+        },
 
-    function makeLayer() {
-        var html = '<div></div>';
+        _makeExpand: function () {
+            // var html='<span data-icon="expand">＋</span>';
+            var html = '<i class="iconfont icon-jia1"></i>';
 
-        return $(html).css({
-            'margin-left': '13px'
-        });
-    }
+            return $(html).css({
+                'font-size': '12px',
+                'vertical-align': 'base-line',
+                'padding-right': '0px',
+                'cursor': 'pointer'
+            })[0].outerHTML;
+        },
 
-    function makeExpand() {
-        // var html='<span data-icon="expand">＋</span>';
-        var html = '<i class="iconfont icon-jia1"></i>';
+        _toShrink: function (dom) {
+            dom.removeClass('icon-jia1');
+            dom.addClass('icon-jian1');
+        },
 
-        return $(html).css({
-            'font-size': '12px',
-            'vertical-align': 'base-line',
-            'padding-right': '0px',
-            'cursor': 'pointer'
-        })[0].outerHTML;
-    }
+        _toExpand: function (dom) {
+            dom.removeClass('icon-jian1');
+            dom.addClass('icon-jia1');
+        },
 
-    function toShrink(dom) {
-        dom.removeClass('icon-jia1');
-        dom.addClass('icon-jian1');
-    }
-
-    function toExpand(dom) {
-        dom.removeClass('icon-jian1');
-        dom.addClass('icon-jia1');
-    }
-
-    function checkData(data) {
-        for (var i in data) {
-            return typeof data[i] == 'object';
-        }
-        return false;
-    }
-
-    function _initData(data) {
-        var clone = $.extend(true, [], data);
-        var len = clone.length;
-
-        for (var k = 0; k < len; k++) {
-            clone[k].has_children = false;
-        }
-
-        for (var i = 0; i < len; i++) {
-            for (var j = i; j < len; j++) {
-                if (clone[i].is_node && clone[i].id === clone[j].nodeId) {
-                    clone[i].has_children = true;
-                }
-                if (clone[i].nodeId === clone[j].id && clone[j].is_node) {
-                    clone[j].has_children = true;
-                }
+        _checkData: function (data) {
+            for (var i in data) {
+                return typeof data[i] == 'object';
             }
-        }
-
-        return clone;
-    }
-
-    function _selData(data, opt) {
-        var sel_ids = opt.sel_ids.split(',');
-        for (var i = 0; i < sel_ids.length; i++) {
-            for (var j = 0; j < data.length; j++) {
-                if (opt.only_child) {
-                    if (!data[j].is_node && data[j].id == sel_ids[i]) {
-                        data[j].is_check = true;
-                        _selParent(data, data[j].nodeId);
-                        if (data[j].is_node && data[i].has_children) {
-                            _selChildren(data, data[j].id);
-                        }
-                    }
-                } else {
-                    if (data[j].id == sel_ids[i]) {
-                        data[j].is_check = true;
-                        _selParent(data, data[j].nodeId);
-                        if (data[j].is_node && data[i].has_children) {
-                            _selChildren(data, data[j].id);
-                        }
-                    }
-                }
-            }
-        }
-        return data;
-    }
-
-    function _selParent(data, nid) {
-        if (!nid) {
             return false;
-        }
-        var selParent = true;
-        var sel_p = {};
-        for (var i = 0; i < data.length; i++) {
-            if (data[i].id == nid) {
-                sel_p = data[i];
+        },
+
+        _initData: function (data) {
+            var clone = $.extend(true, [], data);
+            var len = clone.length;
+
+            for (var k = 0; k < len; k++) {
+                clone[k].has_children = false;
             }
-            if (data[i].nodeId == nid && !data[i].is_check) {
-                selParent = false;
+
+            for (var i = 0; i < len; i++) {
+                for (var j = i; j < len; j++) {
+                    if (clone[i].is_node && clone[i].id === clone[j].nodeId) {
+                        clone[i].has_children = true;
+                    }
+                    if (clone[i].nodeId === clone[j].id && clone[j].is_node) {
+                        clone[j].has_children = true;
+                    }
+                }
+            }
+
+            return clone;
+        },
+
+        _selData: function (data, opt) {
+            var sel_ids = opt.sel_ids.split(',');
+            for (var i = 0; i < sel_ids.length; i++) {
+                for (var j = 0; j < data.length; j++) {
+                    if (opt.only_child) {
+                        if (!data[j].is_node && data[j].id == sel_ids[i]) {
+                            data[j].is_check = true;
+                            this._selParent(data, data[j].nodeId);
+                            if (data[j].is_node && data[i].has_children) {
+                                this._selChildren(data, data[j].id);
+                            }
+                        }
+                    } else {
+                        if (data[j].id == sel_ids[i]) {
+                            data[j].is_check = true;
+                            this._selParent(data, data[j].nodeId);
+                            if (data[j].is_node && data[i].has_children) {
+                                this._selChildren(data, data[j].id);
+                            }
+                        }
+                    }
+                }
+            }
+            return data;
+        },
+
+        _selParent: function (data, nid) {
+            if (!nid) {
                 return false;
             }
+            var selParent = true;
+            var sel_p = {};
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].id == nid) {
+                    sel_p = data[i];
+                }
+                if (data[i].nodeId == nid && !data[i].is_check) {
+                    selParent = false;
+                    return false;
+                }
 
-        }
-
-        if (selParent) {
-            sel_p.is_check = true;
-            if (sel_p.nodeId) {
-                _selParent(data, sel_p.nodeId);
             }
-        }
-    }
 
-    function _selChildren(data, id) {
-        if (!id) {
-            return false;
-        }
-        for (var i = 0; i < data.length; i++) {
-            if (data[i].nodeId === id) {
-                data[i].is_check = true;
-                if (data[i].is_node && data[i].has_children) {
-                    _selChildren(data, data[i].id);
+            if (selParent) {
+                sel_p.is_check = true;
+                if (sel_p.nodeId) {
+                    this._selParent(data, sel_p.nodeId);
                 }
             }
+        },
 
-        }
-    }
-
-    function _getRootId(_data) {
-        var rootId = [];
-        var clone = $.extend(true, [], _data);
-        for (var i = 0, len = _data.length; i < len; i++) {
-            for (var j = i; j < len; j++) {
-                if (_data[i].id === _data[j].nodeId) {
-                    clone[j] = null;
+        _selChildren: function (data, id) {
+            if (!id) {
+                return false;
+            }
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].nodeId === id) {
+                    data[i].is_check = true;
+                    if (data[i].is_node && data[i].has_children) {
+                        this._selChildren(data, data[i].id);
+                    }
                 }
-                if (_data[i].nodeId === _data[j].id) {
-                    clone[i] = null;
+
+            }
+        },
+
+        _getRootId: function (_data) {
+            var rootId = [];
+            var clone = $.extend(true, [], _data);
+            for (var i = 0, len = _data.length; i < len; i++) {
+                for (var j = i; j < len; j++) {
+                    if (_data[i].id === _data[j].nodeId) {
+                        clone[j] = null;
+                    }
+                    if (_data[i].nodeId === _data[j].id) {
+                        clone[i] = null;
+                    }
                 }
             }
-        }
-        $.each(clone, function (i, t) {
-            if (t) {
-                rootId.push(t.nodeId);
-            }
-        });
+            $.each(clone, function (i, t) {
+                if (t) {
+                    rootId.push(t.nodeId);
+                }
+            });
 
-        // //去除数组重复值
-        // function unique(array){
-        //     var n = [];
-        //     for(var i = 0; i < array.length; i++){
-        //         if (n.indexOf(array[i]) == -1) n.push(array[i]);
-        //     }
-        //     return n;
-        // }
-        //
-        // function unique(array){
-        //     var r = [];
-        //     for(var i = 0, l = array.length; i < l; i++) {
-        //         for(var j = i + 1; j < l; j++){
-        //             if (array[i] === array[j]) {
-        //                 j = ++i;
-        //             }
-        //         }
-        //         r.push(array[i]);
-        //     }
-        //     return r;
-        // }
-        // rootId = unique(rootId);
+            // //去除数组重复值
+            // function unique(array){
+            //     var n = [];
+            //     for(var i = 0; i < array.length; i++){
+            //         if (n.indexOf(array[i]) == -1) n.push(array[i]);
+            //     }
+            //     return n;
+            // }
+            //
+            // function unique(array){
+            //     var r = [];
+            //     for(var i = 0, l = array.length; i < l; i++) {
+            //         for(var j = i + 1; j < l; j++){
+            //             if (array[i] === array[j]) {
+            //                 j = ++i;
+            //             }
+            //         }
+            //         r.push(array[i]);
+            //     }
+            //     return r;
+            // }
+            // rootId = unique(rootId);
 
-        return rootId[0];
-    }
-
+            return rootId[0];
+        },
+    };
 
 })(jQuery);
 
