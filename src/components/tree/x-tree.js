@@ -37,10 +37,8 @@
         only_child: false,//是否结果只要 child
         node_merge: false,//结果只显示最上层  比如   中国被选中  四川,成都则不会显示  否则 每个被勾选的节点都显示
         zIndex: 99,
-        // choose: false,  //哪些是选中的？优先级高于data  {nodeId:[1,2,3],id:[1,2,3]}
-        // node_first:false,//是否需要节点排在前面  否则按照data的顺序
         is_multi: true,//是否多选
-        expand: true, //是否展开，false、true、num, (0、false,都展开ROOT级。true,完全展开。num>=1时，展开到对应级）
+        expand: false, //是否展开，false、true、num, (0、false,都展开ROOT级。true,完全展开。num>=1时，展开到对应级）
         width: null,
         maxHeight: 300,
         data: [],//{id:1,name:'xx',nodeId:'0',is_node:true,is_check:false},
@@ -403,8 +401,6 @@
                     data[j].is_check = true;
                 }
             }
-            console.log(sel_ids);
-            console.log(data);
             return data;
         },
 
