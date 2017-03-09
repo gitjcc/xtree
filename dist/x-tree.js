@@ -778,10 +778,6 @@
                 'color': '#333'
             })[0].outerHTML;
         },
-
-        _makeLabel:function (item) {
-
-        },
         _makeFolder: function (item) {
             if (!item) {
                 return '';
@@ -802,7 +798,7 @@
                 return '';
             }
 
-            var html = '<label></label>';
+            var html = '<i class="iconfont icon-wenjianjia"></i>';
 
             return $(html).css({
                 'font-size': '12px',
