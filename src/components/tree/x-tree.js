@@ -376,9 +376,6 @@
                         if (!data[j].is_node && data[j].id == sel_ids[i]) {
                             data[j].is_check = true;
                             this._selParent(data, data[j].nodeId);
-                            if (data[j].is_node && data[i].has_children) {
-                                this._selChildren(data, data[j].id);
-                            }
                         }
                     } else {
                         if (data[j].id == sel_ids[i]) {
@@ -411,14 +408,16 @@
             var selParent = true;
             var sel_p = {};
             for (var i = 0; i < data.length; i++) {
-                if (data[i].id == nid) {
+                if (data[i].id == nid && data[i].is_node) {
                     sel_p = data[i];
                 }
-                if (data[i].nodeId == nid && !data[i].is_check) {
+            }
+
+            for (var j = 0; j < data.length; j++) {
+                if (data[j].nodeId == nid && !data[j].is_check) {
                     selParent = false;
                     return false;
                 }
-
             }
 
             if (selParent) {
