@@ -34,6 +34,7 @@
         dom: '',  //jqueryDom
         is_trigger: false,  //是否需要触发? 否则直接显示
         has_search: false,
+        searchType: 1, //1全部，2节点，3叶子
         only_child: false,//是否结果只要 child
         node_merge: false,//结果只显示最上层  比如   中国被选中  四川,成都则不会显示  否则 每个被勾选的节点都显示
         zIndex: 99,
@@ -327,8 +328,18 @@
                 this._showLayer(this.rootId);
             } else {
                 for (var i in this.data) {
-                    if (!this.data[i].is_node && this.data[i].name.indexOf(val) != -1) {
-                        this.html.find('div[node-id="' + this.rootId + '"]').append(this._makeItem(this.data[i]));
+                    if(this.opt.searchType == 1){
+                        if (this.data[i].name.indexOf(val) != -1) {
+                            this.html.find('div[node-id="' + this.rootId + '"]').append(this._makeItem(this.data[i]));
+                        }
+                    }else if(this.opt.searchType == 2){
+                        if (this.data[i].is_node && this.data[i].name.indexOf(val) != -1) {
+                            this.html.find('div[node-id="' + this.rootId + '"]').append(this._makeItem(this.data[i]));
+                        }
+                    }else if(this.opt.searchType == 3){
+                        if (!this.data[i].is_node && this.data[i].name.indexOf(val) != -1) {
+                            this.html.find('div[node-id="' + this.rootId + '"]').append(this._makeItem(this.data[i]));
+                        }
                     }
                 }
             }
@@ -709,22 +720,25 @@
             if(!item){
                 return false;
             }
+
+            var html;
+            var $html;
+
             if (item.is_node && item.has_children) {
                 $html = this._makeNode(item);
             } else {
                 $html = this._makeLeaf(item);
             }
 
-            var html;
-            var $html;
-
-            var expand = this._makeExpand(item);
-            var checkbox = this._makeCheckbox(item);
-            var folder = this._makeFolder(item);
-            var text = this._makeText(item);
-
-            html = expand + checkbox + folder + text;
-            $html = $(html);
+            //
+            //
+            // var expand = this._makeExpand(item);
+            // var checkbox = this._makeCheckbox(item);
+            // var folder = this._makeFolder(item);
+            // var text = this._makeText(item);
+            //
+            // html = expand + checkbox + folder + text;
+            // $html = $(html);
 
             var obj = this;
             $html.find('input').on('click', function () {
@@ -783,7 +797,7 @@
 
         },
         _makeFolder: function (item) {
-            if (!item) {
+            if (!item || !item.is_node) {
                 return '';
             }
 
@@ -817,14 +831,14 @@
         _makeNode: function (item) {
             var $html;
             if (this.opt.is_multi) {
-                $html = $('<div node-id="' + item.id + '">' + this._makeExpand(item) + '<label><input type="checkbox" data-isNode=true data-id="' + item.id + '" ' + (item.is_check ? 'checked' : '') + ' data-name="' + item.name + '"/><span>' + this._makeFolder() + item.name + '</span></label></div>');
+                $html = $('<div node-id="' + item.id + '">' + this._makeExpand(item) + '<label><input type="checkbox" data-isNode=true data-id="' + item.id + '" ' + (item.is_check ? 'checked' : '') + ' data-name="' + item.name + '"/><span>' + this._makeFolder(item) + item.name + '</span></label></div>');
             }
             else {
                 if (this.opt.only_child) {
-                    $html = $('<div node-id="' + item.id + '">' + this._makeExpand(item) + '<span>' + this._makeFolder(item.is_node) + item.name + '</span></div>');
+                    $html = $('<div node-id="' + item.id + '">' + this._makeExpand(item) + '<span>' + this._makeFolder(item) + item.name + '</span></div>');
                 }
                 else {
-                    $html = $('<div node-id="' + item.id + '">' + this._makeExpand(item) + '<label><input type="radio" name="' + this.dom.selector + '" data-isNode=true data-id="' + item.id + '" ' + (item.is_check ? 'checked' : '') + ' data-name="' + item.name + '"/><span>' + this._makeFolder(item.is_node) + item.name + '</span></label></div>');
+                    $html = $('<div node-id="' + item.id + '">' + this._makeExpand(item) + '<label><input type="radio" name="' + this.dom.selector + '" data-isNode=true data-id="' + item.id + '" ' + (item.is_check ? 'checked' : '') + ' data-name="' + item.name + '"/><span>' + this._makeFolder(item) + item.name + '</span></label></div>');
                 }
             }
             $html.find('span').css({
@@ -850,10 +864,10 @@
         _makeLeaf: function (item) {
             var $html;
             if (this.opt.is_multi) {
-                $html = $('<div><span></span><label><input type="checkbox" data-id="' + item.id + '" data-isNode=false data-name="' + item.name + '" ' + (item.is_check ? 'checked' : '') + '/>' + this._makeFolder(item.is_node) + item.name + '</label></div>');
+                $html = $('<div><span></span><label><input type="checkbox" data-id="' + item.id + '" data-isNode=false data-name="' + item.name + '" ' + (item.is_check ? 'checked' : '') + '/>' + this._makeFolder(item) + item.name + '</label></div>');
             }
             else {
-                $html = $('<div>' + (this.opt.only_child ? '' : '<span></span>') + '<label><input type="radio"' + (item.is_check ? 'checked' : '') + ' name="' + this.dom.selector + '" data-id="' + item.id + '" data-isNode=' + item.is_node + ' data-name="' + item.name + '" />' + this._makeFolder(item.is_node) + item.name + '</label></div>');
+                $html = $('<div>' + (this.opt.only_child ? '' : '<span></span>') + '<label><input type="radio"' + (item.is_check ? 'checked' : '') + ' name="' + this.dom.selector + '" data-id="' + item.id + '" data-isNode=' + item.is_node + ' data-name="' + item.name + '" />' + this._makeFolder(item) + item.name + '</label></div>');
             }
             $html.find('span').css({
                 'width': '12px',
