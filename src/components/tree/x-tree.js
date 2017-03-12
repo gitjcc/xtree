@@ -723,22 +723,22 @@
 
             var html;
             var $html;
+            //
+            // if (item.is_node && item.has_children) {
+            //     $html = this._makeNode(item);
+            // } else {
+            //     $html = this._makeLeaf(item);
+            // }
 
-            if (item.is_node && item.has_children) {
-                $html = this._makeNode(item);
-            } else {
-                $html = this._makeLeaf(item);
-            }
 
-            //
-            //
-            // var expand = this._makeExpand(item);
-            // var checkbox = this._makeCheckbox(item);
-            // var folder = this._makeFolder(item);
-            // var text = this._makeText(item);
-            //
-            // html = expand + checkbox + folder + text;
-            // $html = $(html);
+
+            var expand = this._makeExpand(item);
+            var checkbox = this._makeCheckbox(item);
+            var folder = this._makeFolder(item);
+            var text = this._makeText(item);
+
+            html = expand + checkbox + folder + text;
+            $html = $(html);
 
             var obj = this;
             $html.find('input').on('click', function () {
