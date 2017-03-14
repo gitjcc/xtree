@@ -721,9 +721,9 @@
                 return false;
             }
 
-            var $item = this._makeItemWrap();
-            var $self = this._makeSelfWrap();
-            var $children = this._makeChildrenWrap();
+            var $item = this._makeItemWrap(item);
+            var $self = this._makeSelfWrap(item);
+            var $children = this._makeChildrenWrap(item);
 
             var $expand = this._makeExpand(item);
             var $checkbox = this._makeCheckbox(item);
@@ -738,10 +738,14 @@
             $item.append($self);
             $item.append($children);
 
+            console.log(item.name, $item);
+
             return $item;
         },
         _makeItemWrap: function (item) {
             var $html = $('<div></div>');
+            $html.attr({'node-id':item.nodeId});
+            $html.css({cursor: 'pointer'});
             return $html;
         },
         _makeSelfWrap: function (item) {
@@ -760,9 +764,11 @@
                 var that = this;
                 $html.on('click', function (e) {
                     if ($(this).hasClass('fa-caret-right')) {
+                        console.log();
                         that._showLayer(item.id);
                     } else {
-                        that._removeLayer(item.id);
+                        that._showLayer(item.id);
+                        // that._removeLayer(item.id);
                     }
                 });
             }
@@ -982,6 +988,7 @@
 
             } else {
                 this._toShrink(this.html.find('div[node-id="' + layerId + '"] .fa-caret-right'));
+                console.log("showLayer",this.html.find('div[node-id="' + layerId + '"]'));
                 this.html.find('div[node-id="' + layerId + '"]').append(itemDiv);
             }
 
