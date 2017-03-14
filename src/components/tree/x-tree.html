@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>xtree.js</title>
     <link rel="stylesheet" href="../../base/xtree.css">
-    <link rel="stylesheet" href="../../base/fonts/iconfont.css">
+    <link rel="stylesheet" href="../../base/font-awesome-4.7.0/css/font-awesome.css">
     <style>
         .tree-wrap {
             display: inline-block;
@@ -67,6 +67,40 @@
     </div>
 </div>
 
+<input type="checkbox"/>
+
+<script>
+    var kmnv = ['m', 'n', 'k', 'v'];
+    function wordify(arrayIn) {
+        var len = arrayIn.length;
+        var word = '';
+        var counter = 0;
+        for (var i = 0; i < len; i++) {
+            word = arrayIn[i];
+            for (var j = 0; j < len; j++) {
+                if (i == j) {
+                    continue;
+                }
+                word = arrayIn[i] + arrayIn[j];
+                for (var k = 0; k < len; k++) {
+                    if (i == k || j == k) {
+                        continue;
+                    }
+                    word = arrayIn[i] + arrayIn[j] + arrayIn[k];
+                    for (var m = 0; m < len; m++) {
+                        if (i == m || j == m || k == m) {
+                            continue;
+                        }
+                        word = arrayIn[i] + arrayIn[j] + arrayIn[k] + arrayIn[m];
+                        counter++;
+                        console.log('wordify', counter, word);
+                    }
+                }
+            }
+
+        }
+    }
+</script>
 
 <script>
     var testTree1 = xTree({

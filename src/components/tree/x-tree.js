@@ -328,15 +328,15 @@
                 this._showLayer(this.rootId);
             } else {
                 for (var i in this.data) {
-                    if(this.opt.searchType == 1){
+                    if (this.opt.searchType == 1) {
                         if (this.data[i].name.indexOf(val) != -1) {
                             this.html.find('div[node-id="' + this.rootId + '"]').append(this._makeItem(this.data[i]));
                         }
-                    }else if(this.opt.searchType == 2){
+                    } else if (this.opt.searchType == 2) {
                         if (this.data[i].is_node && this.data[i].name.indexOf(val) != -1) {
                             this.html.find('div[node-id="' + this.rootId + '"]').append(this._makeItem(this.data[i]));
                         }
-                    }else if(this.opt.searchType == 3){
+                    } else if (this.opt.searchType == 3) {
                         if (!this.data[i].is_node && this.data[i].name.indexOf(val) != -1) {
                             this.html.find('div[node-id="' + this.rootId + '"]').append(this._makeItem(this.data[i]));
                         }
@@ -717,31 +717,37 @@
 
         },
         _makeItem: function (item) {
-            if(!item){
+            if (!item) {
                 return false;
             }
-
-            var html;
-            var $html;
-            //
-            // if (item.is_node && item.has_children) {
-            //     $html = this._makeNode(item);
-            // } else {
-            //     $html = this._makeLeaf(item);
-            // }
+// var $html;
+//
+//             if (item.is_node && item.has_children) {
+//                 $html = this._makeNode(item);
+//             } else {
+//                 $html = this._makeLeaf(item);
+//             }
 
 
+            var $item = this._makeItemWrap();
+            var $self = this._makeSelfWrap();
+            var $children = this._makeChildrenWrap();
 
-            var expand = this._makeExpand(item);
-            var checkbox = this._makeCheckbox(item);
-            var folder = this._makeFolder(item);
-            var text = this._makeText(item);
+            var $expand = this._makeExpand(item);
+            var $checkbox = this._makeCheckbox(item);
+            var $folder = this._makeFolder(item);
+            var $text = this._makeText(item);
 
-            html = expand + checkbox + folder + text;
-            $html = $(html);
+            $self.append($expand);
+            $self.append($checkbox);
+            $self.append($folder);
+            $self.append($text);
+
+            $item.append($self);
+            $item.append($children);
 
             var obj = this;
-            $html.find('input').on('click', function () {
+            $item.find('input').on('click', function () {
                 if (obj.opt.is_multi) {
                     item.is_check = !item.is_check;
                 } else {
@@ -755,53 +761,76 @@
 
             });
 
+            return $item;
+        },
+        _makeItemWrap: function (item) {
+            var $html = $('<div></div>');
+            return $html;
+        },
+        _makeSelfWrap: function (item) {
+            var $html = $('<div></div>');
+            return $html;
+        },
+        _makeChildrenWrap: function (item) {
+            var $html = $('<div></div>');
             return $html;
         },
 
         _makeExpand: function (item) {
-            var html = '';
-            if (item.has_children) {
-                html = '<i class="x-tree-expand iconfont icon-jia1"></i>';
+            var $html;
+            if (item.is_node && item.has_children) {
+                $html = $('<i class="x-tree-expand fa fa-caret-right"></i>');
+            }else{
+                $html = $('');
             }
 
-            return html;
 
-            return $(html).css({
-                'font-size': '12px',
-                'vertical-align': 'base-line',
-                'padding-right': '0px',
-                'cursor': 'pointer'
-            })[0].outerHTML;
+            // var obj = this;
+            // $html.on('click', function (e) {
+            //     if ($(this).hasClass('fa-caret-right')) {
+            //         obj._showLayer(item.id);
+            //     } else {
+            //         obj._removeLayer(item.id);
+            //     }
+            // });
+
+            return $html;
+
+            // return $(html).css({
+            //     'font-size': '12px',
+            //     'vertical-align': 'base-line',
+            //     'padding-right': '0px',
+            //     'cursor': 'pointer'
+            // })[0].outerHTML;
         },
 
         _makeCheckbox: function (item) {
             if (!item) {
+                console.log('_makeCheckbox失败,item不存在', item);
                 return '';
             }
 
-            var html='';
-            html = '<input type="checkbox" data-isNode=true data-id="' + item.id + '" ' + (item.is_check ? 'checked' : '') + ' data-name="' + item.name + '"/>';
+            var html = '';
+            html = '<i class="x-tree-checkbox fa fa-square-o"></i>';
+            // html = '<input type="checkbox" data-isNode=true data-id="' + item.id + '" ' + (item.is_check ? 'checked' : '') + ' data-name="' + item.name + '"/>';
 
 
             return html;
-            return $(html).css({
-                'font-size': '12px',
-                'vertical-align': 'base-line',
-                'padding-right': '0px',
-                'cursor': 'pointer',
-                'color': '#333'
-            })[0].outerHTML;
+            // return $(html).css({
+            //     'font-size': '12px',
+            //     'vertical-align': 'base-line',
+            //     'padding-right': '0px',
+            //     'cursor': 'pointer',
+            //     'color': '#333'
+            // })[0].outerHTML;
         },
 
-        _makeLabel:function (item) {
-
-        },
         _makeFolder: function (item) {
             if (!item || !item.is_node) {
                 return '';
             }
 
-            var html = '<i class="iconfont icon-wenjianjia"></i>';
+            var html = '<i class="fa fa-folder-o"></i>';
 
             return $(html).css({
                 'font-size': '12px',
@@ -816,15 +845,17 @@
                 return '';
             }
 
-            var html = '<label></label>';
+            var html = '<span></span>';
 
-            return $(html).css({
-                'font-size': '12px',
-                'vertical-align': 'base-line',
-                'padding-right': '0px',
-                'cursor': 'pointer',
-                'color': '#333'
-            })[0].outerHTML;
+            return html;
+
+            // return $(html).css({
+            //     'font-size': '12px',
+            //     'vertical-align': 'base-line',
+            //     'padding-right': '0px',
+            //     'cursor': 'pointer',
+            //     'color': '#333'
+            // })[0].outerHTML;
         },
 
 
@@ -853,7 +884,7 @@
             });
             var obj = this;
             $html.find('i').on('click', function (e) {
-                if ($(this).hasClass('icon-jia1')) {
+                if ($(this).hasClass('fa-caret-right')) {
                     obj._showLayer(item.id);
                 } else {
                     obj._removeLayer(item.id);
@@ -918,7 +949,7 @@
             if (obj.opt.expand === true) {
                 $.each(obj.data, function (index, item) {
                     if (item.is_node && item.has_children) {
-                        obj.html.find('i').filter('.icon-jia1').click();
+                        obj.html.find('i').filter('.fa-caret-right').click();
                     }
                 });
             } else if (obj.opt.expand) {
@@ -933,7 +964,7 @@
             var obj = this;
             var expandId = [];
             $.each(id, function (index, item) {
-                obj.html.find('div[node-id="' + item + '"] > i').filter('.icon-jia1').click();
+                obj.html.find('div[node-id="' + item + '"] > i').filter('.fa-caret-right').click();
                 $.each(obj.data, function (index2, item2) {
                     if (item2.nodeId == item && item2.is_node) {
                         expandId.push(item2.id);
@@ -954,7 +985,7 @@
                 //itemDiv.parent().attr('node-id',0);
 
             } else {
-                this._toShrink(this.html.find('div[node-id="' + layerId + '"] .icon-jia1'));
+                this._toShrink(this.html.find('div[node-id="' + layerId + '"] .fa-caret-right'));
                 this.html.find('div[node-id="' + layerId + '"]').append(itemDiv);
             }
 
@@ -964,7 +995,7 @@
         },
         _removeLayer: function (layerId) {
             this.html.find('div[node-id="' + layerId + '"]>div').remove();
-            this._toExpand(this.html.find('div[node-id="' + layerId + '"] .icon-jian1'));
+            this._toExpand(this.html.find('div[node-id="' + layerId + '"] .fa-caret-down'));
         },
 
         _makeLayer: function () {
@@ -975,14 +1006,24 @@
             });
         },
 
+        _changeCheckbox:function (item,type) {
+            if(type === 1){
+
+            }else if(type === 2){
+
+            }else if(type === 3){
+
+            }
+        },
+
         _toShrink: function (dom) {
-            dom.removeClass('icon-jia1');
-            dom.addClass('icon-jian1');
+            dom.removeClass('fa-caret-right');
+            dom.addClass('fa-caret-down');
         },
 
         _toExpand: function (dom) {
-            dom.removeClass('icon-jian1');
-            dom.addClass('icon-jia1');
+            dom.removeClass('fa-caret-down');
+            dom.addClass('fa-caret-right');
         },
     };
 
