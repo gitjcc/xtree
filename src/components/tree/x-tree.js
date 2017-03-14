@@ -720,14 +720,6 @@
             if (!item) {
                 return false;
             }
-// var $html;
-//
-//             if (item.is_node && item.has_children) {
-//                 $html = this._makeNode(item);
-//             } else {
-//                 $html = this._makeLeaf(item);
-//             }
-
 
             var $item = this._makeItemWrap();
             var $self = this._makeSelfWrap();
@@ -745,21 +737,6 @@
 
             $item.append($self);
             $item.append($children);
-
-            var obj = this;
-            $item.find('input').on('click', function () {
-                if (obj.opt.is_multi) {
-                    item.is_check = !item.is_check;
-                } else {
-                    $.each(obj.data, function (index, item) {
-                        item.is_check = false;
-                    });
-                    item.is_check = true;
-                }
-
-                obj._changeItem(item, $(this));
-
-            });
 
             return $item;
         },
@@ -780,20 +757,15 @@
             var $html;
             if (item.is_node && item.has_children) {
                 $html = $('<i class="x-tree-expand fa fa-caret-right"></i>');
-            }else{
-                $html = $('');
+                var that = this;
+                $html.on('click', function (e) {
+                    if ($(this).hasClass('fa-caret-right')) {
+                        that._showLayer(item.id);
+                    } else {
+                        that._removeLayer(item.id);
+                    }
+                });
             }
-
-
-            // var obj = this;
-            // $html.on('click', function (e) {
-            //     if ($(this).hasClass('fa-caret-right')) {
-            //         obj._showLayer(item.id);
-            //     } else {
-            //         obj._removeLayer(item.id);
-            //     }
-            // });
-
             return $html;
 
             // return $(html).css({
@@ -805,17 +777,39 @@
         },
 
         _makeCheckbox: function (item) {
-            if (!item) {
-                console.log('_makeCheckbox失败,item不存在', item);
-                return '';
-            }
+            // if (!item) {
+            //     console.log('_makeCheckbox失败,item不存在', item);
+            //     return '';
+            // }
+            //
+            // var $html = '';
+            // if(item.is_check){
+            //     $html = $('<i class="x-tree-checkbox fa fa-square-o"></i>');
+            // }
+            //
+            // $html;
 
-            var html = '';
-            html = '<i class="x-tree-checkbox fa fa-square-o"></i>';
-            // html = '<input type="checkbox" data-isNode=true data-id="' + item.id + '" ' + (item.is_check ? 'checked' : '') + ' data-name="' + item.name + '"/>';
+            var $html;
+            $html = $('<input type="checkbox" data-isNode=true data-id="' + item.id + '" ' + (item.is_check ? 'checked' : '') + ' data-name="' + item.name + '"/>');
 
 
-            return html;
+            var obj = this;
+            $html.on('click', function () {
+                if (obj.opt.is_multi) {
+                    item.is_check = !item.is_check;
+                } else {
+                    $.each(obj.data, function (index, item) {
+                        item.is_check = false;
+                    });
+                    item.is_check = true;
+                }
+
+                obj._changeItem(item, $(this));
+
+            });
+
+
+            return $html;
             // return $(html).css({
             //     'font-size': '12px',
             //     'vertical-align': 'base-line',
@@ -845,9 +839,11 @@
                 return '';
             }
 
-            var html = '<span></span>';
+            var $html = $('<span></span>');
 
-            return html;
+            $html.text(item.name);
+
+            return $html;
 
             // return $(html).css({
             //     'font-size': '12px',

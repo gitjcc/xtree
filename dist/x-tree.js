@@ -720,23 +720,12 @@
             if(!item){
                 return false;
             }
-            var $html;
+
             if (item.is_node && item.has_children) {
                 $html = this._makeNode(item);
             } else {
                 $html = this._makeLeaf(item);
             }
-
-            // var html;
-            // var $html;
-            //
-            // var expand = this._makeExpand(item);
-            // var checkbox = this._makeCheckbox(item);
-            // var folder = this._makeFolder(item);
-            // var text = this._makeText(item);
-            //
-            // html = expand + checkbox + folder + text;
-            // $html = $(html);
 
             var obj = this;
             $html.find('input').on('click', function () {
@@ -762,34 +751,14 @@
                 html = '<i class="x-tree-expand iconfont icon-jia1"></i>';
             }
 
-            return html;
-
-            // return $(html).css({
-            //     'font-size': '12px',
-            //     'vertical-align': 'base-line',
-            //     'padding-right': '0px',
-            //     'cursor': 'pointer'
-            // })[0].outerHTML;
-        },
-
-        _makeCheckbox: function (item) {
-            if (!item) {
-                return '';
-            }
-
-            var html='';
-            html = '<input type="checkbox" data-isNode=true data-id="' + item.id + '" ' + (item.is_check ? 'checked' : '') + ' data-name="' + item.name + '"/>';
-
-
-            return html;
             return $(html).css({
                 'font-size': '12px',
                 'vertical-align': 'base-line',
                 'padding-right': '0px',
-                'cursor': 'pointer',
-                'color': '#333'
+                'cursor': 'pointer'
             })[0].outerHTML;
         },
+
         _makeFolder: function (item) {
             if (!item || !item.is_node) {
                 return '';
@@ -805,22 +774,6 @@
                 'color': '#333'
             })[0].outerHTML;
         },
-        _makeText: function (item) {
-            if (!item) {
-                return '';
-            }
-
-            var html = '<i class="iconfont icon-wenjianjia"></i>';
-
-            return $(html).css({
-                'font-size': '12px',
-                'vertical-align': 'base-line',
-                'padding-right': '0px',
-                'cursor': 'pointer',
-                'color': '#333'
-            })[0].outerHTML;
-        },
-
 
         _makeNode: function (item) {
             var $html;
