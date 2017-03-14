@@ -723,37 +723,32 @@
 
             var $item = this._makeItemWrap(item);
             var $self = this._makeSelfWrap(item);
-            var $children = this._makeChildrenWrap(item);
 
             var $expand = this._makeExpand(item);
             var $checkbox = this._makeCheckbox(item);
             var $folder = this._makeFolder(item);
             var $text = this._makeText(item);
 
-            $self.append($expand);
-            $self.append($checkbox);
-            $self.append($folder);
-            $self.append($text);
+            $self.append($expand,$checkbox,$folder,$text);
 
             $item.append($self);
-            $item.append($children);
 
             console.log(item.name, $item);
 
             return $item;
         },
         _makeItemWrap: function (item) {
-            var $html = $('<div></div>');
-            $html.attr({'node-id':item.nodeId});
+            var $html = $('<div class="x-tree-item" ></div>');
+            $html.attr({'node-id':item.nodeId,'data-id':item.id});
+            if(item.is_node){
+                $html.addClass('x-tree-node-' + item.id);
+            }
             $html.css({cursor: 'pointer'});
             return $html;
         },
         _makeSelfWrap: function (item) {
             var $html = $('<div></div>');
-            return $html;
-        },
-        _makeChildrenWrap: function (item) {
-            var $html = $('<div></div>');
+            $html.addClass('x-tree-self-' + item.id);
             return $html;
         },
 
@@ -764,11 +759,9 @@
                 var that = this;
                 $html.on('click', function (e) {
                     if ($(this).hasClass('fa-caret-right')) {
-                        console.log();
                         that._showLayer(item.id);
                     } else {
-                        that._showLayer(item.id);
-                        // that._removeLayer(item.id);
+                        that._removeLayer(item.id);
                     }
                 });
             }
@@ -984,12 +977,10 @@
             if (layerId == this.rootId) {
                 itemDiv = $(itemDiv).attr('node-id', this.rootId);
                 this.html.append(itemDiv);
-                //itemDiv.parent().attr('node-id',0);
-
             } else {
-                this._toShrink(this.html.find('div[node-id="' + layerId + '"] .fa-caret-right'));
-                console.log("showLayer",this.html.find('div[node-id="' + layerId + '"]'));
-                this.html.find('div[node-id="' + layerId + '"]').append(itemDiv);
+                var $childrenWrap = this.html.find('.x-tree-node-' + layerId);
+                $childrenWrap.append(itemDiv);
+                this._toShrink($childrenWrap.find('.x-tree-self-' + layerId + ' > .fa-caret-right'));
             }
 
             for (var i in showData) {
@@ -997,12 +988,13 @@
             }
         },
         _removeLayer: function (layerId) {
-            this.html.find('div[node-id="' + layerId + '"]>div').remove();
-            this._toExpand(this.html.find('div[node-id="' + layerId + '"] .fa-caret-down'));
+            var $childrenWrap = this.html.find('.x-tree-node-' + layerId );
+            $childrenWrap.find('.x-tree-children').remove();
+            this._toExpand($childrenWrap.find('.x-tree-self-' + layerId + ' > .fa-caret-down'));
         },
 
         _makeLayer: function () {
-            var html = '<div></div>';
+            var html = '<div class="x-tree-children"></div>';
 
             return $(html).css({
                 'margin-left': '16px'
