@@ -1,12 +1,12 @@
 /**
  * 命名大意：
- * dom    用户定义承载树的dom
- * html   树的html
- * item   data的每一条,可以是node也可以是child
- * child  树的叶子;子元素;成员
- * node   树的节点;文件夹;部门
- * layer  树的层级,包含同一层的item(node,child);
- * _      带有下划线的是插件需要的方法属性，用户不需要使用
+ * dom              用户定义承载树的dom
+ * html             树的html
+ * item             data的每一条,可以是node也可以是child
+ * child/leaf       树的叶子;子元素;成员
+ * node             树的节点;文件夹;部门
+ * layer/children   树的层级,包含同一层的item(node,child);
+ * _fn()                带有下划线的是插件需要的方法属性，用户不需要使用
  *
  *
  *
@@ -26,8 +26,8 @@
 
 ;(function ($) {
 
-    window.xTree = function (opt) {
-        return new tree(opt);
+    window.xTree = function (options) {
+        return new tree(options);
     };
 
     var defOpt = {
@@ -321,11 +321,11 @@
         },
 
         search: function (val) {
-            this._removeLayer(this.rootId);
+            this._removeChildren(this.rootId);
 
             if (val === '') {
                 this.$html.find('div[node-id="' + this.rootId + '"]').remove();
-                this._showLayer(this.rootId);
+                this._showChildren(this.rootId);
             } else {
                 for (var i in this.data) {
                     if (this.opt.searchType == 1) {
@@ -499,7 +499,7 @@
             return rootId[0];
         },
 
-        _getLayerData: function (parent) {
+        _getChildrenData: function (parent) {
             var res = [];
             for (var i in this.data) {
                 if (this.data[i].nodeId == parent) {
@@ -648,6 +648,233 @@
         },
 
 
+
+
+        /*数据方法*/
+        _arrayToTree: function (arrayIn) {
+            var rootId = this._getTreeRoot(arrayIn);
+            var treeData = {
+                id: rootId,
+                name: 'ROOT',
+                nodeId: null,
+                is_node: true,
+                is_check: false,
+                dom: this.dom,
+                children: [],
+                parent: null,
+                level: 0,
+                expand: true,
+                amount: arrayIn.length
+
+            };
+            treeData.children = this._getSubTree(arrayIn, treeData);
+            return treeData;
+        },
+
+        _getTreeRoot: function (arrayIn) {
+            var rootId = [];
+            var clone = JSON.parse(JSON.stringify(arrayIn));
+            for (var i = 0, len = arrayIn.length; i < len; i++) {
+                for (var j = i; j < len; j++) {
+                    if (arrayIn[i].id == arrayIn[j].nodeId) {
+                        clone[j] = null;
+                    }
+                    if (arrayIn[i].nodeId == arrayIn[j].id) {
+                        clone[i] = null;
+                    }
+                }
+            }
+
+            for (var k = 0; k < clone.length; k++) {
+                if (clone[k]) {
+                    rootId.push(clone[k].nodeId);
+                }
+            }
+            rootId = this._uniqueArray(rootId);
+
+            if (rootId.length > 1) {
+                console.log('warning: rootId不唯一', rootId);
+            } else if (rootId.length <= 0) {
+                console.log('warning: 没有rootId', rootId);
+            }
+
+            return rootId[0];
+        },
+
+        _uniqueArray:function (arrayIn) {
+            var ua = [];
+            for (var i = 0; i < arrayIn.length; i++) {
+                if (ua.indexOf(arrayIn[i]) == -1) {
+                    ua.push(arrayIn[i]);
+                }
+            }
+            return ua;
+        },
+
+        _getSubTree: function (arrayIn, parent) {
+            var result = [];
+            var temp = {};
+            for (var i = 0; i < arrayIn.length; i++) {
+                if (arrayIn[i].nodeId == parent.id) {
+                    // temp = {
+                    //     id: arrayIn[i].id,
+                    //     name: arrayIn[i].name,
+                    //     nodeId: arrayIn[i].nodeId,
+                    //     is_node: arrayIn[i].is_node,
+                    //     is_check: arrayIn[i].is_check
+                    // }; //copy
+                    temp = arrayIn[i];
+                    temp.parent = parent;
+                    temp.level = parent.level + 1;
+
+                    temp.expand = temp.is_check;
+                    temp.checkState = temp.is_check;
+                    if (temp.is_node) {
+                        temp.children = this._getSubTree(arrayIn, temp);
+                    } else {
+                        temp.children = [];
+                    }
+                    result.push(temp);
+                }
+            }
+            return result;
+        },
+
+        // _getTreeDepth: function (tree, level) {
+        //     var maxDepth = level;
+        //     if (tree.children) {
+        //         for (var i = 0; i < tree.children.length; i++) {
+        //             this._getTreeDepth(tree.children[i], maxDepth);
+        //         }
+        //     }
+        //     return maxDepth;
+        // },
+        // _getTreeLeaves: function (tree) {
+        //     var leaves = [];
+        //     for (var i = 0; i < tree.children.length; i++) {
+        //         if(tree.is_node){
+        //             leaves = this._getTreeLeaves(tree.children[i]);
+        //         }else{
+        //             leaves.push(tree);
+        //         }
+        //     }
+        //     return leaves;
+        // },
+        _getItemById: function (tree, id) {
+            var item = {};
+            if (tree.id == id) {
+                return tree;
+            } else {
+                if (tree.children) {
+                    for (var i = 0; i < tree.children.length; i++) {
+                        item = this._getItemById(tree.children[i], id);
+                        if (item) {
+                            return item;
+                        }
+                    }
+                }
+            }
+            return false;
+        },
+        _getItemsByIds: function (tree, ids) {
+            var items = [];
+            this._traverseTree(tree, this._getItemsByIdsFn, ids, items);
+            return items;
+        },
+        _getItemsByIdsFn: function (item, ids, items) {
+            if (!ids.length) {
+                return false;
+            }
+            for (var i = 0; i < ids.length; i++) {
+                if (item.id == ids[i]) {
+                    items.push(item);
+                    ids.splice(i, 1);
+                    break;
+                }
+            }
+            return ids.length;
+        },
+        _changeItem: function (item, change) {
+            if (!item) {
+                return false;
+            }
+            item.is_check = change;
+            if (item.children) {
+                this._changeChildren(item.children, change);
+            }
+            if (item.parent) {
+                this._changeParent(item.parent, change);
+            }
+        },
+        _changeChildren: function (children, change) {
+            if (!children) {
+                return false;
+            }
+            for (var i = 0; i < children.length; i++) {
+                if (children[i].is_check != change) {
+                    children[i].is_check = change;
+                    if (children[i].children) {
+                        this._changeChildren(children[i], change);
+                    }
+                }
+            }
+        },
+        _changeParent: function (parent, change) {
+            if (!parent || parent.is_check == change) {
+                return false;
+            }
+            if (change) {
+                for (var i = 0; i < parent.children.length; i++) {
+                    if (!parent.children[i].is_check) {
+                        return false;
+                    }
+                }
+            }
+            parent.is_check = change;
+            if (parent.parent) {
+                this._changeParent(parent.parent, change);
+            }
+        },
+        _checkTreeByIds: function (tree, sel_ids) {
+            var ids = sel_ids.split(',');
+            for (var i = 0; i < $.length; i++) {
+                ids[i] = parseInt(ids[i]);
+            }
+            this._traverseTree(tree, this._checkTreeByIdsFn, ids);
+        },
+        _checkTreeByIdsFn: function (item, ids) {
+            if (!ids.length) {
+                return false;
+            }
+            for (var i = 0; i < ids.length; i++) {
+                if (item.id == ids[i]) {
+                    this._changeItem(item, true);
+                    ids.splice(i, 1);
+                    break;
+                }
+            }
+            return ids.length;
+        },
+        _traverseTree: function (tree, fn, input, output) {
+            if (!tree) {
+                return {
+                    children: false,
+                    brother: false
+                };
+            }
+            var _continue = fn.call(this, tree, input, output);//是否继续遍历
+            if (_continue.children && tree.children) {
+                for (var i = 0; i < tree.children.length; i++) {
+                    var brother = this._traverseTree(tree.children[i], fn, input, output);
+                    if (brother) {
+                        break;
+                    }
+                }
+            }
+            return _continue.brother;
+        },
+
+
         /**
          * 构造html内部方法
          */
@@ -670,7 +897,11 @@
                     padding: '0 1%',
                     'white-space': 'nowrap',
                     'overflow': 'auto',
-                    'font-size': '14px'
+                    'font-size': '14px',
+                    'user-select': 'none',
+                    '-webkit-user-select': 'none',
+                    '-moz-user-select': 'none',
+                    '-ms-user-select': 'none'
                 };
             } else {
                 style = {
@@ -680,7 +911,11 @@
                     padding: '0 1%',
                     'white-space': 'nowrap',
                     'overflow': 'auto',
-                    'font-size': '14px'
+                    'font-size': '14px',
+                    'user-select': 'none',
+                    '-webkit-user-select': 'none',
+                    '-moz-user-select': 'none',
+                    '-ms-user-select': 'none'
                 };
             }
 
@@ -742,7 +977,6 @@
             $html.addClass('x-tree-self-' + item.id);
             return $html;
         },
-
         _makeExpand: function (item) {
             var $html;
             if (item.is_node && item.has_children) {
@@ -750,16 +984,16 @@
                 var that = this;
                 $html.on('click', function (e) {
                     if ($(this).hasClass('fa-caret-right')) {
-                        that._showLayer(item.id);
+                        that._showChildren(item.id);
                     } else {
-                        that._removeLayer(item.id);
+                        that._removeChildren(item.id);
                     }
                 });
             } else {
                 $html = $('<span></span>');
             }
             $html.css({
-                display:'inline-block',
+                display: 'inline-block',
                 'vertical-align': 'base-line',
                 'padding-right': '0px',
                 'cursor': 'pointer',
@@ -768,7 +1002,6 @@
             });
             return $html;
         },
-
         _makeCheckbox: function (item) {
             if (!item) {
                 console.log('_makeCheckbox失败,item不存在', item);
@@ -811,7 +1044,6 @@
 
             return $html;
         },
-
         _makeFolder: function (item) {
             if (!item || !item.is_node) {
                 return '';
@@ -845,61 +1077,6 @@
         },
 
 
-        _makeNode: function (item) {
-            var $html;
-            if (this.opt.is_multi) {
-                $html = $('<div node-id="' + item.id + '">' + this._makeExpand(item) + '<label><input type="checkbox" data-isNode=true data-id="' + item.id + '" ' + (item.is_check ? 'checked' : '') + ' data-name="' + item.name + '"/><span>' + this._makeFolder(item) + item.name + '</span></label></div>');
-            }
-            else {
-                if (this.opt.only_child) {
-                    $html = $('<div node-id="' + item.id + '">' + this._makeExpand(item) + '<span>' + this._makeFolder(item) + item.name + '</span></div>');
-                }
-                else {
-                    $html = $('<div node-id="' + item.id + '">' + this._makeExpand(item) + '<label><input type="radio" name="' + this.dom.selector + '" data-isNode=true data-id="' + item.id + '" ' + (item.is_check ? 'checked' : '') + ' data-name="' + item.name + '"/><span>' + this._makeFolder(item) + item.name + '</span></label></div>');
-                }
-            }
-            $html.find('span').css({
-                'cursor': 'pointer',
-                'user-select': 'none',
-                '-webkit-user-select': 'none',
-                '-moz-user-select': 'none',
-                '-ms-user-select': 'none'
-            });
-            $html.find('input').css({
-                'vertical-align': 'middle'
-            });
-            var that = this;
-            $html.find('i').on('click', function (e) {
-                if ($(this).hasClass('fa-caret-right')) {
-                    that._showLayer(item.id);
-                } else {
-                    that._removeLayer(item.id);
-                }
-            });
-            return $html;
-        },
-        _makeLeaf: function (item) {
-            var $html;
-            if (this.opt.is_multi) {
-                $html = $('<div><span></span><label><input type="checkbox" data-id="' + item.id + '" data-isNode=false data-name="' + item.name + '" ' + (item.is_check ? 'checked' : '') + '/>' + this._makeFolder(item) + item.name + '</label></div>');
-            }
-            else {
-                $html = $('<div>' + (this.opt.only_child ? '' : '<span></span>') + '<label><input type="radio"' + (item.is_check ? 'checked' : '') + ' name="' + this.dom.selector + '" data-id="' + item.id + '" data-isNode=' + item.is_node + ' data-name="' + item.name + '" />' + this._makeFolder(item) + item.name + '</label></div>');
-            }
-            $html.find('span').css({
-                'width': '12px',
-                'user-select': 'none',
-                '-webkit-user-select': 'none',
-                '-moz-user-select': 'none',
-                '-ms-user-select': 'none',
-                'display': 'inline-block'
-            });
-            $html.find('input').css({
-                'vertical-align': 'middle'
-            });
-            return $html;
-        },
-
         /**
          *      视图方法
          */
@@ -924,12 +1101,13 @@
         },
         _showData: function () {
             if (this._is_first) {
-                this._showLayer(this.rootId);
+                this._showChildren(this.rootId);
                 this._is_first = false;
             } else {
                 this.$html.show();
             }
         },
+
         _expand: function () {
             var that = this;
             if (that.opt.expand === true) {
@@ -959,32 +1137,33 @@
             });
             return expandId;
         },
-        _showLayer: function (layerId) {
-            var showData = this._getLayerData(layerId);
-            var itemDiv = this._makeLayer();
+
+        _showChildren: function (pid) {
+            var showData = this._getChildrenData(pid);
+            var itemDiv = this._makeChildren();
 
 
             //这里 0节点的结构 和 子节点的结构 没有处理好    以后尽量让node-id 和  itemdiv 分开
-            if (layerId == this.rootId) {
+            if (pid == this.rootId) {
                 itemDiv = $(itemDiv).attr('node-id', this.rootId);
                 this.$html.append(itemDiv);
             } else {
-                var $childrenWrap = this.$html.find('.x-tree-node-' + layerId);
+                var $childrenWrap = this.$html.find('.x-tree-node-' + pid);
                 $childrenWrap.append(itemDiv);
-                this._toShrink($childrenWrap.find('.x-tree-self-' + layerId + ' > .fa-caret-right'));
+                this._toShrink($childrenWrap.find('.x-tree-self-' + pid + ' > .fa-caret-right'));
             }
 
             for (var i in showData) {
                 itemDiv.append(this._makeItem(showData[i]));
             }
         },
-        _removeLayer: function (layerId) {
-            var $childrenWrap = this.$html.find('.x-tree-node-' + layerId);
+        _removeChildren: function (pid) {
+            var $childrenWrap = this.$html.find('.x-tree-node-' + pid);
             $childrenWrap.find('.x-tree-children').remove();
-            this._toExpand($childrenWrap.find('.x-tree-self-' + layerId + ' > .fa-caret-down'));
+            this._toExpand($childrenWrap.find('.x-tree-self-' + pid + ' > .fa-caret-down'));
         },
 
-        _makeLayer: function () {
+        _makeChildren: function () {
             var html = '<div class="x-tree-children"></div>';
 
             return $(html).css({
