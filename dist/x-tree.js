@@ -679,7 +679,11 @@
                     maxHeight: this.opt.maxHeight,
                     padding: '0 1%',
                     'white-space': 'nowrap',
-                    'overflow': 'auto'
+                    'overflow': 'auto',
+                    'user-select': 'none',
+                    '-webkit-user-select': 'none',
+                    '-moz-user-select': 'none',
+                    '-ms-user-select': 'none'
                 };
             } else {
                 css = {
@@ -688,7 +692,11 @@
                     maxHeight: this.opt.maxHeight,
                     padding: '0 1%',
                     'white-space': 'nowrap',
-                    'overflow': 'auto'
+                    'overflow': 'auto',
+                    'user-select': 'none',
+                    '-webkit-user-select': 'none',
+                    '-moz-user-select': 'none',
+                    '-ms-user-select': 'none'
                 };
             }
 
@@ -791,12 +799,10 @@
             }
             $html.find('span').css({
                 'cursor': 'pointer',
-                'user-select': 'none',
-                '-webkit-user-select': 'none',
-                '-moz-user-select': 'none',
-                '-ms-user-select': 'none'
+
             });
             $html.find('input').css({
+                'cursor': 'pointer',
                 'vertical-align': 'middle'
             });
             var obj = this;
@@ -819,13 +825,14 @@
             }
             $html.find('span').css({
                 'width': '12px',
-                'user-select': 'none',
-                '-webkit-user-select': 'none',
-                '-moz-user-select': 'none',
-                '-ms-user-select': 'none',
+                'cursor': 'pointer',
                 'display': 'inline-block'
             });
+            $html.find('label').css({
+                'cursor': 'pointer'
+            });
             $html.find('input').css({
+                'cursor': 'pointer',
                 'vertical-align': 'middle'
             });
             return $html;
