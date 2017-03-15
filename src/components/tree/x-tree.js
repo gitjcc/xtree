@@ -102,7 +102,7 @@
 
             this.dom = this.opt.dom;
             this.dom.css({'position': 'relative'});
-            this.html = this._makePanel();
+            this.$html = this._makeRoot();
 
             this.opt.onInit.apply(this);
 
@@ -130,19 +130,19 @@
         start: function () {
             this.opt.onBeforeOpen.apply(this);
 
-            this._showPanel();
+            this._showRoot();
             this._showData();
             this._expand();
             this._is_open = true;
 
-            this.html.find('.x-tree-search').focus();
+            this.$html.find('.x-tree-search').focus();
 
             this.opt.onOpen.apply(this);
             return this;
         },
         end: function () {
             if (this._is_open) {
-                this.html.hide();
+                this.$html.hide();
 
                 this.opt.onClose.apply(this);
 
@@ -276,7 +276,7 @@
                     if (this.data[j].id == ids[i] && this.data[j].is_node == isNode) {
                         item = this.data[j];
                         item.is_check = false;
-                        dom = this.html.find('input[data-isNode=' + isNode + '][data-id="' + ids[i] + '"]').prop('checked', false);
+                        dom = this.$html.find('input[data-isNode=' + isNode + '][data-id="' + ids[i] + '"]').prop('checked', false);
                         this._changeItem(item, dom);
                     }
                 }
@@ -296,7 +296,7 @@
                     if (this.data[j].id == ids[i] && this.data[j].is_node == isNode) {
                         item = this.data[j];
                         item.is_check = true;
-                        dom = this.html.find('input[data-isNode=' + isNode + '][data-id="' + ids[i] + '"]').prop('checked', true);
+                        dom = this.$html.find('input[data-isNode=' + isNode + '][data-id="' + ids[i] + '"]').prop('checked', true);
                         this._changeItem(item, dom);
                     }
                 }
@@ -307,7 +307,7 @@
             $.each(this.data, function (index, item) {
                 item.is_check = false;
             });
-            this.html.find('input').prop("checked", false);
+            this.$html.find('input').prop("checked", false);
             this.opt.onCancel.apply(this);
         },
         checkAll: function () {
@@ -315,7 +315,7 @@
                 $.each(this.data, function (index, item) {
                     item.is_check = true;
                 });
-                this.html.find('input').prop("checked", true);
+                this.$html.find('input').prop("checked", true);
                 this.opt.onCheck.apply(this);
             }
         },
@@ -324,21 +324,21 @@
             this._removeLayer(this.rootId);
 
             if (val === '') {
-                this.html.find('div[node-id="' + this.rootId + '"]').remove();
+                this.$html.find('div[node-id="' + this.rootId + '"]').remove();
                 this._showLayer(this.rootId);
             } else {
                 for (var i in this.data) {
                     if (this.opt.searchType == 1) {
                         if (this.data[i].name.indexOf(val) != -1) {
-                            this.html.find('div[node-id="' + this.rootId + '"]').append(this._makeItem(this.data[i]));
+                            this.$html.find('div[node-id="' + this.rootId + '"]').append(this._makeItem(this.data[i]));
                         }
                     } else if (this.opt.searchType == 2) {
                         if (this.data[i].is_node && this.data[i].name.indexOf(val) != -1) {
-                            this.html.find('div[node-id="' + this.rootId + '"]').append(this._makeItem(this.data[i]));
+                            this.$html.find('div[node-id="' + this.rootId + '"]').append(this._makeItem(this.data[i]));
                         }
                     } else if (this.opt.searchType == 3) {
                         if (!this.data[i].is_node && this.data[i].name.indexOf(val) != -1) {
-                            this.html.find('div[node-id="' + this.rootId + '"]').append(this._makeItem(this.data[i]));
+                            this.$html.find('div[node-id="' + this.rootId + '"]').append(this._makeItem(this.data[i]));
                         }
                     }
                 }
@@ -584,7 +584,7 @@
                     this._checkParentNode(item.nodeId);
                 }
             } else {
-//                    this.html.find('input').prop("checked",false);
+//                    this.$html.find('input').prop("checked",false);
 //                    $(this).prop('checked',true);
             }
 
@@ -592,12 +592,6 @@
             var childItem = [];
             this._getChild(item, childItem);
 
-
-            if (!item.is_check) {
-                this.opt.onCancel.apply(this);
-            } else {
-                this.opt.onCheck.apply(this);
-            }
             this.opt.onChange.apply(this);
 
         },
@@ -617,40 +611,40 @@
         },
 
         _cancelParentNode: function (id) {
-            var obj = this;
-            $.each(obj.data, function (i, n) {
+            var that = this;
+            $.each(that.data, function (i, n) {
                 if (n.id == id && n.is_node && n.is_check) {
                     n.is_check = false;
-                    obj.html.find('input[data-isNode=true][data-id="' + id + '"]').prop('checked', false);
-                    obj._cancelParentNode(n.nodeId);
+                    that.$html.find('input[data-isNode=true][data-id="' + id + '"]').prop('checked', false);
+                    that._cancelParentNode(n.nodeId);
                 }
             })
         },
 
         _checkParentNode: function (id) {
-            var obj = this;
+            var that = this;
             var allChildrenChecked = true;
-            $.each(obj.data, function (i, n) {
+            $.each(that.data, function (i, n) {
                 if (n.nodeId == id && !n.is_check) {
                     allChildrenChecked = false;
                 }
             });
-            $.each(obj.data, function (i, n) {
+            $.each(that.data, function (i, n) {
                 if (n.id == id && n.is_node && !n.is_check && allChildrenChecked) {
                     n.is_check = true;
-                    obj.html.find('input[data-isNode=true][data-id="' + id + '"]').prop('checked', true);
-                    obj._checkParentNode(n.nodeId);
+                    that.$html.find('input[data-isNode=true][data-id="' + id + '"]').prop('checked', true);
+                    that._checkParentNode(n.nodeId);
                 }
             });
         },
 
         _chgAllChildren: function (nodeid, bol) {
-            var obj = this;
+            var that = this;
             $.each($.extend(true, [], this.data), function (i, n) {   //这句话 看起来 好像 不用 extend
                 if (n.nodeId == nodeid) {
-                    obj.data[i].is_check = bol;
+                    that.data[i].is_check = bol;
                     if (n.is_node && n.has_children) {
-                        obj._chgAllChildren(n.id, bol);
+                        that._chgAllChildren(n.id, bol);
                     }
                 }
             });
@@ -660,16 +654,16 @@
         /**
          * 构造html内部方法
          */
-        _makePanel: function () {
-            var html = '<div></div>';
+        _makeRoot: function () {
+            var html = '<div class="x-tree-root"></div>';
 
             if (this.opt.has_search) {
                 html = this._makeSearch(html);
             }
 
-            var css;
+            var style;
             if (this.opt.is_trigger) {
-                css = {
+                style = {
                     'font-family': 'Microsoft YaHei',
                     'z-index': this.opt.zIndex,
                     border: '1px solid #5d5d5d',
@@ -681,7 +675,7 @@
                     'overflow': 'auto'
                 };
             } else {
-                css = {
+                style = {
                     'font-family': 'Microsoft YaHei',
                     'background': '#fff',
                     maxHeight: this.opt.maxHeight,
@@ -692,7 +686,7 @@
             }
 
 
-            return $(html).css(css);
+            return $(html).css(style);
         },
         _makeSearch: function (html) {
             var search = '<input class="x-tree-search" type="text" placeholder="搜索"/></div>';
@@ -704,12 +698,12 @@
                 'display': 'block'
             });
 
-            var obj = this;
+            var that = this;
             $(search).on('keyup paste', function () {
                 var dom = this;
-                clearTimeout(obj._searchTimer);
-                obj._searchTimer = setTimeout(function () {
-                    obj.search(dom.value);
+                clearTimeout(that._searchTimer);
+                that._searchTimer = setTimeout(function () {
+                    that.search(dom.value);
                 }, 100);
             });
 
@@ -732,8 +726,6 @@
             $self.append($expand,$checkbox,$folder,$text);
 
             $item.append($self);
-
-            console.log(item.name, $item);
 
             return $item;
         },
@@ -776,34 +768,33 @@
         },
 
         _makeCheckbox: function (item) {
-            // if (!item) {
-            //     console.log('_makeCheckbox失败,item不存在', item);
-            //     return '';
-            // }
-            //
-            // var $html = '';
-            // if(item.is_check){
-            //     $html = $('<i class="x-tree-checkbox fa fa-square-o"></i>');
-            // }
-            //
-            // $html;
+            if (!item) {
+                console.log('_makeCheckbox失败,item不存在', item);
+                return '';
+            }
 
-            var $html;
+            var $html = '';
+            if(item.is_check){
+                $html = $('<i class="x-tree-checkbox fa fa-square-o"></i>');
+            }else{
+                $html = $('<i class="x-tree-checkbox fa fa-square-o"></i>');
+            }
+
             $html = $('<input type="checkbox" data-isNode=true data-id="' + item.id + '" ' + (item.is_check ? 'checked' : '') + ' data-name="' + item.name + '"/>');
 
 
-            var obj = this;
+            var that = this;
             $html.on('click', function () {
-                if (obj.opt.is_multi) {
+                if (that.opt.is_multi) {
                     item.is_check = !item.is_check;
                 } else {
-                    $.each(obj.data, function (index, item) {
+                    $.each(that.data, function (index, item) {
                         item.is_check = false;
                     });
                     item.is_check = true;
                 }
 
-                obj._changeItem(item, $(this));
+                that._changeItem(item, $(this));
 
             });
 
@@ -877,12 +868,12 @@
             $html.find('input').css({
                 'vertical-align': 'middle'
             });
-            var obj = this;
+            var that = this;
             $html.find('i').on('click', function (e) {
                 if ($(this).hasClass('fa-caret-right')) {
-                    obj._showLayer(item.id);
+                    that._showLayer(item.id);
                 } else {
-                    obj._removeLayer(item.id);
+                    that._removeLayer(item.id);
                 }
             });
             return $html;
@@ -913,22 +904,22 @@
          *      视图方法
          */
 
-        _showPanel: function () {
+        _showRoot: function () {
             if (this.opt.is_trigger) {
-                this.html.css({
+                this.$html.css({
                     top: this.dom.outerHeight(),
                     left: 0,
                     minWidth: 200
                     // minWidth: this.opt.width ? this.opt.width : this.dom.outerWidth() * 0.98
                 });
 
-                this.html.addClass('xTreePanel');
+                this.$html.addClass('xTreePanel');
 
-                this.html.on('click', function (e) {
+                this.$html.on('click', function (e) {
                     e.stopPropagation();
                 });
             }
-            this.dom.append(this.html);
+            this.dom.append(this.$html);
 
         },
         _showData: function () {
@@ -936,31 +927,31 @@
                 this._showLayer(this.rootId);
                 this._is_first = false;
             } else {
-                this.html.show();
+                this.$html.show();
             }
         },
         _expand: function () {
-            var obj = this;
-            if (obj.opt.expand === true) {
-                $.each(obj.data, function (index, item) {
+            var that = this;
+            if (that.opt.expand === true) {
+                $.each(that.data, function (index, item) {
                     if (item.is_node && item.has_children) {
-                        obj.html.find('i').filter('.fa-caret-right').click();
+                        that.$html.find('i').filter('.fa-caret-right').click();
                     }
                 });
-            } else if (obj.opt.expand) {
+            } else if (that.opt.expand) {
                 var expandId = [];
-                expandId.push(obj.rootId);
-                for (var i = 0; i < obj.opt.expand + 1; i++) {
-                    expandId = obj._expandLevel(expandId);
+                expandId.push(that.rootId);
+                for (var i = 0; i < that.opt.expand + 1; i++) {
+                    expandId = that._expandLevel(expandId);
                 }
             }
         },
         _expandLevel: function (id) {
-            var obj = this;
+            var that = this;
             var expandId = [];
             $.each(id, function (index, item) {
-                obj.html.find('div[node-id="' + item + '"] > i').filter('.fa-caret-right').click();
-                $.each(obj.data, function (index2, item2) {
+                that.$html.find('div[node-id="' + item + '"] > i').filter('.fa-caret-right').click();
+                $.each(that.data, function (index2, item2) {
                     if (item2.nodeId == item && item2.is_node) {
                         expandId.push(item2.id);
                     }
@@ -976,9 +967,9 @@
             //这里 0节点的结构 和 子节点的结构 没有处理好    以后尽量让node-id 和  itemdiv 分开
             if (layerId == this.rootId) {
                 itemDiv = $(itemDiv).attr('node-id', this.rootId);
-                this.html.append(itemDiv);
+                this.$html.append(itemDiv);
             } else {
-                var $childrenWrap = this.html.find('.x-tree-node-' + layerId);
+                var $childrenWrap = this.$html.find('.x-tree-node-' + layerId);
                 $childrenWrap.append(itemDiv);
                 this._toShrink($childrenWrap.find('.x-tree-self-' + layerId + ' > .fa-caret-right'));
             }
@@ -988,7 +979,7 @@
             }
         },
         _removeLayer: function (layerId) {
-            var $childrenWrap = this.html.find('.x-tree-node-' + layerId );
+            var $childrenWrap = this.$html.find('.x-tree-node-' + layerId );
             $childrenWrap.find('.x-tree-children').remove();
             this._toExpand($childrenWrap.find('.x-tree-self-' + layerId + ' > .fa-caret-down'));
         },
