@@ -583,9 +583,6 @@
                 } else {
                     this._checkParentNode(item.nodeId);
                 }
-            } else {
-//                    this.$html.find('input').prop("checked",false);
-//                    $(this).prop('checked',true);
             }
 
 
@@ -672,7 +669,8 @@
                     maxHeight: this.opt.maxHeight,
                     padding: '0 1%',
                     'white-space': 'nowrap',
-                    'overflow': 'auto'
+                    'overflow': 'auto',
+                    'font-size': '14px'
                 };
             } else {
                 style = {
@@ -681,7 +679,8 @@
                     maxHeight: this.opt.maxHeight,
                     padding: '0 1%',
                     'white-space': 'nowrap',
-                    'overflow': 'auto'
+                    'overflow': 'auto',
+                    'font-size': '14px'
                 };
             }
 
@@ -723,7 +722,7 @@
             var $folder = this._makeFolder(item);
             var $text = this._makeText(item);
 
-            $self.append($expand,$checkbox,$folder,$text);
+            $self.append($expand, $checkbox, $folder, $text);
 
             $item.append($self);
 
@@ -731,8 +730,8 @@
         },
         _makeItemWrap: function (item) {
             var $html = $('<div class="x-tree-item" ></div>');
-            $html.attr({'node-id':item.nodeId,'data-id':item.id});
-            if(item.is_node){
+            $html.attr({'node-id': item.nodeId, 'data-id': item.id});
+            if (item.is_node) {
                 $html.addClass('x-tree-node-' + item.id);
             }
             $html.css({cursor: 'pointer'});
@@ -756,15 +755,18 @@
                         that._removeLayer(item.id);
                     }
                 });
+            } else {
+                $html = $('<span></span>');
             }
+            $html.css({
+                display:'inline-block',
+                'vertical-align': 'base-line',
+                'padding-right': '0px',
+                'cursor': 'pointer',
+                width: '14px',
+                height: '14px',
+            });
             return $html;
-
-            // return $(html).css({
-            //     'font-size': '12px',
-            //     'vertical-align': 'base-line',
-            //     'padding-right': '0px',
-            //     'cursor': 'pointer'
-            // })[0].outerHTML;
         },
 
         _makeCheckbox: function (item) {
@@ -773,12 +775,12 @@
                 return '';
             }
 
-            var $html = '';
-            if(item.is_check){
-                $html = $('<i class="x-tree-checkbox fa fa-square-o"></i>');
-            }else{
-                $html = $('<i class="x-tree-checkbox fa fa-square-o"></i>');
-            }
+            var $html;
+            // if(item.is_check){
+            //     $html = $('<i class="x-tree-checkbox fa fa-square-o"></i>');
+            // }else{
+            //     $html = $('<i class="x-tree-checkbox fa fa-square-o"></i>');
+            // }
 
             $html = $('<input type="checkbox" data-isNode=true data-id="' + item.id + '" ' + (item.is_check ? 'checked' : '') + ' data-name="' + item.name + '"/>');
 
@@ -798,15 +800,16 @@
 
             });
 
+            $html.css({
+                'vertical-align': 'base-line',
+                'padding-right': '0px',
+                'cursor': 'pointer',
+                'color': '#333',
+                width: '14px',
+                height: '14px',
+            });
 
             return $html;
-            // return $(html).css({
-            //     'font-size': '12px',
-            //     'vertical-align': 'base-line',
-            //     'padding-right': '0px',
-            //     'cursor': 'pointer',
-            //     'color': '#333'
-            // })[0].outerHTML;
         },
 
         _makeFolder: function (item) {
@@ -814,15 +817,17 @@
                 return '';
             }
 
-            var html = '<i class="fa fa-folder-o"></i>';
+            var $html = $('<i class="fa fa-folder-o"></i>');
 
-            return $(html).css({
-                'font-size': '12px',
+            $html.css({
                 'vertical-align': 'base-line',
                 'padding-right': '0px',
                 'cursor': 'pointer',
-                'color': '#333'
-            })[0].outerHTML;
+                'color': '#333',
+                width: '14px',
+                height: '14px',
+            });
+            return $html;
         },
         _makeText: function (item) {
             if (!item) {
@@ -832,16 +837,11 @@
             var $html = $('<span></span>');
 
             $html.text(item.name);
+            $html.css({
+                padding: '0 0 0 5px'
+            });
 
             return $html;
-
-            // return $(html).css({
-            //     'font-size': '12px',
-            //     'vertical-align': 'base-line',
-            //     'padding-right': '0px',
-            //     'cursor': 'pointer',
-            //     'color': '#333'
-            // })[0].outerHTML;
         },
 
 
@@ -979,7 +979,7 @@
             }
         },
         _removeLayer: function (layerId) {
-            var $childrenWrap = this.$html.find('.x-tree-node-' + layerId );
+            var $childrenWrap = this.$html.find('.x-tree-node-' + layerId);
             $childrenWrap.find('.x-tree-children').remove();
             this._toExpand($childrenWrap.find('.x-tree-self-' + layerId + ' > .fa-caret-down'));
         },
@@ -992,12 +992,12 @@
             });
         },
 
-        _changeCheckbox:function (item,type) {
-            if(type === 1){
+        _changeCheckbox: function (item, type) {
+            if (type === 1) {
 
-            }else if(type === 2){
+            } else if (type === 2) {
 
-            }else if(type === 3){
+            } else if (type === 3) {
 
             }
         },
