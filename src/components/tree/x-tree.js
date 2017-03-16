@@ -88,8 +88,7 @@
             }
 
             this.opt = $.extend(true, {}, defOpt, opt);
-            this.data = this._initData(this.opt.data);
-            this.rootId = this._getRootId(this.data);
+            this.data = this.opt.data;
             if (this.opt.sel_ids) {
                 if (this.opt.is_multi) {
                     this._selData(this.data, this.opt);
@@ -97,6 +96,13 @@
                     this._selDataRadio(this.data, this.opt);
                 }
             }
+
+            this.rootId = this._getTreeRoot(this.data);
+
+            this._initData(this.data);
+
+            this.tree = this._arrayToTree(this.data);
+
 
             this._originId = this.getId();
 
@@ -716,13 +722,6 @@
             var temp = {};
             for (var i = 0; i < arrayIn.length; i++) {
                 if (arrayIn[i].nodeId == parent.id) {
-                    // temp = {
-                    //     id: arrayIn[i].id,
-                    //     name: arrayIn[i].name,
-                    //     nodeId: arrayIn[i].nodeId,
-                    //     is_node: arrayIn[i].is_node,
-                    //     is_check: arrayIn[i].is_check
-                    // }; //copy
                     temp = arrayIn[i];
                     temp.parent = parent;
                     temp.level = parent.level + 1;
@@ -979,7 +978,7 @@
         },
         _makeExpand: function (item) {
             var $html;
-            if (item.is_node && item.has_children) {
+            if (item.is_node && item.children && item.children.length) {
                 $html = $('<i class="x-tree-expand fa fa-caret-right"></i>');
                 var that = this;
                 $html.on('click', function (e) {
