@@ -88,6 +88,12 @@
             }
 
             this.opt = $.extend(true, {}, defOpt, opt);
+
+            this.dom = this.opt.dom;
+            this.dom.css({'position': 'relative'});
+            this.$root = this._makeTreeWrap();
+            this.dom.append(this.$root);
+
             this.data = this.opt.data;
             if (this.opt.sel_ids) {
                 if (this.opt.is_multi) {
@@ -97,18 +103,9 @@
                 }
             }
 
-            this.rootId = this._getTreeRoot(this.data);
-
-            this._initData(this.data);
-
             this.tree = this._arrayToTree(this.data);
 
-
-            this._originId = this.getId();
-
-            this.dom = this.opt.dom;
-            this.dom.css({'position': 'relative'});
-            this.$html = this._makeRoot();
+            // this._makeTree(this.tree);
 
             this.opt.onInit.apply(this);
 
@@ -117,15 +114,15 @@
             if (this.opt.is_trigger) {
                 this.dom.off('click.xTree');
                 this.dom.on('click.xTree', function (e) {
-                    $('.xTreePanel').hide();
-                    that.start();
+                    $('.xTreeWrap').hide();
+                    that.show();
                     e.stopPropagation();
                 });
                 $(document).on('click.xTree', function () {
-                    that.end();
+                    that.hide();
                 });
             } else {
-                this.start();
+                this.show();
             }
         },
 
@@ -133,22 +130,22 @@
          *      方法
          *
          */
-        start: function () {
+        show: function () {
             this.opt.onBeforeOpen.apply(this);
 
-            this._showRoot();
-            this._showData();
+            this._showTreeWrap();
+            this._showTree();
             this._expand();
             this._is_open = true;
 
-            this.$html.find('.x-tree-search').focus();
+            this.$root.find('.x-tree-search').focus();
 
             this.opt.onOpen.apply(this);
             return this;
         },
-        end: function () {
+        hide: function () {
             if (this._is_open) {
-                this.$html.hide();
+                this.$root.hide();
 
                 this.opt.onClose.apply(this);
 
@@ -282,7 +279,7 @@
                     if (this.data[j].id == ids[i] && this.data[j].is_node == isNode) {
                         item = this.data[j];
                         item.is_check = false;
-                        dom = this.$html.find('input[data-isNode=' + isNode + '][data-id="' + ids[i] + '"]').prop('checked', false);
+                        dom = this.$root.find('input[data-isNode=' + isNode + '][data-id="' + ids[i] + '"]').prop('checked', false);
                         this._changeItem(item, dom);
                     }
                 }
@@ -302,7 +299,7 @@
                     if (this.data[j].id == ids[i] && this.data[j].is_node == isNode) {
                         item = this.data[j];
                         item.is_check = true;
-                        dom = this.$html.find('input[data-isNode=' + isNode + '][data-id="' + ids[i] + '"]').prop('checked', true);
+                        dom = this.$root.find('input[data-isNode=' + isNode + '][data-id="' + ids[i] + '"]').prop('checked', true);
                         this._changeItem(item, dom);
                     }
                 }
@@ -313,7 +310,7 @@
             $.each(this.data, function (index, item) {
                 item.is_check = false;
             });
-            this.$html.find('input').prop("checked", false);
+            this.$root.find('input').prop("checked", false);
             this.opt.onCancel.apply(this);
         },
         checkAll: function () {
@@ -321,30 +318,30 @@
                 $.each(this.data, function (index, item) {
                     item.is_check = true;
                 });
-                this.$html.find('input').prop("checked", true);
+                this.$root.find('input').prop("checked", true);
                 this.opt.onCheck.apply(this);
             }
         },
 
         search: function (val) {
-            this._removeChildren(this.rootId);
+            this._removeChildren(this.tree);
 
             if (val === '') {
-                this.$html.find('div[node-id="' + this.rootId + '"]').remove();
-                this._showChildren(this.rootId);
+                this.$root.find('div[node-id="' + this.tree.id + '"]').remove();
+                this._makeChildren(this.tree);
             } else {
                 for (var i in this.data) {
                     if (this.opt.searchType == 1) {
                         if (this.data[i].name.indexOf(val) != -1) {
-                            this.$html.find('div[node-id="' + this.rootId + '"]').append(this._makeItem(this.data[i]));
+                            this.$root.find('div[node-id="' + this.tree.id + '"]').append(this._makeItem(this.data[i]));
                         }
                     } else if (this.opt.searchType == 2) {
                         if (this.data[i].is_node && this.data[i].name.indexOf(val) != -1) {
-                            this.$html.find('div[node-id="' + this.rootId + '"]').append(this._makeItem(this.data[i]));
+                            this.$root.find('div[node-id="' + this.tree.id + '"]').append(this._makeItem(this.data[i]));
                         }
                     } else if (this.opt.searchType == 3) {
                         if (!this.data[i].is_node && this.data[i].name.indexOf(val) != -1) {
-                            this.$html.find('div[node-id="' + this.rootId + '"]').append(this._makeItem(this.data[i]));
+                            this.$root.find('div[node-id="' + this.tree.id + '"]').append(this._makeItem(this.data[i]));
                         }
                     }
                 }
@@ -358,31 +355,11 @@
 
         _checkData: function (data) {
             for (var i in data) {
-                return typeof data[i] === 'object';
-            }
-            return false;
-        },
-
-        _initData: function (data) {
-            var clone = $.extend(true, [], data);
-            var len = clone.length;
-
-            for (var k = 0; k < len; k++) {
-                clone[k].has_children = false;
-            }
-
-            for (var i = 0; i < len; i++) {
-                for (var j = i; j < len; j++) {
-                    if (clone[i].is_node && clone[i].id == clone[j].nodeId) {
-                        clone[i].has_children = true;
-                    }
-                    if (clone[i].nodeId == clone[j].id && clone[j].is_node) {
-                        clone[j].has_children = true;
-                    }
+                if (typeof data[i] !== 'object') {
+                    return false;
                 }
             }
-
-            return clone;
+            return true;
         },
 
         _selData: function (data, opt) {
@@ -460,72 +437,6 @@
             }
         },
 
-        _getRootId: function (_data) {
-            var rootId = [];
-            var clone = $.extend(true, [], _data);
-            for (var i = 0, len = _data.length; i < len; i++) {
-                for (var j = i; j < len; j++) {
-                    if (_data[i].id == _data[j].nodeId) {
-                        clone[j] = null;
-                    }
-                    if (_data[i].nodeId == _data[j].id) {
-                        clone[i] = null;
-                    }
-                }
-            }
-            $.each(clone, function (i, t) {
-                if (t) {
-                    rootId.push(t.nodeId);
-                }
-            });
-
-            // //去除数组重复值
-            // function unique(array){
-            //     var n = [];
-            //     for(var i = 0; i < array.length; i++){
-            //         if (n.indexOf(array[i]) == -1) n.push(array[i]);
-            //     }
-            //     return n;
-            // }
-            //
-            // function unique(array){
-            //     var r = [];
-            //     for(var i = 0, l = array.length; i < l; i++) {
-            //         for(var j = i + 1; j < l; j++){
-            //             if (array[i] == array[j]) {
-            //                 j = ++i;
-            //             }
-            //         }
-            //         r.push(array[i]);
-            //     }
-            //     return r;
-            // }
-            // rootId = unique(rootId);
-
-            return rootId[0];
-        },
-
-        _getChildrenData: function (parent) {
-            var res = [];
-            for (var i in this.data) {
-                if (this.data[i].nodeId == parent) {
-//                if(data[i].is_node){
-//                    res.unshift(data[i])
-//                }else{
-//                    res.push(data[i]);
-//                }
-
-                    res.push(this.data[i]);  //原序
-                }
-            }
-            return res;
-        },
-
-
-        _changeItems: function () {
-
-        },
-
         _changeAll: function () {
 
         },
@@ -576,29 +487,6 @@
             return arr;
         },
 
-        _changeItem: function (item, dom) {
-
-            if (this.opt.is_multi) {
-                if (item.is_node) {
-                    dom.parent().parent().find('label > input').prop('checked', item.is_check);
-                    this._chgAllChildren(item.id, item.is_check);
-                }
-
-                if (!item.is_check) {
-                    this._cancelParentNode(item.nodeId);
-                } else {
-                    this._checkParentNode(item.nodeId);
-                }
-            }
-
-
-            var childItem = [];
-            this._getChild(item, childItem);
-
-            this.opt.onChange.apply(this);
-
-        },
-
         _getChild: function (node, cont) {
             if (node.is_node && node.has_children) {
                 var that = this;
@@ -618,7 +506,7 @@
             $.each(that.data, function (i, n) {
                 if (n.id == id && n.is_node && n.is_check) {
                     n.is_check = false;
-                    that.$html.find('input[data-isNode=true][data-id="' + id + '"]').prop('checked', false);
+                    that.$root.find('input[data-isNode=true][data-id="' + id + '"]').prop('checked', false);
                     that._cancelParentNode(n.nodeId);
                 }
             })
@@ -635,7 +523,7 @@
             $.each(that.data, function (i, n) {
                 if (n.id == id && n.is_node && !n.is_check && allChildrenChecked) {
                     n.is_check = true;
-                    that.$html.find('input[data-isNode=true][data-id="' + id + '"]').prop('checked', true);
+                    that.$root.find('input[data-isNode=true][data-id="' + id + '"]').prop('checked', true);
                     that._checkParentNode(n.nodeId);
                 }
             });
@@ -654,8 +542,6 @@
         },
 
 
-
-
         /*数据方法*/
         _arrayToTree: function (arrayIn) {
             var rootId = this._getTreeRoot(arrayIn);
@@ -665,7 +551,7 @@
                 nodeId: null,
                 is_node: true,
                 is_check: false,
-                dom: this.dom,
+                dom: this.$root,
                 children: [],
                 parent: null,
                 level: 0,
@@ -707,7 +593,7 @@
             return rootId[0];
         },
 
-        _uniqueArray:function (arrayIn) {
+        _uniqueArray: function (arrayIn) {
             var ua = [];
             for (var i = 0; i < arrayIn.length; i++) {
                 if (ua.indexOf(arrayIn[i]) == -1) {
@@ -739,26 +625,6 @@
             return result;
         },
 
-        // _getTreeDepth: function (tree, level) {
-        //     var maxDepth = level;
-        //     if (tree.children) {
-        //         for (var i = 0; i < tree.children.length; i++) {
-        //             this._getTreeDepth(tree.children[i], maxDepth);
-        //         }
-        //     }
-        //     return maxDepth;
-        // },
-        // _getTreeLeaves: function (tree) {
-        //     var leaves = [];
-        //     for (var i = 0; i < tree.children.length; i++) {
-        //         if(tree.is_node){
-        //             leaves = this._getTreeLeaves(tree.children[i]);
-        //         }else{
-        //             leaves.push(tree);
-        //         }
-        //     }
-        //     return leaves;
-        // },
         _getItemById: function (tree, id) {
             var item = {};
             if (tree.id == id) {
@@ -775,6 +641,7 @@
             }
             return false;
         },
+
         _getItemsByIds: function (tree, ids) {
             var items = [];
             this._traverseTree(tree, this._getItemsByIdsFn, ids, items);
@@ -793,11 +660,13 @@
             }
             return ids.length;
         },
+
         _changeItem: function (item, change) {
-            if (!item) {
+            if (!item && item.is_check === change) {
                 return false;
             }
             item.is_check = change;
+            this._updateDom(item);
             if (item.children) {
                 this._changeChildren(item.children, change);
             }
@@ -805,6 +674,7 @@
                 this._changeParent(item.parent, change);
             }
         },
+
         _changeChildren: function (children, change) {
             if (!children) {
                 return false;
@@ -877,11 +747,16 @@
         /**
          * 构造html内部方法
          */
-        _makeRoot: function () {
-            var html = '<div class="x-tree-root"></div>';
+
+        _makeTree: function (tree) {
+
+        },
+        _makeTreeWrap: function () {
+            var $html = $('<div class="x-tree-root"></div>');
+            $html.hide();
 
             if (this.opt.has_search) {
-                html = this._makeSearch(html);
+                $html.append(this._makeSearch());
             }
 
             var style;
@@ -918,12 +793,28 @@
                 };
             }
 
+            $html.css(style);
 
-            return $(html).css(style);
+            if (this.opt.is_trigger) {
+                $html.css({
+                    top: this.dom.outerHeight(),
+                    left: 0,
+                    minWidth: 200
+                    // minWidth: this.opt.width ? this.opt.width : this.dom.outerWidth() * 0.98
+                });
+
+                $html.addClass('xTreeWrap');
+
+                $html.on('click', function (e) {
+                    e.stopPropagation();
+                });
+            }
+
+            return $html;
         },
-        _makeSearch: function (html) {
-            var search = '<input class="x-tree-search" type="text" placeholder="搜索"/></div>';
-            search = $(search).css({
+        _makeSearch: function () {
+            var $search = $('<input class="x-tree-search" type="text" placeholder="搜索"/></div>');
+            $search.css({
                 'border': 'none',
                 'padding': '4px 0',
                 'margin': '5px auto 0 auto',
@@ -932,7 +823,7 @@
             });
 
             var that = this;
-            $(search).on('keyup paste', function () {
+            $search.on('keyup paste', function () {
                 var dom = this;
                 clearTimeout(that._searchTimer);
                 that._searchTimer = setTimeout(function () {
@@ -940,7 +831,7 @@
                 }, 100);
             });
 
-            return $(html).append(search);
+            return $search;
 
         },
         _makeItem: function (item) {
@@ -960,38 +851,42 @@
 
             $item.append($self);
 
+            item.dom = $item;
+
             return $item;
         },
         _makeItemWrap: function (item) {
-            var $html = $('<div class="x-tree-item" ></div>');
-            $html.attr({'node-id': item.nodeId, 'data-id': item.id});
+            var $itemWrap = $('<div class="x-tree-item" ></div>');
+            $itemWrap.attr({'node-id': item.nodeId, 'data-id': item.id});
             if (item.is_node) {
-                $html.addClass('x-tree-node-' + item.id);
+                $itemWrap.addClass('x-tree-node-' + item.id);
+            }else{
+                $itemWrap.addClass('x-tree-leaf-' + item.id);
             }
-            $html.css({cursor: 'pointer'});
-            return $html;
+            $itemWrap.css({cursor: 'pointer'});
+            return $itemWrap;
         },
         _makeSelfWrap: function (item) {
-            var $html = $('<div></div>');
-            $html.addClass('x-tree-self-' + item.id);
-            return $html;
+            var $selfWrap = $('<div></div>');
+            $selfWrap.addClass('x-tree-self');
+            return $selfWrap;
         },
         _makeExpand: function (item) {
-            var $html;
+            var $expand;
             if (item.is_node && item.children && item.children.length) {
-                $html = $('<i class="x-tree-expand fa fa-caret-right"></i>');
+                $expand = $('<i class="x-tree-expand fa fa-caret-right"></i>');
                 var that = this;
-                $html.on('click', function (e) {
+                $expand.on('click', function (e) {
                     if ($(this).hasClass('fa-caret-right')) {
-                        that._showChildren(item.id);
+                        that._makeChildren(item);
                     } else {
-                        that._removeChildren(item.id);
+                        that._removeChildren(item);
                     }
                 });
             } else {
-                $html = $('<span></span>');
+                $expand = $('<span></span>');
             }
-            $html.css({
+            $expand.css({
                 display: 'inline-block',
                 'vertical-align': 'base-line',
                 'padding-right': '0px',
@@ -999,7 +894,7 @@
                 width: '14px',
                 height: '14px',
             });
-            return $html;
+            return $expand;
         },
         _makeCheckbox: function (item) {
             if (!item) {
@@ -1007,50 +902,45 @@
                 return '';
             }
 
-            var $html;
-            // if(item.is_check){
-            //     $html = $('<i class="x-tree-checkbox fa fa-square-o"></i>');
-            // }else{
-            //     $html = $('<i class="x-tree-checkbox fa fa-square-o"></i>');
-            // }
+            var $checkbox;
 
-            $html = $('<input type="checkbox" data-isNode=true data-id="' + item.id + '" ' + (item.is_check ? 'checked' : '') + ' data-name="' + item.name + '"/>');
+            if (item.is_check) {
+                $checkbox = $('<i class="x-tree-checkbox fa fa-check-square-o" /i>');
+            } else {
+                $checkbox = $('<i class="x-tree-checkbox fa fa-square-o" /i>');
+            }
 
+            $checkbox.css({
+                'vertical-align': 'base-line',
+                'padding-right': '0px',
+                'cursor': 'pointer',
+                'color': '#333',
+                width: '14px',
+                height: '14px',
+            });
 
             var that = this;
-            $html.on('click', function () {
+            $checkbox.on('click', function () {
                 if (that.opt.is_multi) {
-                    item.is_check = !item.is_check;
+                    that._changeItem(item, !item.is_check);
                 } else {
                     $.each(that.data, function (index, item) {
                         item.is_check = false;
                     });
                     item.is_check = true;
                 }
-
-                that._changeItem(item, $(this));
-
             });
 
-            $html.css({
-                'vertical-align': 'base-line',
-                'padding-right': '0px',
-                'cursor': 'pointer',
-                'color': '#333',
-                width: '14px',
-                height: '14px',
-            });
-
-            return $html;
+            return $checkbox;
         },
         _makeFolder: function (item) {
             if (!item || !item.is_node) {
                 return '';
             }
 
-            var $html = $('<i class="fa fa-folder-o"></i>');
+            var $folder = $('<i class="fa fa-folder-o"></i>');
 
-            $html.css({
+            $folder.css({
                 'vertical-align': 'base-line',
                 'padding-right': '0px',
                 'cursor': 'pointer',
@@ -1058,21 +948,51 @@
                 width: '14px',
                 height: '14px',
             });
-            return $html;
+            return $folder;
         },
         _makeText: function (item) {
             if (!item) {
                 return '';
             }
 
-            var $html = $('<span></span>');
+            var $text = $('<span></span>');
 
-            $html.text(item.name);
-            $html.css({
+            $text.text(item.name);
+            $text.css({
                 padding: '0 0 0 5px'
             });
 
-            return $html;
+            return $text;
+        },
+
+        _makeChildren: function (item) {
+            var childrenWrap = this._makeChildrenWrap();
+
+            //这里 0节点的结构 和 子节点的结构 没有处理好    以后尽量让node-id 和  itemdiv 分开
+            if (item.id == this.tree.id) {
+                childrenWrap = $(childrenWrap).attr('node-id', this.tree.id);
+                this.$root.append(childrenWrap);
+            } else {
+                item.dom.append(childrenWrap);
+                this._toShrink(item.dom.children('.x-tree-self').find('.fa-caret-right'));
+            }
+
+            for (var i in item.children) {
+                childrenWrap.append(this._makeItem(item.children[i]));
+            }
+        },
+
+        _removeChildren: function (item) {
+            item.dom.find('.x-tree-children').remove();
+            this._toExpand(item.dom.children('.x-tree-self').find('.fa-caret-down'));
+        },
+
+        _makeChildrenWrap: function () {
+            var html = '<div class="x-tree-children"></div>';
+
+            return $(html).css({
+                'margin-left': '16px'
+            });
         },
 
 
@@ -1080,30 +1000,15 @@
          *      视图方法
          */
 
-        _showRoot: function () {
-            if (this.opt.is_trigger) {
-                this.$html.css({
-                    top: this.dom.outerHeight(),
-                    left: 0,
-                    minWidth: 200
-                    // minWidth: this.opt.width ? this.opt.width : this.dom.outerWidth() * 0.98
-                });
-
-                this.$html.addClass('xTreePanel');
-
-                this.$html.on('click', function (e) {
-                    e.stopPropagation();
-                });
-            }
-            this.dom.append(this.$html);
-
+        _showTreeWrap: function () {
+            this.$root.show();
         },
-        _showData: function () {
+        _showTree: function () {
             if (this._is_first) {
-                this._showChildren(this.rootId);
+                this._makeChildren(this.tree);
                 this._is_first = false;
             } else {
-                this.$html.show();
+                this.$root.show();
             }
         },
 
@@ -1112,12 +1017,12 @@
             if (that.opt.expand === true) {
                 $.each(that.data, function (index, item) {
                     if (item.is_node && item.has_children) {
-                        that.$html.find('i').filter('.fa-caret-right').click();
+                        that.$root.find('i').filter('.fa-caret-right').click();
                     }
                 });
             } else if (that.opt.expand) {
                 var expandId = [];
-                expandId.push(that.rootId);
+                expandId.push(that.tree.id);
                 for (var i = 0; i < that.opt.expand + 1; i++) {
                     expandId = that._expandLevel(expandId);
                 }
@@ -1127,7 +1032,7 @@
             var that = this;
             var expandId = [];
             $.each(id, function (index, item) {
-                that.$html.find('div[node-id="' + item + '"] > i').filter('.fa-caret-right').click();
+                that.$root.find('div[node-id="' + item + '"] > i').filter('.fa-caret-right').click();
                 $.each(that.data, function (index2, item2) {
                     if (item2.nodeId == item && item2.is_node) {
                         expandId.push(item2.id);
@@ -1137,47 +1042,18 @@
             return expandId;
         },
 
-        _showChildren: function (pid) {
-            var showData = this._getChildrenData(pid);
-            var itemDiv = this._makeChildren();
-
-
-            //这里 0节点的结构 和 子节点的结构 没有处理好    以后尽量让node-id 和  itemdiv 分开
-            if (pid == this.rootId) {
-                itemDiv = $(itemDiv).attr('node-id', this.rootId);
-                this.$html.append(itemDiv);
-            } else {
-                var $childrenWrap = this.$html.find('.x-tree-node-' + pid);
-                $childrenWrap.append(itemDiv);
-                this._toShrink($childrenWrap.find('.x-tree-self-' + pid + ' > .fa-caret-right'));
-            }
-
-            for (var i in showData) {
-                itemDiv.append(this._makeItem(showData[i]));
-            }
-        },
-        _removeChildren: function (pid) {
-            var $childrenWrap = this.$html.find('.x-tree-node-' + pid);
-            $childrenWrap.find('.x-tree-children').remove();
-            this._toExpand($childrenWrap.find('.x-tree-self-' + pid + ' > .fa-caret-down'));
-        },
-
-        _makeChildren: function () {
-            var html = '<div class="x-tree-children"></div>';
-
-            return $(html).css({
-                'margin-left': '16px'
-            });
-        },
-
-        _changeCheckbox: function (item, type) {
-            if (type === 1) {
-
-            } else if (type === 2) {
-
-            } else if (type === 3) {
+        _updateDom: function (item) {
+            console.log(item);
+            if (item.is_check === true) {
+                item.dom.find('.x-tree-self > .x-tree-checkbox').removeClass('fa-square-o');
+                item.dom.find('.x-tree-self > .x-tree-checkbox').addClass('fa-check-square-o');
+            } else if (item.is_check === false) {
+                item.dom.find('.x-tree-self > .x-tree-checkbox').removeClass('fa-check-square-o');
+                item.dom.find('.x-tree-self > .x-tree-checkbox').addClass('fa-square-o');
+            } else if (item.is_check === 3) {
 
             }
+
         },
 
         _toShrink: function (dom) {
