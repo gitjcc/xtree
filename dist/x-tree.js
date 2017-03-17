@@ -761,10 +761,12 @@
             }
 
             return $(html).css({
-                'font-size': '12px',
+                'font-size': '14px',
+                width:'14px',
+                height:'14px',
                 'vertical-align': 'base-line',
                 'padding-right': '0px',
-                'color': '#555',
+                'color': '#777',
                 'cursor': 'pointer'
             })[0].outerHTML;
         },
@@ -777,11 +779,13 @@
             var html = '<i class="iconfont icon-wenjianjia"></i>';
 
             return $(html).css({
-                'font-size': '12px',
+                'font-size': '14px',
+                width:'14px',
+                height:'14px',
                 'vertical-align': 'base-line',
                 'padding-right': '0px',
                 'cursor': 'pointer',
-                'color': '#555'
+                'color': '#777'
             })[0].outerHTML;
         },
 
@@ -825,7 +829,7 @@
                 $html = $('<div>' + (this.opt.only_child ? '' : '<span></span>') + '<label><input type="radio"' + (item.is_check ? 'checked' : '') + ' name="' + this.dom.selector + '" data-id="' + item.id + '" data-isNode=' + item.is_node + ' data-name="' + item.name + '" />' + this._makeFolder(item) + item.name + '</label></div>');
             }
             $html.find('span').css({
-                'width': '12px',
+                'width': '14px',
                 'cursor': 'pointer',
                 'display': 'inline-block'
             });
