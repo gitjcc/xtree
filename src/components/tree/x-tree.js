@@ -69,9 +69,8 @@
             }
             this.tree = this._arrayToTree(this.data);
 
-
-            this.$root = this._makeTreeWrap();
-            this.dom.append(this._makeTree(this.tree));
+            this.$root = this._makeTree(this.tree);
+            this.dom.append(this.$root);
 
 
             this.opt.onInit.apply(this);
@@ -517,7 +516,6 @@
                 nodeId: null,
                 is_node: true,
                 is_check: false,
-                dom: this.$root,
                 children: [],
                 parent: null,
                 level: 0,
@@ -714,22 +712,26 @@
          */
 
         _makeTree: function (tree) {
-            var $tree = this.$root;
+            tree.$dom = this._makeTreeWrap(tree);
+            tree.$dom.$self = this._makeSelfWrap(tree);
+            tree.$dom.$children = this._makeChildrenWrap(tree);
+            tree.$dom.append(tree.$dom.$self,tree.$dom.$children);
+            tree.$dom.$self.hide();
             if (tree.is_node && tree.children && tree.children.length) {
                 for (var i = 0; i < tree.children.length; i++) {
-                    this._makeTreeFn(tree.children[i],$tree);
+                    tree.$dom.$children.append(this._makeTreeFn(tree.children[i]));
                 }
             }
-            return $tree;
+            return tree.$dom;
         },
-        _makeTreeFn: function (item,$dom) {
-            $dom.append(this._makeItem(item));
-            console.log(item);
-            if (tree.is_node && tree.children && tree.children.length) {
-                for (var i = 0; i < tree.children.length; i++) {
-                    this._makeTreeFn(tree.children[i],item.$dom.find('.x-tree-children'));
+        _makeTreeFn: function (item) {
+            var $item = this._makeItem(item);
+            if (item.is_node && item.children && item.children.length) {
+                for (var i = 0; i < item.children.length; i++) {
+                    item.$dom.$children.append(this._makeTreeFn(item.children[i]));
                 }
             }
+            return $item;
         },
         _makeTreeWrap: function () {
             var $html = $('<div class="x-tree-root"></div>');
@@ -821,6 +823,7 @@
 
             var $item = this._makeItemWrap(item);
             var $self = this._makeSelfWrap(item);
+            var $children = this._makeChildrenWrap(item);
 
             var $expand = this._makeExpand(item);
             var $check = this._makeCheck(item);
@@ -829,9 +832,11 @@
 
             $self.append($expand, $check, $folder, $text);
 
-            $item.append($self);
+            $item.append($self,$children);
 
             item.$dom = $item;
+            item.$dom.$self = $self;
+            item.$dom.$children = $children;
 
             return $item;
         },
@@ -851,6 +856,15 @@
             $selfWrap.addClass('x-tree-self');
             return $selfWrap;
         },
+        _makeChildrenWrap: function (item) {
+            var $html = $('<div class="x-tree-children"></div>');
+            $html.css({
+                'display':'none',
+                'margin-left': '16px'
+            });
+            return $html;
+        },
+
         _makeExpand: function (item) {
             var $expand;
             if (item.is_node && item.children && item.children.length) {
@@ -946,26 +960,19 @@
         },
 
         _showChildren: function (item) {
+            console.log(item);
             item.expand = true;
-
-            item.$dom.find('.x-tree-children').show();
+            item.$dom.$children.show();
             this._updateExpand(item);
         },
 
         _hideChildren: function (item) {
             item.expand = false;
 
-            item.$dom.find('.x-tree-children').hide();
+            item.$dom.$children.hide();
             this._updateExpand(item);
         },
 
-        _makeChildrenWrap: function () {
-            var html = '<div class="x-tree-children"></div>';
-
-            return $(html).css({
-                'margin-left': '16px'
-            });
-        },
 
 
         /**
@@ -1016,20 +1023,20 @@
 
         _updateExpand:function (item) {
             if(item.expand){
-                item.$dom.find('.x-tree-self > .x-tree-expand').removeClass('fa-caret-right');
-                item.$dom.find('.x-tree-self > .x-tree-expand').addClass('fa-caret-down');
+                item.$dom.$self.find('.x-tree-expand').removeClass('fa-caret-right');
+                item.$dom.$self.find('.x-tree-expand').addClass('fa-caret-down');
             }else{
-                item.$dom.find('.x-tree-self > .x-tree-expand').removeClass('fa-caret-down');
-                item.$dom.find('.x-tree-self > .x-tree-expand').addClass('fa-caret-right');
+                item.$dom.$self.find('.x-tree-expand').removeClass('fa-caret-down');
+                item.$dom.$self.find('.x-tree-expand').addClass('fa-caret-right');
             }
         },
         _updateCheck: function (item) {
             if (item.is_check === true) {
-                item.$dom.find('.x-tree-self > .x-tree-check').removeClass('fa-square-o');
-                item.$dom.find('.x-tree-self > .x-tree-check').addClass('fa-check-square-o');
+                item.$dom.$self.find('.x-tree-check').removeClass('fa-square-o');
+                item.$dom.$self.find('.x-tree-check').addClass('fa-check-square-o');
             } else if (item.is_check === false) {
-                item.$dom.find('.x-tree-self > .x-tree-check').removeClass('fa-check-square-o');
-                item.$dom.find('.x-tree-self > .x-tree-check').addClass('fa-square-o');
+                item.$dom.$self.find('.x-tree-check').removeClass('fa-check-square-o');
+                item.$dom.$self.find('.x-tree-check').addClass('fa-square-o');
             } else if (item.is_check === 3) {
 
             }
