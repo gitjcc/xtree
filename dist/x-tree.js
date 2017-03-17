@@ -757,13 +757,14 @@
         _makeExpand: function (item) {
             var html = '';
             if (item.has_children) {
-                html = '<i class="x-tree-expand iconfont icon-jia1"></i>';
+                html = '<i class="x-tree-expand iconfont icon-xiangyou2"></i>';
             }
 
             return $(html).css({
                 'font-size': '12px',
                 'vertical-align': 'base-line',
                 'padding-right': '0px',
+                'color': '#555',
                 'cursor': 'pointer'
             })[0].outerHTML;
         },
@@ -807,7 +808,7 @@
             });
             var obj = this;
             $html.find('i').on('click', function (e) {
-                if ($(this).hasClass('icon-jia1')) {
+                if ($(this).hasClass('icon-xiangyou2')) {
                     obj._showLayer(item.id);
                 } else {
                     obj._removeLayer(item.id);
@@ -873,7 +874,7 @@
             if (obj.opt.expand === true) {
                 $.each(obj.data, function (index, item) {
                     if (item.is_node && item.has_children) {
-                        obj.html.find('i').filter('.icon-jia1').click();
+                        obj.html.find('i').filter('.icon-xiangyou2').click();
                     }
                 });
             } else if (obj.opt.expand) {
@@ -888,7 +889,7 @@
             var obj = this;
             var expandId = [];
             $.each(id, function (index, item) {
-                obj.html.find('div[node-id="' + item + '"] > i').filter('.icon-jia1').click();
+                obj.html.find('div[node-id="' + item + '"] > i').filter('.icon-xiangyou2').click();
                 $.each(obj.data, function (index2, item2) {
                     if (item2.nodeId == item && item2.is_node) {
                         expandId.push(item2.id);
@@ -909,7 +910,7 @@
                 //itemDiv.parent().attr('node-id',0);
 
             } else {
-                this._toShrink(this.html.find('div[node-id="' + layerId + '"] .icon-jia1'));
+                this._toShrink(this.html.find('div[node-id="' + layerId + '"] .icon-xiangyou2'));
                 this.html.find('div[node-id="' + layerId + '"]').append(itemDiv);
             }
 
@@ -919,7 +920,7 @@
         },
         _removeLayer: function (layerId) {
             this.html.find('div[node-id="' + layerId + '"]>div').remove();
-            this._toExpand(this.html.find('div[node-id="' + layerId + '"] .icon-jian1'));
+            this._toExpand(this.html.find('div[node-id="' + layerId + '"] .icon-xiangxia1'));
         },
 
         _makeLayer: function () {
@@ -931,13 +932,13 @@
         },
 
         _toShrink: function (dom) {
-            dom.removeClass('icon-jia1');
-            dom.addClass('icon-jian1');
+            dom.removeClass('icon-xiangyou2');
+            dom.addClass('icon-xiangxia1');
         },
 
         _toExpand: function (dom) {
-            dom.removeClass('icon-jian1');
-            dom.addClass('icon-jia1');
+            dom.removeClass('icon-xiangxia1');
+            dom.addClass('icon-xiangyou2');
         },
     };
 
