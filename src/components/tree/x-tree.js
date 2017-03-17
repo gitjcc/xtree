@@ -1,4 +1,3 @@
-
 ;(function ($) {
 
     window.xTree = function (options) {
@@ -715,7 +714,7 @@
             tree.$dom = this._makeTreeWrap(tree);
             tree.$dom.$self = this._makeSelfWrap(tree);
             tree.$dom.$children = this._makeChildrenWrap(tree);
-            tree.$dom.append(tree.$dom.$self,tree.$dom.$children);
+            tree.$dom.append(tree.$dom.$self, tree.$dom.$children);
             tree.$dom.$self.hide();
             if (tree.is_node && tree.children && tree.children.length) {
                 for (var i = 0; i < tree.children.length; i++) {
@@ -832,7 +831,7 @@
 
             $self.append($expand, $check, $folder, $text);
 
-            $item.append($self,$children);
+            $item.append($self, $children);
 
             item.$dom = $item;
             item.$dom.$self = $self;
@@ -845,7 +844,7 @@
             $itemWrap.attr({'node-id': item.nodeId, 'data-id': item.id});
             if (item.is_node) {
                 $itemWrap.addClass('x-tree-node-' + item.id);
-            }else{
+            } else {
                 $itemWrap.addClass('x-tree-leaf-' + item.id);
             }
             $itemWrap.css({cursor: 'pointer'});
@@ -859,16 +858,22 @@
         _makeChildrenWrap: function (item) {
             var $html = $('<div class="x-tree-children"></div>');
             $html.css({
-                'display':'none',
                 'margin-left': '16px'
             });
+            if (item.level > this.opt.expand) {
+                $html.hide();
+            }
             return $html;
         },
 
         _makeExpand: function (item) {
             var $expand;
             if (item.is_node && item.children && item.children.length) {
-                $expand = $('<i class="x-tree-expand fa fa-caret-right"></i>');
+                if (item.level > this.opt.expand) {
+                    $expand = $('<i class="x-tree-expand fa fa-caret-right"></i>');
+                } else {
+                    $expand = $('<i class="x-tree-expand fa fa-caret-down"></i>');
+                }
                 var that = this;
                 $expand.on('click', function (e) {
                     if ($(this).hasClass('fa-caret-right')) {
@@ -974,7 +979,6 @@
         },
 
 
-
         /**
          *      视图方法
          */
@@ -1021,11 +1025,11 @@
             return expandId;
         },
 
-        _updateExpand:function (item) {
-            if(item.expand){
+        _updateExpand: function (item) {
+            if (item.expand) {
                 item.$dom.$self.find('.x-tree-expand').removeClass('fa-caret-right');
                 item.$dom.$self.find('.x-tree-expand').addClass('fa-caret-down');
-            }else{
+            } else {
                 item.$dom.$self.find('.x-tree-expand').removeClass('fa-caret-down');
                 item.$dom.$self.find('.x-tree-expand').addClass('fa-caret-right');
             }
