@@ -994,37 +994,7 @@
                 this.$root.show();
             }
         },
-
-        _expand: function () {
-            var that = this;
-            if (that.opt.expand === true) {
-                $.each(that.data, function (index, item) {
-                    if (item.is_node && item.has_children) {
-                        that.$root.find('i').filter('.fa-caret-right').click();
-                    }
-                });
-            } else if (that.opt.expand) {
-                var expandId = [];
-                expandId.push(that.tree.id);
-                for (var i = 0; i < that.opt.expand + 1; i++) {
-                    expandId = that._expandLevel(expandId);
-                }
-            }
-        },
-        _expandLevel: function (id) {
-            var that = this;
-            var expandId = [];
-            $.each(id, function (index, item) {
-                that.$root.find('div[node-id="' + item + '"] > i').filter('.fa-caret-right').click();
-                $.each(that.data, function (index2, item2) {
-                    if (item2.nodeId == item && item2.is_node) {
-                        expandId.push(item2.id);
-                    }
-                });
-            });
-            return expandId;
-        },
-
+        
         _updateExpand: function (item) {
             if (item.expand) {
                 item.$dom.$self.find('.x-tree-expand').removeClass('fa-caret-right');
