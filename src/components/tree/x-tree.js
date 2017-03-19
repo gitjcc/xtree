@@ -33,19 +33,18 @@
         onClose: function () {
         },
     };
-
+    var defState = {
+        _is_open: false,  //是否open
+        _originId: {nodeId: [], id: []},   //上次打开时候选中了哪一些id
+        _searchTimer: ''   //搜索框的定时器
+    };
 
     var tree = function (opt) {
         this._init(opt);
         return this;
     };
 
-
     tree.prototype = {
-        _is_open: false,  //是否open
-        _originId: {nodeId: [], id: []},   //上次打开时候选中了哪一些id
-        _searchTimer: '',   //搜索框的定时器
-        _is_first: true,  //是不是第一次打开
         _init: function (opt) {
             var res = this._checkData(opt.data);
             if (!res) {
@@ -53,24 +52,23 @@
             }
 
             this.opt = $.extend(true, {}, defOpt, opt);
+            this.state = defState;
 
             this.dom = this.opt.dom;
             this.dom.css({'position': 'relative'});
 
+            this.tree = this._arrayToTree(this.opt.data);
 
-            this.data = this.opt.data;
+            this.dom.append(this._makeTree(this.tree));
+
             if (this.opt.sel_ids) {
+                console.log("this", this);
                 if (this.opt.is_multi) {
-                    this._selData(this.data, this.opt);
+                    this._checkTreeByIds(this.tree, this.opt.sel_ids);
                 } else {
-                    this._selDataRadio(this.data, this.opt);
+                    this._checkTreeByIds(this.tree, this.opt.sel_ids);
                 }
             }
-            this.tree = this._arrayToTree(this.data);
-
-            this.$root = this._makeTree(this.tree);
-            this.dom.append(this.$root);
-
 
             this.opt.onInit.apply(this);
 
@@ -96,25 +94,25 @@
         show: function () {
             this.opt.onBeforeOpen.apply(this);
             this._showTree();
-            if(this.opt.is_trigger){
-                this.$root.find('.x-tree-search').focus();
+            if (this.opt.is_trigger) {
+                this.tree.$dom.find('.x-tree-search').focus();
             }
-            this._is_open = true;
+            this.state._is_open = true;
             this.opt.onOpen.apply(this);
             return this;
         },
         hide: function () {
-            if (this._is_open) {
+            if (this.state._is_open) {
                 this._hideTree();
-                this._originId = this.getId();
-                this._is_open = false;
+                this.state._originId = this.getId();
+                this.state._is_open = false;
                 this.opt.onClose.apply(this);
             }
         },
 
         getName: function (only, merge) {
             var text = [];
-            var data = this.data;
+            var data = this.opt.data;
             if (this.opt.only_child) {
                 $.each(data, function (i, n) {
                     if (n.is_check && !n.is_node) {
@@ -156,7 +154,7 @@
 
         getId: function (only, merge) {
             var ids = [];
-            var data = this.data;
+            var data = this.opt.data;
             if (this.opt.only_child) {
                 for (var i = 0; i < data.length; i++) {
                     if (data[i].is_check && !data[i].is_node) {
@@ -176,7 +174,7 @@
         getIdss: function (only, merge) {
             var id = [];
             var nodeId = [];
-            var data = this.data;
+            var data = this.opt.data;
 
             if (this.opt.only_child) {
                 $.each(data, function (i, n) {
@@ -232,11 +230,11 @@
             var item = {};
             var dom;
             for (var i = 0; i < ids.length; i++) {
-                for (var j = 0; j < this.data.length; j++) {
-                    if (this.data[j].id == ids[i] && this.data[j].is_node == isNode) {
-                        item = this.data[j];
+                for (var j = 0; j < this.opt.data.length; j++) {
+                    if (this.opt.data[j].id == ids[i] && this.opt.data[j].is_node == isNode) {
+                        item = this.opt.data[j];
                         item.is_check = false;
-                        dom = this.$root.find('input[data-isNode=' + isNode + '][data-id="' + ids[i] + '"]').prop('checked', false);
+                        dom = this.tree.$dom.find('input[data-isNode=' + isNode + '][data-id="' + ids[i] + '"]').prop('checked', false);
                         this._changeItem(item, dom);
                     }
                 }
@@ -252,11 +250,11 @@
             var item = {};
             var dom;
             for (var i = 0; i < ids.length; i++) {
-                for (var j = 0; j < this.data.length; j++) {
-                    if (this.data[j].id == ids[i] && this.data[j].is_node == isNode) {
-                        item = this.data[j];
+                for (var j = 0; j < this.opt.data.length; j++) {
+                    if (this.opt.data[j].id == ids[i] && this.opt.data[j].is_node == isNode) {
+                        item = this.opt.data[j];
                         item.is_check = true;
-                        dom = this.$root.find('input[data-isNode=' + isNode + '][data-id="' + ids[i] + '"]').prop('checked', true);
+                        dom = this.tree.$dom.find('input[data-isNode=' + isNode + '][data-id="' + ids[i] + '"]').prop('checked', true);
                         this._changeItem(item, dom);
                     }
                 }
@@ -264,18 +262,18 @@
         },
 
         cancelAll: function () {
-            $.each(this.data, function (index, item) {
+            $.each(this.opt.data, function (index, item) {
                 item.is_check = false;
             });
-            this.$root.find('input').prop("checked", false);
+            this.tree.$dom.find('input').prop("checked", false);
             this.opt.onCancel.apply(this);
         },
         checkAll: function () {
             if (this.opt.is_multi) {
-                $.each(this.data, function (index, item) {
+                $.each(this.opt.data, function (index, item) {
                     item.is_check = true;
                 });
-                this.$root.find('input').prop("checked", true);
+                this.tree.$dom.find('input').prop("checked", true);
                 this.opt.onCheck.apply(this);
             }
         },
@@ -284,21 +282,21 @@
             this._hideChildren(this.tree);
 
             if (val === '') {
-                this.$root.find('div[node-id="' + this.tree.id + '"]').remove();
+                this.tree.$dom.find('div[node-id="' + this.tree.id + '"]').remove();
                 this._showChildren(this.tree);
             } else {
-                for (var i in this.data) {
+                for (var i in this.opt.data) {
                     if (this.opt.searchType == 1) {
-                        if (this.data[i].name.indexOf(val) != -1) {
-                            this.$root.find('div[node-id="' + this.tree.id + '"]').append(this._makeItem(this.data[i]));
+                        if (this.opt.data[i].name.indexOf(val) != -1) {
+                            this.tree.$dom.find('div[node-id="' + this.tree.id + '"]').append(this._makeItem(this.opt.data[i]));
                         }
                     } else if (this.opt.searchType == 2) {
-                        if (this.data[i].is_node && this.data[i].name.indexOf(val) != -1) {
-                            this.$root.find('div[node-id="' + this.tree.id + '"]').append(this._makeItem(this.data[i]));
+                        if (this.opt.data[i].is_node && this.opt.data[i].name.indexOf(val) != -1) {
+                            this.tree.$dom.find('div[node-id="' + this.tree.id + '"]').append(this._makeItem(this.opt.data[i]));
                         }
                     } else if (this.opt.searchType == 3) {
-                        if (!this.data[i].is_node && this.data[i].name.indexOf(val) != -1) {
-                            this.$root.find('div[node-id="' + this.tree.id + '"]').append(this._makeItem(this.data[i]));
+                        if (!this.opt.data[i].is_node && this.opt.data[i].name.indexOf(val) != -1) {
+                            this.tree.$dom.find('div[node-id="' + this.tree.id + '"]').append(this._makeItem(this.opt.data[i]));
                         }
                     }
                 }
@@ -400,7 +398,7 @@
 
         _getItem: function () {
             var arr = [];
-            var data = this.data;
+            var data = this.opt.data;
             if (this.opt.only_child) {
                 $.each(data, function (i, n) {
                     if (n.is_check && !n.is_node) {
@@ -447,7 +445,7 @@
         _getChild: function (node, cont) {
             if (node.is_node && node.has_children) {
                 var that = this;
-                $.each(that.data, function (i, n) {
+                $.each(that.opt.data, function (i, n) {
                     if (n.nodeId == node.id) {
                         cont.push(n);
                         if (n.is_node && node.has_children) {
@@ -460,7 +458,7 @@
 
         _cancelParentNode: function (id) {
             var that = this;
-            $.each(that.data, function (i, n) {
+            $.each(that.opt.data, function (i, n) {
                 if (n.id == id && n.is_node && n.is_check) {
                     n.is_check = false;
                     that.$root.find('input[data-isNode=true][data-id="' + id + '"]').prop('checked', false);
@@ -472,12 +470,12 @@
         _checkParentNode: function (id) {
             var that = this;
             var allChildrenChecked = true;
-            $.each(that.data, function (i, n) {
+            $.each(that.opt.data, function (i, n) {
                 if (n.nodeId == id && !n.is_check) {
                     allChildrenChecked = false;
                 }
             });
-            $.each(that.data, function (i, n) {
+            $.each(that.opt.data, function (i, n) {
                 if (n.id == id && n.is_node && !n.is_check && allChildrenChecked) {
                     n.is_check = true;
                     that.$root.find('input[data-isNode=true][data-id="' + id + '"]').prop('checked', true);
@@ -488,9 +486,9 @@
 
         _chgAllChildren: function (nodeid, bol) {
             var that = this;
-            $.each($.extend(true, [], this.data), function (i, n) {   //这句话 看起来 好像 不用 extend
+            $.each($.extend(true, [], this.opt.data), function (i, n) {   //这句话 看起来 好像 不用 extend
                 if (n.nodeId == nodeid) {
-                    that.data[i].is_check = bol;
+                    that.opt.data[i].is_check = bol;
                     if (n.is_node && n.has_children) {
                         that._chgAllChildren(n.id, bol);
                     }
@@ -636,7 +634,7 @@
                     children[i].is_check = change;
                     this._updateCheck(children[i]);
                     if (children[i].children) {
-                        this._changeChildren(children[i], change);
+                        this._changeChildren(children[i].children, change);
                     }
                 }
             }
@@ -661,14 +659,14 @@
 
         _checkTreeByIds: function (tree, sel_ids) {
             var ids = sel_ids.split(',');
-            for (var i = 0; i < $.length; i++) {
-                ids[i] = parseInt(ids[i]);
-            }
             this._traverseTree(tree, this._checkTreeByIdsFn, ids);
         },
         _checkTreeByIdsFn: function (item, ids) {
             if (!ids.length) {
-                return false;
+                return {
+                    children: false,
+                    brother: false
+                };
             }
             for (var i = 0; i < ids.length; i++) {
                 if (item.id == ids[i]) {
@@ -677,7 +675,10 @@
                     break;
                 }
             }
-            return ids.length;
+            return {
+                children: ids.length,
+                brother: ids.length
+            };
         },
 
         _traverseTree: function (tree, fn, input, output) {
@@ -730,7 +731,6 @@
             if (this.opt.has_search) {
                 $html.append(this._makeSearch());
             }
-            console.log($html);
             var style;
             if (this.opt.is_trigger) {
                 style = {
@@ -794,8 +794,8 @@
             var that = this;
             $search.on('keyup paste', function () {
                 var input = this;
-                clearTimeout(that._searchTimer);
-                that._searchTimer = setTimeout(function () {
+                clearTimeout(that.state._searchTimer);
+                that.state._searchTimer = setTimeout(function () {
                     that.search(input.value);
                 }, 100);
             });
@@ -908,7 +908,7 @@
                 if (that.opt.is_multi) {
                     that._changeItem(item, !item.is_check);
                 } else {
-                    $.each(that.data, function (index, item) {
+                    $.each(that.opt.data, function (index, item) {
                         item.is_check = false;
                     });
                     item.is_check = true;
@@ -949,11 +949,11 @@
          */
 
         _showTree: function () {
-            this.$root.show();
+            this.tree.$dom.show();
         },
 
         _hideTree: function () {
-            this.$root.hide();
+            this.tree.$dom.hide();
         },
 
         _showChildren: function (item) {
