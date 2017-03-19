@@ -78,7 +78,6 @@
             if (this.opt.is_trigger) {
                 this.dom.off('click.xTree');
                 this.dom.on('click.xTree', function (e) {
-                    $('.xTreeWrap').hide();
                     that.show();
                     e.stopPropagation();
                 });
@@ -86,7 +85,7 @@
                     that.hide();
                 });
             } else {
-                this.show();
+                that.show();
             }
         },
 
@@ -106,7 +105,7 @@
         },
         hide: function () {
             if (this._is_open) {
-                this.$root.hide();
+                this._hideTree();
                 this._originId = this.getId();
                 this._is_open = false;
                 this.opt.onClose.apply(this);
@@ -499,8 +498,9 @@
             });
         },
 
-
-        /*数据方法*/
+        /**
+         *      数据方法
+         */
         _arrayToTree: function (arrayIn) {
             var rootId = this._getTreeRoot(arrayIn);
             var treeData = {
@@ -519,7 +519,6 @@
             treeData.children = this._getSubTree(arrayIn, treeData);
             return treeData;
         },
-
         _getTreeRoot: function (arrayIn) {
             var rootId = [];
             var clone = JSON.parse(JSON.stringify(arrayIn));
@@ -549,7 +548,6 @@
 
             return rootId[0];
         },
-
         _uniqueArray: function (arrayIn) {
             var ua = [];
             for (var i = 0; i < arrayIn.length; i++) {
@@ -559,7 +557,6 @@
             }
             return ua;
         },
-
         _getSubTree: function (arrayIn, parent) {
             var result = [];
             var temp = {};
@@ -598,7 +595,6 @@
             }
             return false;
         },
-
         _getItemsByIds: function (tree, ids) {
             var items = [];
             this._traverseTree(tree, this._getItemsByIdsFn, ids, items);
@@ -631,7 +627,6 @@
                 this._changeParent(item.parent, change);
             }
         },
-
         _changeChildren: function (children, change) {
             if (!children) {
                 return false;
@@ -663,6 +658,7 @@
                 this._changeParent(parent.parent, change);
             }
         },
+
         _checkTreeByIds: function (tree, sel_ids) {
             var ids = sel_ids.split(',');
             for (var i = 0; i < $.length; i++) {
@@ -683,6 +679,7 @@
             }
             return ids.length;
         },
+
         _traverseTree: function (tree, fn, input, output) {
             if (!tree) {
                 return true;
@@ -701,7 +698,7 @@
 
 
         /**
-         * 构造html内部方法
+         *  视图：构造Tree、 item、 self、 children
          */
 
         _makeTree: function (tree) {
@@ -709,12 +706,13 @@
             tree.$dom.$self = this._makeSelfWrap(tree);
             tree.$dom.$children = this._makeChildrenWrap(tree);
             tree.$dom.append(tree.$dom.$self, tree.$dom.$children);
-            tree.$dom.$self.hide();
             if (tree.is_node && tree.children && tree.children.length) {
                 for (var i = 0; i < tree.children.length; i++) {
                     tree.$dom.$children.append(this._makeTreeFn(tree.children[i]));
                 }
             }
+            tree.$dom.$self.hide();
+            tree.$dom.hide();
             return tree.$dom;
         },
         _makeTreeFn: function (item) {
@@ -728,12 +726,11 @@
         },
         _makeTreeWrap: function () {
             var $html = $('<div class="x-tree-root"></div>');
-            $html.hide();
 
             if (this.opt.has_search) {
                 $html.append(this._makeSearch());
             }
-
+            console.log($html);
             var style;
             if (this.opt.is_trigger) {
                 style = {
@@ -778,13 +775,10 @@
                     // minWidth: this.opt.width ? this.opt.width : this.dom.outerWidth() * 0.98
                 });
 
-                $html.addClass('xTreeWrap');
-
                 $html.on('click', function (e) {
                     e.stopPropagation();
                 });
             }
-
             return $html;
         },
         _makeSearch: function () {
@@ -799,15 +793,14 @@
 
             var that = this;
             $search.on('keyup paste', function () {
-                var dom = this;
+                var input = this;
                 clearTimeout(that._searchTimer);
                 that._searchTimer = setTimeout(function () {
-                    that.search(dom.value);
+                    that.search(input.value);
                 }, 100);
             });
 
             return $search;
-
         },
         _makeItem: function (item) {
             if (!item) {
@@ -896,13 +889,11 @@
             }
 
             var $check;
-
             if (item.is_check) {
                 $check = $('<i class="x-tree-check fa fa-check-square-o" /i>');
             } else {
                 $check = $('<i class="x-tree-check fa fa-square-o" /i>');
             }
-
             $check.css({
                 'vertical-align': 'base-line',
                 'padding-right': '0px',
@@ -923,16 +914,13 @@
                     item.is_check = true;
                 }
             });
-
             return $check;
         },
         _makeFolder: function (item) {
             if (!item || !item.is_node) {
                 return '';
             }
-
             var $folder = $('<i class="fa fa-folder-o"></i>');
-
             $folder.css({
                 'vertical-align': 'base-line',
                 'padding-right': '0px',
@@ -947,29 +935,25 @@
             if (!item) {
                 return '';
             }
-
-            var $text = $('<span></span>');
-
+            var $text = $('<span class="x-tree-item-text"></span>');
             $text.text(item.name);
             $text.css({
                 padding: '0 0 0 5px'
             });
-
             return $text;
         },
 
 
         /**
-         *      
+         *    视图：显示、隐藏
          */
-        
+
         _showTree: function () {
-            if (this._is_first) {
-                this._showChildren(this.tree);
-                this._is_first = false;
-            } else {
-                this.$root.show();
-            }
+            this.$root.show();
+        },
+
+        _hideTree: function () {
+            this.$root.hide();
         },
 
         _showChildren: function (item) {
@@ -977,13 +961,11 @@
             item.$dom.$children.show();
             this._updateExpand(item);
         },
-
         _hideChildren: function (item) {
             item.expand = false;
             item.$dom.$children.hide();
             this._updateExpand(item);
         },
-
 
         _updateExpand: function (item) {
             if (item.expand) {
