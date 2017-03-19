@@ -96,26 +96,21 @@
          */
         show: function () {
             this.opt.onBeforeOpen.apply(this);
-
             this._showTreeWrap();
             this._showTree();
-
+            if(this.opt.is_trigger){
+                this.$root.find('.x-tree-search').focus();
+            }
             this._is_open = true;
-
-            this.$root.find('.x-tree-search').focus();
-
             this.opt.onOpen.apply(this);
             return this;
         },
         hide: function () {
             if (this._is_open) {
                 this.$root.hide();
-
-                this.opt.onClose.apply(this);
-
                 this._originId = this.getId();
-
                 this._is_open = false;
+                this.opt.onClose.apply(this);
             }
         },
 
@@ -964,23 +959,9 @@
             return $text;
         },
 
-        _showChildren: function (item) {
-            console.log(item);
-            item.expand = true;
-            item.$dom.$children.show();
-            this._updateExpand(item);
-        },
-
-        _hideChildren: function (item) {
-            item.expand = false;
-
-            item.$dom.$children.hide();
-            this._updateExpand(item);
-        },
-
 
         /**
-         *      视图方法
+         *      
          */
 
         _showTreeWrap: function () {
@@ -994,7 +975,21 @@
                 this.$root.show();
             }
         },
-        
+
+
+        _showChildren: function (item) {
+            item.expand = true;
+            item.$dom.$children.show();
+            this._updateExpand(item);
+        },
+
+        _hideChildren: function (item) {
+            item.expand = false;
+            item.$dom.$children.hide();
+            this._updateExpand(item);
+        },
+
+
         _updateExpand: function (item) {
             if (item.expand) {
                 item.$dom.$self.find('.x-tree-expand').removeClass('fa-caret-right');
