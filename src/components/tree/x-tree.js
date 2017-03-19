@@ -151,7 +151,6 @@
 
             return text.join();
         },
-
         getId: function (only, merge) {
             var ids = [];
             var data = this.opt.data;
@@ -170,7 +169,6 @@
             }
             return ids;
         },
-
         getIdss: function (only, merge) {
             var id = [];
             var nodeId = [];
@@ -260,7 +258,6 @@
                 }
             }
         },
-
         cancelAll: function () {
             $.each(this.opt.data, function (index, item) {
                 item.is_check = false;
@@ -303,7 +300,6 @@
                 }
             }
         },
-
 
         /**
          *      数据方法
@@ -765,7 +761,7 @@
             tree.$dom = this._makeTreeWrap(tree);
             if (this.opt.has_search) {
                 tree.$dom.$search = this._makeSearchWrap();
-                tree.$dom.append(this._makeSearchInput(),tree.$dom.$search);
+                tree.$dom.append(this._makeSearchInput(), tree.$dom.$search);
             }
             tree.$dom.$self = this._makeSelfWrap(tree);
             tree.$dom.$children = this._makeChildrenWrap(tree);
@@ -1008,8 +1004,6 @@
         },
 
 
-
-
         /**
          *    视图：显示、隐藏
          */
@@ -1017,7 +1011,6 @@
         _showTree: function () {
             this.tree.$dom.show();
         },
-
         _hideTree: function () {
             this.tree.$dom.hide();
         },
