@@ -617,12 +617,15 @@
                 return false;
             }
             item.is_check = change;
+            item.checkState = change;
             this._updateCheck(item);
             if (item.children) {
                 this._changeChildren(item.children, change);
+                this._changeChildrenState(item.children, change);
             }
             if (item.parent) {
                 this._changeParent(item.parent, change);
+                this._changeParentState(item.parent, change)
             }
         },
         _changeChildren: function (children, change) {
@@ -632,7 +635,6 @@
             for (var i = 0; i < children.length; i++) {
                 if (children[i].is_check != change) {
                     children[i].is_check = change;
-                    this._updateCheck(children[i]);
                     if (children[i].children) {
                         this._changeChildren(children[i].children, change);
                     }
@@ -655,6 +657,62 @@
             if (parent.parent) {
                 this._changeParent(parent.parent, change);
             }
+        },
+        _changeChildrenState: function (children, change) {
+            if (!children) {
+                return false;
+            }
+            for (var i = 0; i < children.length; i++) {
+                children[i].checkState = change;
+                this._updateCheck(children[i]);
+                if (children[i].children) {
+                    this._changeChildrenState(children[i].children, change);
+                }
+            }
+            return true;
+        },
+        _changeParentState: function (parent, change) {
+            if (!parent) {
+                return false;
+            }
+            var old = parent.checkState;
+            var len = parent.children.length;
+
+            if (change === "z") {
+                parent.checkState = "z";
+            } else if (change === true) {
+                var n = 0;
+                for (var i = 0; i < len; i++) {
+                    if (parent.children[i].checkState === true) {
+                        n += 1;
+                    } else {
+                        parent.checkState = "z";
+                        break;
+                    }
+                }
+                if (n === len) {
+                    parent.checkState = true;
+                }
+            } else if (change === false) {
+                var m = 0;
+                for (var j = 0; j < len; j++) {
+                    if (parent.children[j].checkState === false) {
+                        m += 1;
+                    } else {
+                        parent.checkState = "z";
+                        break;
+                    }
+                }
+                if (m === len) {
+                    parent.checkState = false;
+                }
+            }
+
+            this._updateCheck(parent);
+            if (parent.parent && parent.checkState !== old) {
+                this._changeParentState(parent.parent, parent.checkState);
+            }
+            return true;
         },
 
         _checkTreeByIds: function (tree, sel_ids) {
@@ -977,14 +1035,15 @@
             }
         },
         _updateCheck: function (item) {
-            if (item.is_check === true) {
-                item.$dom.$self.find('.x-tree-check').removeClass('fa-square-o');
+            if (item.checkState === true) {
+                item.$dom.$self.find('.x-tree-check').removeClass('fa-square-o fa-minus-square-o');
                 item.$dom.$self.find('.x-tree-check').addClass('fa-check-square-o');
-            } else if (item.is_check === false) {
-                item.$dom.$self.find('.x-tree-check').removeClass('fa-check-square-o');
+            } else if (item.checkState === false) {
+                item.$dom.$self.find('.x-tree-check').removeClass('fa-check-square-o fa-minus-square-o');
                 item.$dom.$self.find('.x-tree-check').addClass('fa-square-o');
-            } else if (item.is_check === 3) {
-
+            } else if (item.checkState === 'z') {
+                item.$dom.$self.find('.x-tree-check').removeClass('fa-square-o fa-check-square-o');
+                item.$dom.$self.find('.x-tree-check').addClass('fa-minus-square-o');
             }
 
         },
