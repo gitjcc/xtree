@@ -96,7 +96,6 @@
          */
         show: function () {
             this.opt.onBeforeOpen.apply(this);
-            this._showTreeWrap();
             this._showTree();
             if(this.opt.is_trigger){
                 this.$root.find('.x-tree-search').focus();
@@ -963,10 +962,7 @@
         /**
          *      
          */
-
-        _showTreeWrap: function () {
-            this.$root.show();
-        },
+        
         _showTree: function () {
             if (this._is_first) {
                 this._showChildren(this.tree);
@@ -975,7 +971,6 @@
                 this.$root.show();
             }
         },
-
 
         _showChildren: function (item) {
             item.expand = true;
