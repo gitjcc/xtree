@@ -279,24 +279,25 @@
         },
 
         search: function (val) {
-            this._hideChildren(this.tree);
+            this.tree.$dom.$children.hide();
 
             if (val === '') {
-                this.tree.$dom.find('div[node-id="' + this.tree.id + '"]').remove();
-                this._showChildren(this.tree);
+                this.tree.$dom.$search.empty();
+                this.tree.$dom.$children.show();
             } else {
+                this.tree.$dom.$search.empty();
                 for (var i in this.opt.data) {
                     if (this.opt.searchType == 1) {
                         if (this.opt.data[i].name.indexOf(val) != -1) {
-                            this.tree.$dom.find('div[node-id="' + this.tree.id + '"]').append(this._makeItem(this.opt.data[i]));
+                            this.tree.$dom.$search.append(this._makeItem(this.opt.data[i]));
                         }
                     } else if (this.opt.searchType == 2) {
                         if (this.opt.data[i].is_node && this.opt.data[i].name.indexOf(val) != -1) {
-                            this.tree.$dom.find('div[node-id="' + this.tree.id + '"]').append(this._makeItem(this.opt.data[i]));
+                            this.tree.$dom.$search.append(this._makeItem(this.opt.data[i]));
                         }
                     } else if (this.opt.searchType == 3) {
                         if (!this.opt.data[i].is_node && this.opt.data[i].name.indexOf(val) != -1) {
-                            this.tree.$dom.find('div[node-id="' + this.tree.id + '"]').append(this._makeItem(this.opt.data[i]));
+                            this.tree.$dom.$search.append(this._makeItem(this.opt.data[i]));
                         }
                     }
                 }
@@ -762,6 +763,10 @@
 
         _makeTree: function (tree) {
             tree.$dom = this._makeTreeWrap(tree);
+            if (this.opt.has_search) {
+                tree.$dom.$search = this._makeSearchWrap();
+                tree.$dom.append(this._makeSearchInput(),tree.$dom.$search);
+            }
             tree.$dom.$self = this._makeSelfWrap(tree);
             tree.$dom.$children = this._makeChildrenWrap(tree);
             tree.$dom.append(tree.$dom.$self, tree.$dom.$children);
@@ -783,12 +788,8 @@
             }
             return $item;
         },
-        _makeTreeWrap: function () {
+        _makeTreeWrap: function (item) {
             var $html = $('<div class="x-tree-root"></div>');
-
-            if (this.opt.has_search) {
-                $html.append(this._makeSearch());
-            }
             var style;
             if (this.opt.is_trigger) {
                 style = {
@@ -839,7 +840,7 @@
             }
             return $html;
         },
-        _makeSearch: function () {
+        _makeSearchInput: function (item) {
             var $search = $('<input class="x-tree-search" type="text" placeholder="搜索"/></div>');
             $search.css({
                 'border': 'none',
@@ -859,6 +860,11 @@
             });
 
             return $search;
+        },
+        _makeSearchWrap: function (item) {
+            var $searchWrap = $('<div></div>');
+            $searchWrap.addClass('x-tree-search');
+            return $searchWrap;
         },
         _makeItem: function (item) {
             if (!item) {
@@ -1000,6 +1006,8 @@
             });
             return $text;
         },
+
+
 
 
         /**
