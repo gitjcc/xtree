@@ -283,7 +283,7 @@
         _getItemsByIds: function (data, id, type) {
             var items = [];
             var data = this.opt.data;
-            if (type === 0) {
+            if (!type || type === 0) {
                 for (var k = 0; k < data.length; k++) {
                     if (data[k].is_check) {
                         items.push(data[k]);
@@ -301,7 +301,14 @@
         _getItems: function (type) {
             var items = [];
             var data = this.opt.data;
-            if (type === 1) {
+            if (!type || type === 0) {
+                for (var k = 0; k < data.length; k++) {
+                    if (data[k].is_check) {
+                        items.push(data[k]);
+                    }
+                }
+
+            } else if (type === 1) {
                 for (var i = 0; i < data.length; i++) {
                     if (data[i].is_check && !data[i].is_node) {
                         items.push(data[i]);
@@ -309,12 +316,6 @@
                 }
             } else if (type === 2) {
                 this._getItemMerge(this.tree, items);
-            } else {
-                for (var k = 0; k < data.length; k++) {
-                    if (data[k].is_check) {
-                        items.push(data[k]);
-                    }
-                }
             }
             return items;
         },
@@ -390,6 +391,7 @@
             } else {
                 this._changeItemRadio(item, true);
             }
+            this.opt.onChange.apply(this);
         },
         _changeItemRadio: function (item, change) {
             if (!item && !change && item.is_check === change) {
