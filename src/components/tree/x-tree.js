@@ -65,7 +65,7 @@
                 if (this.opt.is_multi) {
                     this._checkTreeByIds(this.tree, this.opt.sel_ids);
                 } else {
-                    this._checkDataRadio(this.tree, this.opt.sel_ids);
+                    this._checkDataRadio(this.opt.data, this.opt.sel_ids);
                 }
             }
 
@@ -130,16 +130,16 @@
             if (!Array.isArray(ids)) {
                 return "checkItem(),参数ids不是数组";
             }
-            var items = this._getItemsByIds(this.opt.data,ids,type);
+            var items = this._getItemsByIds(this.opt.data, ids, type);
             for (var i = 0; i < items.length; i++) {
-                this._changeItem(items[i], true);
+                this._changeItem(items[i], false);
             }
         },
         checkItem: function (ids, type) {
             if (!Array.isArray(ids)) {
                 return "checkItem(),参数ids不是数组";
             }
-            var items = this._getItemsByIds(this.opt.data,ids,type);
+            var items = this._getItemsByIds(this.opt.data, ids, type);
             for (var i = 0; i < items.length; i++) {
                 this._changeItem(items[i], true);
             }
@@ -280,19 +280,23 @@
             }
             return false;
         },
-        _getItemsByIds: function (data, id, type) {
+        _getItemsByIds: function (data, ids, type) {
             var items = [];
             var data = this.opt.data;
             if (!type || type === 0) {
-                for (var k = 0; k < data.length; k++) {
-                    if (data[k].is_check) {
-                        items.push(data[k]);
+                for (var i = 0; i < ids.length; i++) {
+                    for (var j = 0; j < data.length; j++) {
+                        if (data[j].id == ids[i]) {
+                            items.push(data[j]);
+                        }
                     }
                 }
             } else if (type === 1) {
-                for (var i = 0; i < data.length; i++) {
-                    if (data[i].is_check && !data[i].is_node) {
-                        items.push(data[i]);
+                for (var m = 0; m < ids.length; m++) {
+                    for (var n = 0; n < data.length; n++) {
+                        if (data[n].id == ids[m] && !data[n].is_node) {
+                            items.push(data[n]);
+                        }
                     }
                 }
             }
@@ -333,9 +337,12 @@
             return true;
         },
 
-        _checkDataRadio: function (data, sel_id) {
+        _checkDataRadio: function (data, sel_ids) {
+            if (!Array.isArray(sel_ids)) {
+                var sel_id = sel_ids.split(',');
+            }
             for (var j = 0; j < data.length; j++) {
-                if (data[j].id == sel_id) {
+                if (data[j].id == sel_id[0]) {
                     this._changeItem(data[j], true);
                     return false;
                 }
@@ -352,7 +359,9 @@
             return false;
         },
         _checkTreeByIds: function (tree, sel_ids) {
-            var ids = sel_ids.split(',');
+            if (!Array.isArray(sel_ids)) {
+                var ids = sel_ids.split(',');
+            }
             this._traverseTree(tree, this._checkTreeByIdsFn, ids);
         },
         _checkTreeByIdsFn: function (item, ids) {
@@ -390,6 +399,11 @@
                 this._changeItemMulti(item, change);
             } else {
                 this._changeItemRadio(item, true);
+            }
+            if (change) {
+                this.opt.onCheck.apply(this);
+            } else {
+                this.opt.onCancel.apply(this);
             }
             this.opt.onChange.apply(this);
         },
