@@ -8,7 +8,7 @@
         dom: '',  //jqueryDom
         is_trigger: false,  //是否需要触发? 否则直接显示
         has_search: false,
-        searchType: 1, //1全部，2节点，3叶子
+        searchType: 0, //0全部，1节点，2叶子
         only_child: false,//是否结果只要 child
         node_merge: false,//结果只显示最上层  比如   中国被选中  四川,成都则不会显示  否则 每个被勾选的节点都显示
         zIndex: 99,
@@ -164,15 +164,15 @@
             } else {
                 this.tree.$dom.$search.empty();
                 for (var i in this.opt.data) {
-                    if (this.opt.searchType == 1) {
+                    if (this.opt.searchType == 0) {
                         if (this.opt.data[i].name.indexOf(val) != -1) {
                             this.tree.$dom.$search.append(this._makeItem(this.opt.data[i]));
                         }
-                    } else if (this.opt.searchType == 2) {
+                    } else if (this.opt.searchType == 1) {
                         if (this.opt.data[i].is_node && this.opt.data[i].name.indexOf(val) != -1) {
                             this.tree.$dom.$search.append(this._makeItem(this.opt.data[i]));
                         }
-                    } else if (this.opt.searchType == 3) {
+                    } else if (this.opt.searchType == 2) {
                         if (!this.opt.data[i].is_node && this.opt.data[i].name.indexOf(val) != -1) {
                             this.tree.$dom.$search.append(this._makeItem(this.opt.data[i]));
                         }
@@ -398,7 +398,7 @@
             if (this.opt.is_multi) {
                 this._changeItemMulti(item, change);
             } else {
-                this._changeItemRadio(item, true);
+                this._changeItemRadio(item, change);
             }
             if (change) {
                 this.opt.onCheck.apply(this);
@@ -408,7 +408,7 @@
             this.opt.onChange.apply(this);
         },
         _changeItemRadio: function (item, change) {
-            if (!item && !change && item.is_check === change) {
+            if (!item || !change || item.is_check === change) {
                 return false;
             }
             for (var i = 0; i < this.opt.data.length; i++) {
@@ -422,7 +422,7 @@
             return false;
         },
         _changeItemMulti: function (item, change) {
-            if (!item && item.is_check === change) {
+            if (!item || item.is_check === change && change) {
                 return false;
             }
             item.is_check = change;
