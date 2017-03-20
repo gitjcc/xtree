@@ -46,7 +46,7 @@
 
     tree.prototype = {
         _init: function (opt) {
-            var res = this._checkData(opt.data);
+            var res = this._validateOpt(opt);
             if (!res) {
                 return false;
             }
@@ -62,11 +62,10 @@
             this.dom.append(this._makeTree(this.tree));
 
             if (this.opt.sel_ids) {
-                console.log("this", this);
                 if (this.opt.is_multi) {
                     this._checkTreeByIds(this.tree, this.opt.sel_ids);
                 } else {
-                    this._checkTreeByIds(this.tree, this.opt.sel_ids);
+                    this._checkDataRadio(this.tree, this.opt.sel_ids);
                 }
             }
 
@@ -110,168 +109,49 @@
             }
         },
 
-        getName: function (only, merge) {
-            var text = [];
-            var data = this.opt.data;
-            if (this.opt.only_child) {
-                $.each(data, function (i, n) {
-                    if (n.is_check && !n.is_node) {
-                        text.push(n.name);
-                    }
-                });
-            } else {
-                if (this.opt.node_merge) {
-                    var nodes = [];
-                    $.each(data, function (i, n) {
-                        if (n.is_check && n.is_node) {
-                            nodes.push(n.id);
-                        }
-                    });
-
-                    var clone = $.extend(true, [], data); //直接赋值传的是引用
-                    $.each(clone, function (i, n) {
-                        if ((n.is_check && $.inArray(n.nodeId, nodes) != -1) || !n.is_check) {
-                            clone[i] = null;
-                        }
-                    });
-
-                    $.each(clone, function (i, n) {
-                        if (n) {
-                            text.push(n.name);
-                        }
-                    });
-                } else {
-                    $.each(data, function (i, n) {
-                        if (n.is_check) {
-                            text.push(n.name);
-                        }
-                    });
-                }
+        getName: function (type) {
+            var name = [];
+            var items = this._getItems(type);
+            for (var i = 0; i < items.length; i++) {
+                name.push(items[i].name);
             }
-
-            return text.join();
+            return name.join();
         },
-        getId: function (only, merge) {
+        getId: function (type) {
             var ids = [];
-            var data = this.opt.data;
-            if (this.opt.only_child) {
-                for (var i = 0; i < data.length; i++) {
-                    if (data[i].is_check && !data[i].is_node) {
-                        ids.push(data[i].id);
-                    }
-                }
-            } else {
-                for (var j = 0; j < data.length; j++) {
-                    if (data[j].is_check) {
-                        ids.push(data[j].id);
-                    }
-                }
+            var items = this._getItems(type);
+            for (var i = 0; i < items.length; i++) {
+                ids.push(items[i].id);
             }
             return ids;
         },
-        getIdss: function (only, merge) {
-            var id = [];
-            var nodeId = [];
-            var data = this.opt.data;
 
-            if (this.opt.only_child) {
-                $.each(data, function (i, n) {
-                    if (n.is_check && !n.is_node) {
-                        id.push(n.id);
-                    }
-                });
-            } else {
-                if (this.opt.node_merge) {
-                    var node = [];
-                    $.each(data, function (i, n) {
-                        if (n.is_check && n.is_node) {
-                            node.push(n.id);
-//                            text.push( n.name);  //nodefirst
-                        }
-                    });
-                    var clone = $.extend(true, [], data);
-                    $.each(clone, function (i, n) {
-                        if ((n.is_check && $.inArray(n.nodeId, node) != -1) || !n.is_check) {
-                            clone[i] = null;
-                        }
-                    });
-                    $.each(clone, function (i, n) {
-                        if (n) {
-                            if (n.is_node) {
-                                nodeId.push(n.id);
-                            } else {
-                                id.push(n.id);
-                            }
-                        }
-                    });
-                } else {
-                    $.each(data, function (i, n) {
-                        if (n.is_check) {
-                            if (n.is_node) {
-                                nodeId.push(n.id);
-                            } else {
-                                id.push(n.id);
-                            }
-                        }
-                    });
-                }
-                id = {'id': id, 'nodeId': nodeId};
-            }
-            return id;
-        },
-
-        cancelItem: function (ids, isNode) {
+        cancelItem: function (ids, type) {
             if (!Array.isArray(ids)) {
                 return "checkItem(),参数ids不是数组";
             }
-            isNode = !!isNode;
-            var item = {};
-            var dom;
-            for (var i = 0; i < ids.length; i++) {
-                for (var j = 0; j < this.opt.data.length; j++) {
-                    if (this.opt.data[j].id == ids[i] && this.opt.data[j].is_node == isNode) {
-                        item = this.opt.data[j];
-                        item.is_check = false;
-                        dom = this.tree.$dom.find('input[data-isNode=' + isNode + '][data-id="' + ids[i] + '"]').prop('checked', false);
-                        this._changeItem(item, dom);
-                    }
-                }
+            var items = this._getItemsByIds(this.opt.data,ids,type);
+            for (var i = 0; i < items.length; i++) {
+                this._changeItem(items[i], true);
             }
         },
-        checkItem: function (ids, isNode) {
+        checkItem: function (ids, type) {
             if (!Array.isArray(ids)) {
                 return "checkItem(),参数ids不是数组";
             }
-            isNode = !!isNode;
-            this._changeItems(ids);
-
-            var item = {};
-            var dom;
-            for (var i = 0; i < ids.length; i++) {
-                for (var j = 0; j < this.opt.data.length; j++) {
-                    if (this.opt.data[j].id == ids[i] && this.opt.data[j].is_node == isNode) {
-                        item = this.opt.data[j];
-                        item.is_check = true;
-                        dom = this.tree.$dom.find('input[data-isNode=' + isNode + '][data-id="' + ids[i] + '"]').prop('checked', true);
-                        this._changeItem(item, dom);
-                    }
-                }
+            var items = this._getItemsByIds(this.opt.data,ids,type);
+            for (var i = 0; i < items.length; i++) {
+                this._changeItem(items[i], true);
             }
         },
         cancelAll: function () {
-            $.each(this.opt.data, function (index, item) {
-                item.is_check = false;
-            });
-            this.tree.$dom.find('input').prop("checked", false);
-            this.opt.onCancel.apply(this);
+            for (var i = 0; i < this.opt.data.length; i++) {
+                this._changeItem(this.opt.data[i], false);
+            }
         },
         checkAll: function () {
-            if (this.opt.is_multi) {
-                $.each(this.opt.data, function (index, item) {
-                    item.is_check = true;
-                });
-                this.tree.$dom.find('input').prop("checked", true);
-                this.opt.onCheck.apply(this);
+            for (var i = 0; i < this.opt.data.length; i++) {
+                this._changeItem(this.opt.data[i], true);
             }
         },
 
@@ -305,197 +185,15 @@
          *      数据方法
          */
 
-        _checkData: function (data) {
-            for (var i in data) {
-                if (typeof data[i] !== 'object') {
+        _validateOpt: function (opt) {
+            for (var i in opt.data) {
+                if (typeof opt.data[i] !== 'object') {
                     return false;
                 }
             }
             return true;
         },
 
-        _selData: function (data, opt) {
-            var sel_ids = opt.sel_ids.split(',');
-            for (var i = 0; i < sel_ids.length; i++) {
-                for (var j = 0; j < data.length; j++) {
-                    if (opt.only_child) {
-                        if (!data[j].is_node && data[j].id == sel_ids[i]) {
-                            data[j].is_check = true;
-                            this._selParent(data, data[j].nodeId);
-                        }
-                    } else {
-                        if (data[j].id == sel_ids[i]) {
-                            data[j].is_check = true;
-                            this._selParent(data, data[j].nodeId);
-                            if (data[j].is_node && data[i].has_children) {
-                                this._selChildren(data, data[j].id);
-                            }
-                        }
-                    }
-                }
-            }
-            return data;
-        },
-
-        _selDataRadio: function (data, opt) {
-            var sel_ids = opt.sel_ids;
-            for (var j = 0; j < data.length; j++) {
-                if (data[j].id == sel_ids) {
-                    data[j].is_check = true;
-                }
-            }
-            return data;
-        },
-
-        _selParent: function (data, nid) {
-            if (!nid) {
-                return false;
-            }
-            var selParent = true;
-            var sel_p = {};
-            for (var i = 0; i < data.length; i++) {
-                if (data[i].id == nid && data[i].is_node) {
-                    sel_p = data[i];
-                }
-            }
-
-            for (var j = 0; j < data.length; j++) {
-                if (data[j].nodeId == nid && !data[j].is_check) {
-                    selParent = false;
-                    return false;
-                }
-            }
-
-            if (selParent) {
-                sel_p.is_check = true;
-                if (sel_p.nodeId) {
-                    this._selParent(data, sel_p.nodeId);
-                }
-            }
-        },
-
-        _selChildren: function (data, id) {
-            if (!id) {
-                return false;
-            }
-            for (var i = 0; i < data.length; i++) {
-                if (data[i].nodeId == id) {
-                    data[i].is_check = true;
-                    if (data[i].is_node && data[i].has_children) {
-                        this._selChildren(data, data[i].id);
-                    }
-                }
-
-            }
-        },
-
-        _changeAll: function () {
-
-        },
-
-        _getItem: function () {
-            var arr = [];
-            var data = this.opt.data;
-            if (this.opt.only_child) {
-                $.each(data, function (i, n) {
-                    if (n.is_check && !n.is_node) {
-                        arr.push(n);
-                    }
-                });
-            } else {
-
-                if (this.opt.node_merge) {
-                    var node = [];
-                    $.each(data, function (i, n) {
-                        if (n.is_check && n.is_node) {
-                            node.push(n.id);
-//                            text.push( n.name);  //nodefirst
-                        }
-                    });
-
-                    var clone = $.extend(true, [], data);
-                    $.each(clone, function (i, n) {
-                        if ((n.is_check && $.inArray(n.nodeId, node) != -1) || !n.is_check) {
-                            clone[i] = null;
-                        }
-                    });
-
-
-                    $.each(clone, function (i, n) {
-                        if (n) {
-                            arr.push(n);
-                        }
-                    });
-                } else {
-                    $.each(data, function (i, n) {
-                        if (n.is_check) {
-                            arr.push(n);
-                        }
-                    });
-                }
-
-
-            }
-            return arr;
-        },
-
-        _getChild: function (node, cont) {
-            if (node.is_node && node.has_children) {
-                var that = this;
-                $.each(that.opt.data, function (i, n) {
-                    if (n.nodeId == node.id) {
-                        cont.push(n);
-                        if (n.is_node && node.has_children) {
-                            that._getChild(n, cont);
-                        }
-                    }
-                })
-            }
-        },
-
-        _cancelParentNode: function (id) {
-            var that = this;
-            $.each(that.opt.data, function (i, n) {
-                if (n.id == id && n.is_node && n.is_check) {
-                    n.is_check = false;
-                    that.$root.find('input[data-isNode=true][data-id="' + id + '"]').prop('checked', false);
-                    that._cancelParentNode(n.nodeId);
-                }
-            })
-        },
-
-        _checkParentNode: function (id) {
-            var that = this;
-            var allChildrenChecked = true;
-            $.each(that.opt.data, function (i, n) {
-                if (n.nodeId == id && !n.is_check) {
-                    allChildrenChecked = false;
-                }
-            });
-            $.each(that.opt.data, function (i, n) {
-                if (n.id == id && n.is_node && !n.is_check && allChildrenChecked) {
-                    n.is_check = true;
-                    that.$root.find('input[data-isNode=true][data-id="' + id + '"]').prop('checked', true);
-                    that._checkParentNode(n.nodeId);
-                }
-            });
-        },
-
-        _chgAllChildren: function (nodeid, bol) {
-            var that = this;
-            $.each($.extend(true, [], this.opt.data), function (i, n) {   //这句话 看起来 好像 不用 extend
-                if (n.nodeId == nodeid) {
-                    that.opt.data[i].is_check = bol;
-                    if (n.is_node && n.has_children) {
-                        that._chgAllChildren(n.id, bol);
-                    }
-                }
-            });
-        },
-
-        /**
-         *      数据方法
-         */
         _arrayToTree: function (arrayIn) {
             var rootId = this._getTreeRoot(arrayIn);
             var treeData = {
@@ -504,6 +202,7 @@
                 nodeId: null,
                 is_node: true,
                 is_check: false,
+                checkState: false,
                 children: [],
                 parent: null,
                 level: 0,
@@ -558,11 +257,10 @@
             for (var i = 0; i < arrayIn.length; i++) {
                 if (arrayIn[i].nodeId == parent.id) {
                     temp = arrayIn[i];
+                    temp.checkState = temp.is_check;
                     temp.parent = parent;
                     temp.level = parent.level + 1;
-
-                    temp.expand = temp.is_check;
-                    temp.checkState = temp.is_check;
+                    temp.expand = true;
                     if (temp.is_node) {
                         temp.children = this._getSubTree(arrayIn, temp);
                     } else {
@@ -574,49 +272,147 @@
             return result;
         },
 
-        _getItemById: function (tree, id) {
-            var item = {};
-            if (tree.id == id) {
-                return tree;
-            } else {
-                if (tree.children) {
-                    for (var i = 0; i < tree.children.length; i++) {
-                        item = this._getItemById(tree.children[i], id);
-                        if (item) {
-                            return item;
-                        }
-                    }
+        _getItemById: function (data, id) {
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].id == id) {
+                    return data[i];
                 }
             }
             return false;
         },
-        _getItemsByIds: function (tree, ids) {
+        _getItemsByIds: function (data, id, type) {
             var items = [];
-            this._traverseTree(tree, this._getItemsByIdsFn, ids, items);
-            return items;
-        },
-        _getItemsByIdsFn: function (item, ids, items) {
-            if (!ids.length) {
-                return false;
-            }
-            for (var i = 0; i < ids.length; i++) {
-                if (item.id == ids[i]) {
-                    items.push(item);
-                    ids.splice(i, 1);
-                    break;
+            var data = this.opt.data;
+            if (type === 0) {
+                for (var k = 0; k < data.length; k++) {
+                    if (data[k].is_check) {
+                        items.push(data[k]);
+                    }
+                }
+            } else if (type === 1) {
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].is_check && !data[i].is_node) {
+                        items.push(data[i]);
+                    }
                 }
             }
-            return ids.length;
+            return items;
+        },
+        _getItems: function (type) {
+            var items = [];
+            var data = this.opt.data;
+            if (type === 1) {
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].is_check && !data[i].is_node) {
+                        items.push(data[i]);
+                    }
+                }
+            } else if (type === 2) {
+                this._getItemMerge(this.tree, items);
+            } else {
+                for (var k = 0; k < data.length; k++) {
+                    if (data[k].is_check) {
+                        items.push(data[k]);
+                    }
+                }
+            }
+            return items;
+        },
+        _getItemMerge: function (item, items) {
+            if (item.is_check) {
+                items.push(item);
+                return false;
+            }
+            if (item.is_node && item.children && item.children.length) {
+                for (var i = 0; i < item.children.length; i++) {
+                    this._getItemMerge(item.children[i], items);
+                }
+                return false;
+            }
+            return true;
+        },
+
+        _checkDataRadio: function (data, sel_id) {
+            for (var j = 0; j < data.length; j++) {
+                if (data[j].id == sel_id) {
+                    this._changeItem(data[j], true);
+                    return false;
+                }
+            }
+            return false;
+        },
+        _checkItemById: function (data, id) {
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].id == id) {
+                    this._changeItem(data[i], true);
+                    return false;
+                }
+            }
+            return false;
+        },
+        _checkTreeByIds: function (tree, sel_ids) {
+            var ids = sel_ids.split(',');
+            this._traverseTree(tree, this._checkTreeByIdsFn, ids);
+        },
+        _checkTreeByIdsFn: function (item, ids) {
+            if (!ids.length) {
+                return {
+                    children: false,
+                    brother: false
+                };
+            }
+            if (this.opt.only_child) {
+                for (var i = 0; i < ids.length; i++) {
+                    if (item.id == ids[i] && !data[i].is_node) {
+                        this._changeItem(item, true);
+                        ids.splice(i, 1);
+                        break;
+                    }
+                }
+            } else {
+                for (var j = 0; j < ids.length; j++) {
+                    if (item.id == ids[j]) {
+                        this._changeItem(item, true);
+                        ids.splice(j, 1);
+                        break;
+                    }
+                }
+            }
+            return {
+                children: ids.length,
+                brother: ids.length
+            };
         },
 
         _changeItem: function (item, change) {
+            if (this.opt.is_multi) {
+                this._changeItemMulti(item, change);
+            } else {
+                this._changeItemRadio(item, true);
+            }
+        },
+        _changeItemRadio: function (item, change) {
+            if (!item && !change && item.is_check === change) {
+                return false;
+            }
+            for (var i = 0; i < this.opt.data.length; i++) {
+                this.opt.data[i].is_check = false;
+                this.opt.data[i].checkState = false;
+                this._updateCheck(this.opt.data[i]);
+            }
+            item.is_check = true;
+            item.checkState = true;
+            this._updateCheck(item);
+            return false;
+        },
+        _changeItemMulti: function (item, change) {
             if (!item && item.is_check === change) {
                 return false;
             }
             item.is_check = change;
             item.checkState = change;
             this._updateCheck(item);
-            if (item.children) {
+            if (item.is_node && item.children) {
                 this._changeChildren(item.children, change);
                 this._changeChildrenState(item.children, change);
             }
@@ -650,7 +446,6 @@
                 }
             }
             parent.is_check = change;
-            this._updateCheck(parent);
             if (parent.parent) {
                 this._changeParent(parent.parent, change);
             }
@@ -660,10 +455,12 @@
                 return false;
             }
             for (var i = 0; i < children.length; i++) {
-                children[i].checkState = change;
-                this._updateCheck(children[i]);
-                if (children[i].children) {
-                    this._changeChildrenState(children[i].children, change);
+                if (children[i].checkState != change) {
+                    children[i].checkState = change;
+                    this._updateCheck(children[i]);
+                    if (children[i].children) {
+                        this._changeChildrenState(children[i].children, change);
+                    }
                 }
             }
             return true;
@@ -712,30 +509,6 @@
             return true;
         },
 
-        _checkTreeByIds: function (tree, sel_ids) {
-            var ids = sel_ids.split(',');
-            this._traverseTree(tree, this._checkTreeByIdsFn, ids);
-        },
-        _checkTreeByIdsFn: function (item, ids) {
-            if (!ids.length) {
-                return {
-                    children: false,
-                    brother: false
-                };
-            }
-            for (var i = 0; i < ids.length; i++) {
-                if (item.id == ids[i]) {
-                    this._changeItem(item, true);
-                    ids.splice(i, 1);
-                    break;
-                }
-            }
-            return {
-                children: ids.length,
-                brother: ids.length
-            };
-        },
-
         _traverseTree: function (tree, fn, input, output) {
             if (!tree) {
                 return true;
@@ -751,7 +524,6 @@
             }
             return _continue.brother;
         },
-
 
         /**
          *  视图：构造Tree、 item、 self、 children
@@ -908,6 +680,7 @@
                 'margin-left': '16px'
             });
             if (item.level > this.opt.expand) {
+                item.expand = false;
                 $html.hide();
             }
             return $html;
@@ -965,14 +738,7 @@
 
             var that = this;
             $check.on('click', function () {
-                if (that.opt.is_multi) {
-                    that._changeItem(item, !item.is_check);
-                } else {
-                    $.each(that.opt.data, function (index, item) {
-                        item.is_check = false;
-                    });
-                    item.is_check = true;
-                }
+                that._changeItem(item, !item.is_check);
             });
             return $check;
         },
@@ -1002,7 +768,6 @@
             });
             return $text;
         },
-
 
         /**
          *    视图：显示、隐藏
