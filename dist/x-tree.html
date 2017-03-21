@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>xtree.js</title>
-    <link rel="stylesheet" href="../../base/xtree.css">
-    <link rel="stylesheet" href="../../base/font-awesome-4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="../src/base/xtree.css">
+    <link rel="stylesheet" href="../src/base/fonts/iconfont.css">
     <style>
         .tree-wrap {
             display: inline-block;
@@ -39,7 +39,7 @@
     </style>
 </head>
 <body>
-<script type="text/javascript" src="../../base/jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="../src/base/jquery-3.1.1.min.js"></script>
 <script type="text/javascript" src="x-tree.js"></script>
 
 <div class="tree-box">
@@ -67,51 +67,17 @@
     </div>
 </div>
 
-<input type="checkbox"/>
-
-<script>
-    var kmnv = ['m', 'n', 'k', 'v'];
-    function wordify(arrayIn) {
-        var len = arrayIn.length;
-        var word = '';
-        var counter = 0;
-        for (var i = 0; i < len; i++) {
-            word = arrayIn[i];
-            for (var j = 0; j < len; j++) {
-                if (i == j) {
-                    continue;
-                }
-                word = arrayIn[i] + arrayIn[j];
-                for (var k = 0; k < len; k++) {
-                    if (i == k || j == k) {
-                        continue;
-                    }
-                    word = arrayIn[i] + arrayIn[j] + arrayIn[k];
-                    for (var m = 0; m < len; m++) {
-                        if (i == m || j == m || k == m) {
-                            continue;
-                        }
-                        word = arrayIn[i] + arrayIn[j] + arrayIn[k] + arrayIn[m];
-                        counter++;
-                        console.log('wordify', counter, word);
-                    }
-                }
-            }
-
-        }
-    }
-</script>
 
 <script>
     var testTree1 = xTree({
         dom: $('#tree1'),
-        only_child: false,
+        only_child: true,
         is_multi: true,
         is_trigger: false,
         node_merge: false,
         has_search: false,
-        sel_ids: '6,7,8,9,10,11,12,13',
-        expand: 2,
+        sel_ids: '2,6,7,8,9,10,11,12,13',
+        expand: 1,
         data: [
             {id: 1, name: '中国', nodeId: 0, is_node: true, is_check: false},
             {id: 2, name: '四川', nodeId: 1, is_node: true, is_check: false},
@@ -173,9 +139,8 @@
         is_trigger: true,
         node_merge: false,
         has_search: true,
-        searchType: 3,
         sel_ids: '3,11,12,13,30,31,32,33',
-        expand: 2,
+        expand: 3,
         data: [
             {id: 1, name: '中国', nodeId: 0, is_node: true, is_check: false},
             {id: 2, name: '四川', nodeId: 1, is_node: true, is_check: false},
@@ -232,7 +197,7 @@
         node_merge: false,
         has_search: true,
         sel_ids: '3,11,12,13,30,31,32,33',
-        expand: 2,
+        expand: 3,
         data: [
             {id: 1, name: '中国', nodeId: 0, is_node: true, is_check: false},
             {id: 2, name: '四川', nodeId: 1, is_node: true, is_check: false},
@@ -295,7 +260,7 @@
         node_merge: false,
         has_search: true,
         sel_ids: '3,11,12,13,30,31,32,33',
-        expand: 2,
+        expand: 3,
         data: [
             {id: 1, name: '中国', nodeId: 0, is_node: true, is_check: false},
             {id: 2, name: '四川', nodeId: 1, is_node: true, is_check: false},
