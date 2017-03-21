@@ -776,7 +776,7 @@
                 return '';
             }
 
-            var html = '<i class="iconfont icon-wenjianjia"></i>';
+            var html = '<i class="iconfont icon-folder"></i>';
 
             return $(html).css({
                 'font-size': '14px',
