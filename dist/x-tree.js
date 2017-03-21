@@ -706,13 +706,13 @@
             var $expand;
             if (item.is_node && item.children && item.children.length) {
                 if (item.level > this.opt.expand) {
-                    $expand = $('<i class="x-tree-expand fa fa-caret-right"></i>');
+                    $expand = $('<i class="x-tree-expand iconfont icon-xiangyou2"></i>');
                 } else {
-                    $expand = $('<i class="x-tree-expand fa fa-caret-down"></i>');
+                    $expand = $('<i class="x-tree-expand iconfont icon-xiangxia1"></i>');
                 }
                 var that = this;
                 $expand.on('click', function (e) {
-                    if ($(this).hasClass('fa-caret-right')) {
+                    if ($(this).hasClass('icon-xiangyou2')) {
                         that._showChildren(item);
                     } else {
                         that._hideChildren(item);
@@ -739,9 +739,9 @@
 
             var $check;
             if (item.is_check) {
-                $check = $('<i class="x-tree-check fa fa-check-square-o" /i>');
+                $check = $('<i class="x-tree-check iconfont icon-square-check" /i>');
             } else {
-                $check = $('<i class="x-tree-check fa fa-square-o" /i>');
+                $check = $('<i class="x-tree-check iconfont icon-square" /i>');
             }
             $check.css({
                 'vertical-align': 'base-line',
@@ -762,7 +762,7 @@
             if (!item || !item.is_node) {
                 return '';
             }
-            var $folder = $('<i class="fa fa-folder-o"></i>');
+            var $folder = $('<i class="iconfont icon-folder"></i>');
             $folder.css({
                 'vertical-align': 'base-line',
                 'padding-right': '0px',
@@ -809,23 +809,23 @@
 
         _updateExpand: function (item) {
             if (item.expand) {
-                item.$dom.$self.find('.x-tree-expand').removeClass('fa-caret-right');
-                item.$dom.$self.find('.x-tree-expand').addClass('fa-caret-down');
+                item.$dom.$self.find('.x-tree-expand').removeClass('icon-xiangyou2');
+                item.$dom.$self.find('.x-tree-expand').addClass('icon-xiangxia2');
             } else {
-                item.$dom.$self.find('.x-tree-expand').removeClass('fa-caret-down');
-                item.$dom.$self.find('.x-tree-expand').addClass('fa-caret-right');
+                item.$dom.$self.find('.x-tree-expand').removeClass('icon-xiangxia2');
+                item.$dom.$self.find('.x-tree-expand').addClass('icon-xiangyou2');
             }
         },
         _updateCheck: function (item) {
             if (item.checkState === true) {
-                item.$dom.$self.find('.x-tree-check').removeClass('fa-square-o fa-minus-square-o');
-                item.$dom.$self.find('.x-tree-check').addClass('fa-check-square-o');
+                item.$dom.$self.find('.x-tree-check').removeClass('icon-square icon-square-minus');
+                item.$dom.$self.find('.x-tree-check').addClass('icon-square-check');
             } else if (item.checkState === false) {
-                item.$dom.$self.find('.x-tree-check').removeClass('fa-check-square-o fa-minus-square-o');
-                item.$dom.$self.find('.x-tree-check').addClass('fa-square-o');
+                item.$dom.$self.find('.x-tree-check').removeClass('icon-square-check icon-square-minus');
+                item.$dom.$self.find('.x-tree-check').addClass('icon-square');
             } else if (item.checkState === 'z') {
-                item.$dom.$self.find('.x-tree-check').removeClass('fa-square-o fa-check-square-o');
-                item.$dom.$self.find('.x-tree-check').addClass('fa-minus-square-o');
+                item.$dom.$self.find('.x-tree-check').removeClass('icon-square icon-square-check');
+                item.$dom.$self.find('.x-tree-check').addClass('icon-square-minus');
             }
 
         },
