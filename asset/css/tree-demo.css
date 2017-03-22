@@ -1,0 +1,50 @@
+body {
+    padding: 20px;
+    background: #5CD;
+    word-break: break-all;
+}
+
+.hidden {visibility: hidden;}
+.visible {visibility: visible;}
+
+.hide {display: none;}
+.block {display: block;}
+.inline-block {display: inline-block;}
+.inline {display: inline;}
+
+.tree-box {
+    height: 600px;
+    overflow: auto;
+}
+
+.box-block {
+    height: 600px;
+}
+
+.tree-wrap {
+    display: inline-block;
+    overflow: auto;
+    width: 360px;
+    height: 555px;
+    padding: 5px;
+    border: 1px solid #02B;
+    vertical-align: bottom;
+    background: #fff;
+}
+
+.tree-span {
+    display: inline-block;
+    width: 300px;
+    height: 20px;
+    border: 1px solid orangered;
+}
+
+.tree_input_tip {
+    display: inline-block;
+    width: 298px;
+    height: 18px;
+    border: 1px solid deepskyblue;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
