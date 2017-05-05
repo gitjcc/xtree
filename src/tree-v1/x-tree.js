@@ -213,7 +213,8 @@
             return ids;
         },
 
-        getIdss: function (only, merge) {
+
+        getIds: function (only, merge) {
             var id = [];
             var nodeId = [];
             var data = this.data;
@@ -262,6 +263,21 @@
                 id = {'id': id, 'nodeId': nodeId};
             }
             return id;
+        },
+
+        getNames: function(only,merge){
+
+        },
+
+        getItems: function(only,merge){
+            //1、全部；
+            //2、合并到节点；
+            //3、仅叶子；
+            //4、仅节点
+            var leaf = [];
+            var node = [];
+            var data = this.data;
+
         },
 
         cancelItem: function (ids, isNode) {
