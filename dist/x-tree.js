@@ -155,10 +155,10 @@
       var ids = [];
       var items = this.getItem();
 
-        if (items.length > 0) {
-          items.forEach(function (element) {
-              ids.push(element.id);
-          }, this);
+      if (items.length > 0) {
+        items.forEach(function (element) {
+          ids.push(element.id);
+        }, this);
       }
       return ids;
     },
@@ -167,10 +167,10 @@
       var names = [];
       var items = this.getItem();
 
-        if (items.length > 0) {
-          items.forEach(function (element) {
-              names.push(element.name);
-          }, this);
+      if (items.length > 0) {
+        items.forEach(function (element) {
+          names.push(element.name);
+        }, this);
       }
       return names.join();
     },
@@ -222,7 +222,7 @@
         ids[key] = [];
         if (items.hasOwnProperty(key) && items[key].length > 0) {
           items[key].forEach(function (element) {
-              ids[key].push(element.id);
+            ids[key].push(element.id);
           }, this);
         }
       }
@@ -237,7 +237,7 @@
         names[key] = [];
         if (items.hasOwnProperty(key) && items[key].length > 0) {
           items[key].forEach(function (element) {
-              names[key].push(element.name);
+            names[key].push(element.name);
           }, this);
         }
       }
