@@ -151,62 +151,28 @@
       }
     },
 
-    getName: function () {
-      var text = [];
-      var data = this.data;
-      if (this.opt.only_child) {
-        $.each(data, function (i, n) {
-          if (n.is_check && !n.is_node) {
-            text.push(n.name);
-          }
-        });
-      } else {
-        if (this.opt.node_merge) {
-          var nodes = [];
-          $.each(data, function (i, n) {
-            if (n.is_check && n.is_node) {
-              nodes.push(n.id);
-            }
-          });
-          var clone = $.extend(true, [], data); //直接赋值传的是引用
-          $.each(clone, function (i, n) {
-            if ((n.is_check && $.inArray(n.nodeId, nodes) != -1) || !n.is_check) {
-              clone[i] = null;
-            }
-          });
-          $.each(clone, function (i, n) {
-            if (n) {
-              text.push(n.name);
-            }
-          });
-        } else {
-          $.each(data, function (i, n) {
-            if (n.is_check) {
-              text.push(n.name);
-            }
-          });
-        }
-      }
-      return text.join();
-    },
-
     getId: function () {
       var ids = [];
-      var data = this.data;
-      if (this.opt.only_child) {
-        for (var i = 0; i < data.length; i++) {
-          if (data[i].is_check && !data[i].is_node) {
-            ids.push(data[i].id);
-          }
-        }
-      } else {
-        for (var j = 0; j < data.length; j++) {
-          if (data[j].is_check) {
-            ids.push(data[j].id);
-          }
-        }
+      var items = this.getItem();
+
+        if (items.length > 0) {
+          items.forEach(function (element) {
+              ids.push(element.id);
+          }, this);
       }
       return ids;
+    },
+
+    getName: function () {
+      var names = [];
+      var items = this.getItem();
+
+        if (items.length > 0) {
+          items.forEach(function (element) {
+              names.push(element.name);
+          }, this);
+      }
+      return names.join();
     },
 
     getItem: function () {
@@ -220,16 +186,15 @@
         });
       } else {
         if (this.opt.node_merge) {
-          var node = [];
+          var nodeIds = [];
           $.each(data, function (i, n) {
             if (n.is_check && n.is_node) {
-              node.push(n.id);
-              //                            text.push( n.name);  //nodefirst
+              nodeIds.push(n.id);
             }
           });
           var clone = $.extend(true, [], data);
           $.each(clone, function (i, n) {
-            if ((n.is_check && $.inArray(n.nodeId, node) != -1) || !n.is_check) {
+            if (($.inArray(n.nodeId, nodeIds) != -1) || !n.is_check) {
               clone[i] = null;
             }
           });
