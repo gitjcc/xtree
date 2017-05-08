@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>xtree.js</title>
-    <link rel="stylesheet" href="../asset/css/reset.css">
-    <link rel="stylesheet" href="../asset/fonts/iconfont.css">
-    <link rel="stylesheet" href="../asset/css/tree-demo.css">
+    <link rel="stylesheet" href="../../asset/css/reset.css">
+    <link rel="stylesheet" href="../../asset/fonts/iconfont.css">
+    <link rel="stylesheet" href="../../asset/css/tree-demo.css">
 
-    <script type="text/javascript" src="../asset/js/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="../../asset/js/jquery-3.1.1.min.js"></script>
     <script type="text/javascript" src="x-tree.js"></script>
 </head>
 <body>
@@ -41,13 +41,13 @@
 <script>
     var testTree1 = xTree({
         dom: $('#tree1'),
-        only_child: true,
+        only_child: true, //初始化只传leaf的id, getXX()只返回leaf
         is_multi: true,
         is_trigger: false,
         node_merge: false,
         has_search: false,
         sel_ids: '2,6,7,8,9,10,11,12,13',
-        expand: 1,
+        expand: true,
         data: [
             {id: 1, name: '中国', nodeId: 0, is_node: true, is_check: false},
             {id: 2, name: '四川', nodeId: 1, is_node: true, is_check: false},
