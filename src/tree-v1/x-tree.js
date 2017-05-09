@@ -218,7 +218,7 @@
       var ids = {}
       var items = this.getItems(type);
 
-      for (key in items) {
+      for (var key in items) {
         ids[key] = [];
         if (items.hasOwnProperty(key) && items[key].length > 0) {
           items[key].forEach(function (element) {
@@ -233,7 +233,7 @@
       var names = {};
       var items = this.getItems(type);
 
-      for (key in items) {
+      for (var key in items) {
         names[key] = [];
         if (items.hasOwnProperty(key) && items[key].length > 0) {
           items[key].forEach(function (element) {
