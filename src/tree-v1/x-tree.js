@@ -246,10 +246,10 @@
 
     getItems: function (typeIn) {
       //0、根据this.options
-      //1、全部；
-      //2、合并到节点；
-      //3、仅叶子；
-      //4、仅节点；
+      //'all'、全部；
+      //'merge'、合并到节点；
+      //'leaf'、仅叶子；
+      //'node'、仅节点；
       var type
       var leaf = [];
       var node = [];
@@ -259,18 +259,18 @@
         if (this.opt.getType) {
           type = this.opt.getType;
         } else if (this.opt.only_child) {
-          type = 3;
+          type = 'leaf';
         } else if (this.opt.node_merge) {
-          type = 2;
+          type = 'merge';
         } else {
-          type = 1;
+          type = 'all';
         }
       } else {
         type = typeIn;
       }
 
       switch (type) {
-        case 4: //仅节点
+        case 'node': //仅节点
           $.each(data, function (i, n) {
             if (n.is_check === true && n.is_node === true) {
               node.push(n);
@@ -278,7 +278,7 @@
           });
           break;
 
-        case 3: //仅叶子
+        case 'leaf': //仅叶子
           $.each(data, function (i, n) {
             if (n.is_check === true && n.is_node === false) {
               leaf.push(n);
@@ -286,7 +286,7 @@
           });
           break;
 
-        case 2: //合并到节点
+        case 'merge': //合并到节点
           var nodeIds = [];
           $.each(data, function (i, n) {
             if (n.is_check === true && n.is_node === true) {
@@ -308,7 +308,7 @@
             }
           });
           break;
-        case 1:
+        case 'all':
         default: //全部
           $.each(data, function (i, n) {
             if (n.is_check === true && n.is_node === true) {
