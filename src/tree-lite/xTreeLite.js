@@ -7,9 +7,7 @@
 
     var defOpt = {
         dom: '', //jqueryDom
-        zIndex: 9,
         expand: false, //是否展开，false、true、num, (true,完全展开。false,展开ROOT(0)级。num>=0时，展开对应级）
-        width: null,
         data: [], //{id:1,name:'xx',nodeId:'0',is_node:true,is_check:false},
         onInit: function () {},
         onBeforeOpen: function () {},
@@ -38,7 +36,6 @@
             this.$dom = this.opt.dom;
             this.$dom.css({
                 'position': 'relative',
-                zIndex: this.opt.zIndex,
             });
 
             this.tree = this._arrayToTree(this.opt.data);
