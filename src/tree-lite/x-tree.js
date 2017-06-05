@@ -50,7 +50,7 @@
 
             this.$dom.append(this._makeTree(this.tree));
 
-            this.opt.onInit.apply(this);
+            this.opt.onInit.call(this);
 
             var that = this;
             that.show();
@@ -61,17 +61,17 @@
          *
          */
         show: function () {
-            this.opt.onBeforeOpen.apply(this);
+            this.opt.onBeforeOpen.call(this);
             this._showTree();
             this.state._is_open = true;
-            this.opt.onOpen.apply(this);
+            this.opt.onOpen.call(this);
             return this;
         },
         hide: function () {
             if (this.state._is_open) {
                 this._hideTree();
                 this.state._is_open = false;
-                this.opt.onClose.apply(this);
+                this.opt.onClose.call(this);
             }
         },
 
@@ -323,7 +323,7 @@
                     } else {
                         that._hideChildren(item);
                     }
-                    that.opt.onExpand.apply(this, item);
+                    that.opt.onExpand.call(that, item);
                 });
             } else {
                 $expand = $('<span></span>');
@@ -354,7 +354,7 @@
             });
             var that = this;
             $icon.on('click', function name(e) {
-                that.opt.onIcon.apply(this, item);
+                that.opt.onIcon.call(this, item);
             });
             return $icon;
         },
@@ -369,7 +369,7 @@
             });
             var that = this;
             $text.on('click', function name(e) {
-                that.opt.onText.apply(this, item);
+                that.opt.onText.call(this, item);
             });
             return $text;
         },
@@ -387,7 +387,7 @@
             });
             var that = this;
             $menu.on('click', function (e) {
-                that.opt.onMenu.apply(this, item);
+                that.opt.onMenu.call(this, item);
             });
             return $menu;
         },
