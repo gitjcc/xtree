@@ -14,7 +14,6 @@
 
 <div class="tree-box">
     <div class="tree-wrap">
-        <!--    <input class="test_tree1" placeholder="">-->
         <div id="tree1" class="test_tree"></div>
     </div>
 </div>
@@ -22,13 +21,20 @@
 <script>
     var testTree1 = xTreeLite({
         dom: $('#tree1'),
-        only_child: false,
-        is_multi: true,
-        is_trigger: false,
-        node_merge: false,
-        has_search: false,
-        sel_ids: '6,7,8,9,10,11,12,13',
         expand: 2,
+        menu: '视频连线',
+        onInit: function () {
+            console.log('onInit');
+        },
+        onOpen: function () {
+            console.log('onOpen');
+        },
+        onBeforeOpen: function () {
+            console.log('onBeforeOpen');
+        },
+        onClose: function () {
+            console.log('onClose');
+        },
         onExpand: function name(params) {
             console.log('onExpand', params.name, params);
         },
@@ -38,7 +44,6 @@
         onText: function name(params) {
             console.log('onText', params.name, params);
         },
-        menu: '视频连线',
         onMenu: function name(params) {
             console.log('onMenu', params.name, params);
         },
@@ -73,18 +78,6 @@
             {id: 32, name: '南宁', nodeId: 29, is_node: false, is_check: false},
             {id: 33, name: '桂林', nodeId: 29, is_node: false, is_check: false}
         ],
-        onInit: function () {
-            console.log('onInit');
-        },
-        onOpen: function () {
-            console.log('onOpen');
-        },
-        onBeforeOpen: function () {
-            console.log('onBeforeOpen');
-        },
-        onClose: function () {
-            console.log('onClose');
-        },
     });
 </script>
 
