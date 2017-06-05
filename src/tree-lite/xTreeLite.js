@@ -62,12 +62,15 @@
             return this;
         },
         hide: function () {
-                this._hideTree();
-                this.opt.onClose.call(this);
+            this._hideTree();
+            this.opt.onClose.call(this);
         },
 
         setIcon: function (id, iconClass) {
             var item = this._getItemById(this.opt.data, id)
+            if (item === false) {
+                return false;
+            }
             item.$icon.removeClass();
             item.$icon.addClass('iconfont ' + iconClass);
             return true;
@@ -77,7 +80,7 @@
          *      数据方法
          */
         _validateOpt: function (opt) {
-            if(!opt.dom){
+            if (!opt.dom) {
                 return false;
             }
             for (var i in opt.data) {
@@ -250,27 +253,19 @@
                 return false;
             }
 
-            var $item = this._makeItemWrap(item);
-            var $self = this._makeSelfWrap(item);
-            var $children = this._makeChildrenWrap(item);
+            item.$item = this._makeItemWrap(item);
+            item.$self = this._makeSelfWrap(item);
+            item.$children = this._makeChildrenWrap(item);
 
-            var $expand = this._makeExpand(item);
-            var $icon = this._makeIcon(item);
-            var $text = this._makeText(item);
-            var $menu = this._makeMenu(item);
+            item.$expand = this._makeExpand(item);
+            item.$icon = this._makeIcon(item);
+            item.$text = this._makeText(item);
+            item.$menu = this._makeMenu(item);
 
-            $self.append($expand, $icon, $text, $menu);
-            $item.append($self, $children);
+            item.$self.append(item.$expand, item.$icon, item.$text, item.$menu);
+            item.$item.append(item.$self, item.$children);
 
-            item.$item = $item;
-            item.$self = $self;
-            item.$children = $children;
-            item.$expand = $expand
-            item.$icon = $icon
-            item.$text = $text
-            item.$menu = $menu
-
-            return $item;
+            return item.$item;
         },
         _makeItemWrap: function (item) {
             var $itemWrap = $('<div class="x-tree-item" ></div>');
