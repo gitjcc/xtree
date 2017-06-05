@@ -21,9 +21,6 @@
         onText: function () {},
         onMenu: function () {},
     };
-    var defState = {
-        _is_open: false, //是否open
-    };
 
     var tree = function (opt) {
         this._init(opt);
@@ -38,7 +35,6 @@
             }
 
             this.opt = $.extend(true, {}, defOpt, opt);
-            this.state = defState;
 
             this.$dom = this.opt.dom;
             this.$dom.css({
@@ -52,8 +48,7 @@
 
             this.opt.onInit.call(this);
 
-            var that = this;
-            that.show();
+            this.show();
         },
 
         /**
@@ -63,16 +58,12 @@
         show: function () {
             this.opt.onBeforeOpen.call(this);
             this._showTree();
-            this.state._is_open = true;
             this.opt.onOpen.call(this);
             return this;
         },
         hide: function () {
-            if (this.state._is_open) {
                 this._hideTree();
-                this.state._is_open = false;
                 this.opt.onClose.call(this);
-            }
         },
 
         setIcon: function (id, iconClass) {
@@ -111,7 +102,7 @@
                 parent: null,
                 level: 0,
                 expand: true,
-                amount: arrayIn.length
+                originData: arrayIn
             };
             treeData.children = this._getSubTree(arrayIn, treeData);
             return treeData;
@@ -284,7 +275,7 @@
         _makeItemWrap: function (item) {
             var $itemWrap = $('<div class="x-tree-item" ></div>');
             $itemWrap.attr({
-                'node-id': item.nodeId,
+                'data-parent': item.nodeId,
                 'data-id': item.id
             });
             if (item.is_node) {
@@ -292,19 +283,25 @@
             } else {
                 $itemWrap.addClass('x-tree-leaf-' + item.id);
             }
-            $itemWrap.css({
-                cursor: 'pointer'
-            });
             return $itemWrap;
         },
         _makeSelfWrap: function (item) {
             var $selfWrap = $('<div></div>');
             $selfWrap.addClass('x-tree-self');
+            $selfWrap.css({
+                cursor: 'pointer'
+            });
             $selfWrap.on('mouseenter', function (e) {
-                $selfWrap.find('.x-tree-item-menu').show();
+                $selfWrap.css({
+                    background: '#eee',
+                });
+                item.$menu.show();
             });
             $selfWrap.on('mouseleave', function (e) {
-                $selfWrap.find('.x-tree-item-menu').hide();
+                $selfWrap.css({
+                    background: '',
+                });
+                item.$menu.hide();
             });
             return $selfWrap;
         },
@@ -346,7 +343,6 @@
                 display: 'inline-block',
                 'vertical-align': 'base-line',
                 'padding-right': '0px',
-                'cursor': 'pointer',
                 width: '14px',
                 height: '14px',
             });
@@ -358,13 +354,13 @@
             }
             var $icon = '';
             if (item.is_node) {
-                $icon = $('<i class="iconfont icon-yonghu color-red"></i>');
+                $icon = $('<i class="iconfont icon-shexiangtou gray"></i>');
             } else {
-                $icon = $('<i class="iconfont icon-yonghu color-blue"></i>');
+                $icon = $('<i class="iconfont icon-shexiangtou gray"></i>');
             }
             $icon.css({
+                padding: '0 0 0 5px',
                 'vertical-align': 'base-line',
-                'cursor': 'pointer',
             });
             var that = this;
             $icon.on('click', function (e) {
@@ -397,7 +393,7 @@
                 display: 'none',
                 padding: '0 0 0 5px',
                 float: 'right',
-                color: 'blue',
+                color: '#0275d8',
             });
             var that = this;
             $menu.on('click', function (e) {
