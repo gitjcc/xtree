@@ -10,7 +10,6 @@
         zIndex: 9,
         expand: false, //是否展开，false、true、num, (true,完全展开。false,展开ROOT(0)级。num>=0时，展开对应级）
         width: null,
-        maxHeight: 300,
         data: [], //{id:1,name:'xx',nodeId:'0',is_node:true,is_check:false},
         onInit: function () {},
         onBeforeOpen: function () {},
@@ -227,7 +226,6 @@
             $tree.css({
                 'font-family': 'Microsoft YaHei',
                 'background': '#fff',
-                maxHeight: this.opt.maxHeight,
                 padding: '0 1%',
                 'white-space': 'nowrap',
                 'overflow': 'auto',
