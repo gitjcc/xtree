@@ -12,6 +12,20 @@ body {
 .inline-block {display: inline-block;}
 .inline {display: inline;}
 
+.iconfont {
+    font-size: 14px;
+    width: 14px;
+    color: #666;
+}
+
+.color-red {
+    color:red;
+}
+
+.color-blue {
+    color:blue;
+}
+
 .tree-box {
     height: 600px;
     overflow: auto;

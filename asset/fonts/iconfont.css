@@ -1,10 +1,10 @@
 
 @font-face {font-family: "iconfont";
-  src: url('iconfont.eot?t=1490086668807'); /* IE9*/
-  src: url('iconfont.eot?t=1490086668807#iefix') format('embedded-opentype'), /* IE6-IE8 */
-  url('iconfont.woff?t=1490086668807') format('woff'), /* chrome, firefox */
-  url('iconfont.ttf?t=1490086668807') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
-  url('iconfont.svg?t=1490086668807#iconfont') format('svg'); /* iOS 4.1- */
+  src: url('iconfont.eot?t=1495622980375'); /* IE9*/
+  src: url('iconfont.eot?t=1495622980375#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('iconfont.woff?t=1495622980375') format('woff'), /* chrome, firefox */
+  url('iconfont.ttf?t=1495622980375') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
+  url('iconfont.svg?t=1495622980375#iconfont') format('svg'); /* iOS 4.1- */
 }
 
 .iconfont {
@@ -127,6 +127,8 @@
 
 .icon-circle-unchecked:before { content: "\e644"; }
 
+.icon-wenjianjia1:before { content: "\e650"; }
+
 .icon-check:before { content: "\e645"; }
 
 .icon-close:before { content: "\e646"; }
@@ -147,6 +149,10 @@
 
 .icon-circle-add:before { content: "\e6d9"; }
 
+.icon-mima:before { content: "\e64a"; }
+
+.icon-iconfontdelete:before { content: "\e64b"; }
+
 .icon-tupian2222:before { content: "\e636"; }
 
 .icon-jine:before { content: "\e637"; }
@@ -160,6 +166,16 @@
 .icon-xiangzuo3:before { content: "\e63b"; }
 
 .icon-xiazai:before { content: "\e63c"; }
+
+.icon-zuzhijiegou:before { content: "\e73d"; }
+
+.icon-edit1:before { content: "\e655"; }
+
+.icon-shang3:before { content: "\e64c"; }
+
+.icon-dui:before { content: "\e647"; }
+
+.icon-folder1:before { content: "\e64d"; }
 
 .icon-gongzuoliuchengtu:before { content: "\e63d"; }
 
@@ -177,9 +193,33 @@
 
 .icon-dengdaiqueren:before { content: "\e642"; }
 
+.icon-x:before { content: "\e648"; }
+
 .icon-folder:before { content: "\e9f6"; }
+
+.icon-xia2:before { content: "\e79b"; }
+
+.icon-shang2:before { content: "\e79c"; }
+
+.icon-shang:before { content: "\e64e"; }
+
+.icon-1-copy:before { content: "\e652"; }
+
+.icon-shouyeshouye:before { content: "\e6ee"; }
+
+.icon-laba:before { content: "\e64f"; }
+
+.icon-sos:before { content: "\e65f"; }
 
 .icon-scan:before { content: "\e7db"; }
 
 .icon-square-minus:before { content: "\e8e2"; }
+
+.icon-xiangxia11:before { content: "\e6a5"; }
+
+.icon-xia:before { content: "\e66d"; }
+
+.icon-yonghu:before { content: "\e651"; }
+
+.icon-1:before { content: "\e653"; }
 
