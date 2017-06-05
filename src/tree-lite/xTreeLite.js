@@ -1,14 +1,14 @@
 ;
 (function ($) {
 
-    window.xTree = function (options) {
+    window.xTreeLite = function (options) {
         return new tree(options);
     };
 
     var defOpt = {
         dom: '', //jqueryDom
         zIndex: 9,
-        expand: false, //是否展开，false、true、num, (0、false,都展开ROOT级。true,完全展开。num>=1时，展开到对应级）
+        expand: false, //是否展开，false、true、num, (true,完全展开。false,展开ROOT(0)级。num>=0时，展开对应级）
         width: null,
         maxHeight: 300,
         data: [], //{id:1,name:'xx',nodeId:'0',is_node:true,is_check:false},
@@ -75,7 +75,7 @@
             }
         },
 
-        setIcon: function name(id, iconClass) {
+        setIcon: function (id, iconClass) {
             var item = this._getItemById(this.opt.data, id)
             item.$icon.removeClass();
             item.$icon.addClass('iconfont ' + iconClass);
@@ -86,6 +86,9 @@
          *      数据方法
          */
         _validateOpt: function (opt) {
+            if(!opt.dom){
+                return false;
+            }
             for (var i in opt.data) {
                 if (typeof opt.data[i] !== 'object') {
                     return false;
@@ -101,7 +104,7 @@
             var rootId = this._getTreeRoot(arrayIn);
             var treeData = {
                 id: rootId,
-                name: 'ROOT',
+                text: 'ROOT',
                 nodeId: null,
                 is_node: true,
                 children: [],
@@ -157,9 +160,10 @@
             for (var i = 0; i < arrayIn.length; i++) {
                 if (arrayIn[i].nodeId == parent.id) {
                     temp = arrayIn[i];
+                    temp.text = temp.name;
                     temp.parent = parent;
                     temp.level = parent.level + 1;
-                    temp.expand = true;
+                    temp.expand = this._getExpand(temp, this.opt.expand);
                     if (temp.is_node) {
                         temp.children = this._getSubTree(arrayIn, temp);
                     } else {
@@ -169,6 +173,16 @@
                 }
             }
             return result;
+        },
+
+        _getExpand: function (item, expand) {
+            if (expand === true) {
+                return true;
+            } else if (expand === false) {
+                return item.level === 0;
+            } else {
+                return item.level <= expand;
+            }
         },
 
         _getItemById: function (data, id) {
@@ -214,18 +228,9 @@
             tree.$dom.hide();
             return tree.$dom;
         },
-        _makeTreeFn: function (item) {
-            var $item = this._makeItem(item);
-            if (item.is_node && item.children && item.children.length) {
-                for (var i = 0; i < item.children.length; i++) {
-                    item.$children.append(this._makeTreeFn(item.children[i]));
-                }
-            }
-            return $item;
-        },
         _makeTreeWrap: function (item) {
-            var $html = $('<div class="x-tree-root"></div>');
-            $html.css({
+            var $tree = $('<div class="x-tree-root"></div>');
+            $tree.css({
                 'font-family': 'Microsoft YaHei',
                 'background': '#fff',
                 maxHeight: this.opt.maxHeight,
@@ -238,7 +243,16 @@
                 '-moz-user-select': 'none',
                 '-ms-user-select': 'none'
             });
-            return $html;
+            return $tree;
+        },
+        _makeTreeFn: function (item) {
+            var $item = this._makeItem(item);
+            if (item.is_node && item.children && item.children.length) {
+                for (var i = 0; i < item.children.length; i++) {
+                    item.$children.append(this._makeTreeFn(item.children[i]));
+                }
+            }
+            return $item;
         },
         _makeItem: function (item) {
             if (!item) {
@@ -295,26 +309,26 @@
             return $selfWrap;
         },
         _makeChildrenWrap: function (item) {
-            var $html = $('<div class="x-tree-children"></div>');
+            var $children = $('<div class="x-tree-children"></div>');
             if (item.level !== 0) {
-                $html.css({
+                $children.css({
                     'margin-left': '16px'
                 });
             }
-            if (item.level > this.opt.expand) {
-                item.expand = false;
-                $html.hide();
+            if (item.expand === false) {
+                $children.hide();
             }
-            return $html;
+            return $children;
         },
 
         _makeExpand: function (item) {
             var $expand;
             if (item.is_node && item.children && item.children.length) {
-                if (item.level > this.opt.expand) {
-                    $expand = $('<i class="x-tree-expand iconfont icon-xiangyou2"></i>');
+                $expand = $('<i class="x-tree-expand iconfont"></i>');
+                if (item.expand) {
+                    $expand.addClass('icon-xiangxia1');
                 } else {
-                    $expand = $('<i class="x-tree-expand iconfont icon-xiangxia1"></i>');
+                    $expand.addClass('icon-xiangyou2');
                 }
                 var that = this;
                 $expand.on('click', function (e) {
@@ -353,8 +367,8 @@
                 'cursor': 'pointer',
             });
             var that = this;
-            $icon.on('click', function name(e) {
-                that.opt.onIcon.call(this, item);
+            $icon.on('click', function (e) {
+                that.opt.onIcon.call(that, item);
             });
             return $icon;
         },
@@ -363,13 +377,13 @@
                 return '';
             }
             var $text = $('<span class="x-tree-item-text"></span>');
-            $text.text(item.name + item.id);
+            $text.text(item.text);
             $text.css({
                 padding: '0 0 0 5px'
             });
             var that = this;
-            $text.on('click', function name(e) {
-                that.opt.onText.call(this, item);
+            $text.on('click', function (e) {
+                that.opt.onText.call(that, item);
             });
             return $text;
         },
@@ -387,7 +401,7 @@
             });
             var that = this;
             $menu.on('click', function (e) {
-                that.opt.onMenu.call(this, item);
+                that.opt.onMenu.call(that, item);
             });
             return $menu;
         },

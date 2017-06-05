@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>xtree.js</title>
+    <title>xTreeLite.js</title>
     <link rel="stylesheet" href="../../asset/css/reset.css">
     <link rel="stylesheet" href="../../asset/fonts/iconfont.css">
     <link rel="stylesheet" href="../../asset/css/tree-demo.css">
 
     <script type="text/javascript" src="../../asset/js/jquery.min.js"></script>
-    <script type="text/javascript" src="x-tree.js"></script>
+    <script type="text/javascript" src="xTreeLite.js"></script>
 </head>
 <body>
 
@@ -20,7 +20,7 @@
 </div>
 
 <script>
-    var testTree1 = xTree({
+    var testTree1 = xTreeLite({
         dom: $('#tree1'),
         only_child: false,
         is_multi: true,
@@ -30,14 +30,17 @@
         sel_ids: '6,7,8,9,10,11,12,13',
         expand: 2,
         onExpand: function name(params) {
-            console.log('onExpand', params.name);
+            console.log('onExpand', params.name, params);
         },
         onIcon: function name(params) {
-            console.log('onIcon', params.name);
+            console.log('onIcon', params.name, params);
+        },
+        onText: function name(params) {
+            console.log('onText', params.name, params);
         },
         menu: '视频连线',
         onMenu: function name(params) {
-            console.log('onMenu', params.name);
+            console.log('onMenu', params.name, params);
         },
         data: [
             {id: 1, name: '中国', nodeId: 0, is_node: true, is_check: false},
