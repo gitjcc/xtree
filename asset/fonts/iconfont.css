@@ -1,10 +1,10 @@
 
 @font-face {font-family: "iconfont";
-  src: url('iconfont.eot?t=1495622980375'); /* IE9*/
-  src: url('iconfont.eot?t=1495622980375#iefix') format('embedded-opentype'), /* IE6-IE8 */
-  url('iconfont.woff?t=1495622980375') format('woff'), /* chrome, firefox */
-  url('iconfont.ttf?t=1495622980375') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
-  url('iconfont.svg?t=1495622980375#iconfont') format('svg'); /* iOS 4.1- */
+  src: url('iconfont.eot?t=1496655384371'); /* IE9*/
+  src: url('iconfont.eot?t=1496655384371#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('iconfont.woff?t=1496655384371') format('woff'), /* chrome, firefox */
+  url('iconfont.ttf?t=1496655384371') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
+  url('iconfont.svg?t=1496655384371#iconfont') format('svg'); /* iOS 4.1- */
 }
 
 .iconfont {
@@ -159,6 +159,8 @@
 
 .icon-xiaoxi:before { content: "\e638"; }
 
+.icon-down:before { content: "\e656"; }
+
 .icon-jinggao:before { content: "\e639"; }
 
 .icon-xiangyou3:before { content: "\e63a"; }
@@ -170,6 +172,8 @@
 .icon-zuzhijiegou:before { content: "\e73d"; }
 
 .icon-edit1:before { content: "\e655"; }
+
+.icon-shexiangtou:before { content: "\e654"; }
 
 .icon-shang3:before { content: "\e64c"; }
 
@@ -208,6 +212,12 @@
 .icon-shouyeshouye:before { content: "\e6ee"; }
 
 .icon-laba:before { content: "\e64f"; }
+
+.icon-btn-setting:before { content: "\e65b"; }
+
+.icon-home:before { content: "\e6ac"; }
+
+.icon-user:before { content: "\e730"; }
 
 .icon-sos:before { content: "\e65f"; }
 
