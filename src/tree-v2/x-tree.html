@@ -114,7 +114,7 @@
             {id: 33, name: '桂林', nodeId: 29, is_node: false, is_check: false}
         ],
         onInit: function () {
-            this.dom.find('.tree_input_tip').text(this.getName());
+            this.$dom.find('.tree_input_tip').text(this.getName());
         },
         onOpen: function () {
         },
@@ -127,7 +127,7 @@
 
         },
         onChange: function () {
-            this.dom.find('.tree_input_tip').text(this.getName());
+            this.$dom.find('.tree_input_tip').text(this.getName());
         },
         onCancel: function () {
         }
@@ -138,6 +138,7 @@
 <script>
     var testTree2 = xTree({
         dom: $('#tree2'),
+        position: 'fixed',
         only_child: false,
         is_multi: true,
         is_trigger: true,
@@ -172,7 +173,7 @@
         ],
 
         onInit: function () {
-            this.dom.find('.tree_input_tip').text(this.getName());
+            this.$dom.find('.tree_input_tip').text(this.getName());
         },
         onOpen: function () {
         },
@@ -186,7 +187,7 @@
         onCancel: function () {
         },
         onChange: function () {
-            this.dom.find('.tree_input_tip').text(this.getName());
+            this.$dom.find('.tree_input_tip').text(this.getName());
         },
 
     });
@@ -196,11 +197,13 @@
 <script>
     var testTree3 = xTree({
         dom: $('#tree3'),
+        position: 'fixed',
         only_child: false,
         is_multi: true,
         is_trigger: true,
         node_merge: false,
         has_search: true,
+        searchType: 3,
         sel_ids: '3,11,12,13,30,31,32,33',
         expand: 2,
         data: [
@@ -227,24 +230,24 @@
             {id: 32, name: '南宁', nodeId: 29, is_node: false, is_check: false},
             {id: 33, name: '桂林', nodeId: 29, is_node: false, is_check: false}
         ],
+
         onInit: function () {
-            this.dom.find('.tree_input_tip').text(this.getName());
+            this.$dom.find('.tree_input_tip').text(this.getName());
         },
         onOpen: function () {
         },
         onBeforeOpen: function () {
         },
         onClose: function () {
-            console.log(this.getId());
+            console.log(JSON.stringify(this.getId()) !== JSON.stringify(this._originId));
         },
         onCheck: function () {
-
-        },
-        onChange: function () {
-            this.dom.find('.tree_input_tip').text(this.getName());
         },
         onCancel: function () {
-        }
+        },
+        onChange: function () {
+            this.$dom.find('.tree_input_tip').text(this.getName());
+        },
     });
 </script>
 
@@ -259,6 +262,7 @@
 <script>
     var testTree4 = xTree({
         dom: $('#tree-span'),
+        position: 'fixed',
         only_child: false,
         is_multi: true,
         is_trigger: true,
@@ -291,7 +295,7 @@
             {id: 33, name: '桂林', nodeId: 29, is_node: false, is_check: false}
         ],
         onInit: function () {
-            this.dom.find('.tree_input_tip').text(this.getName());
+            this.$dom.find('.tree_input_tip').text(this.getName());
         },
         onOpen: function () {
         },
@@ -304,7 +308,7 @@
 
         },
         onChange: function () {
-            this.dom.find('.tree_input_tip').text(this.getName());
+            this.$dom.find('.tree_input_tip').text(this.getName());
         },
         onCancel: function () {
         }
