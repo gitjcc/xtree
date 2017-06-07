@@ -81,7 +81,7 @@
                 });
                 $(document).on('click.xTree', function (e) {
                     var exclude = that.$dom;
-                    if ( !exclude.is(e.target) && exclude.has(e.target).length === 0) {
+                    if (!exclude.is(e.target) && exclude.has(e.target).length === 0) {
                         that.hide();
                     }
                 });
@@ -110,21 +110,178 @@
             }
         },
 
-        getName: function (type) {
-            var name = [];
-            var items = this._getItems(type);
-            for (var i = 0; i < items.length; i++) {
-                name.push(items[i].name);
-            }
-            return name.join();
-        },
-        getId: function (type) {
+        getId: function () {
             var ids = [];
-            var items = this._getItems(type);
-            for (var i = 0; i < items.length; i++) {
-                ids.push(items[i].id);
+            var items = this.getItem();
+
+            if (items.length > 0) {
+                items.forEach(function (element) {
+                    ids.push(element.id);
+                }, this);
             }
             return ids;
+        },
+
+        getName: function () {
+            var names = [];
+            var items = this.getItem();
+
+            if (items.length > 0) {
+                items.forEach(function (element) {
+                    names.push(element.name);
+                }, this);
+            }
+            return names.join();
+        },
+
+        getItem: function () {
+            var items = [];
+            var data = this.data;
+            if (this.opt.only_child) {
+                $.each(data, function (i, n) {
+                    if (n.is_check && !n.is_node) {
+                        items.push(n);
+                    }
+                });
+            } else {
+                if (this.opt.node_merge) {
+                    var nodeIds = [];
+                    $.each(data, function (i, n) {
+                        if (n.is_check && n.is_node) {
+                            nodeIds.push(n.id);
+                        }
+                    });
+                    var clone = $.extend(true, [], data);
+                    $.each(clone, function (i, n) {
+                        if (($.inArray(n.nodeId, nodeIds) != -1) || !n.is_check) {
+                            clone[i] = null;
+                        }
+                    });
+                    $.each(clone, function (i, n) {
+                        if (n) {
+                            items.push(n);
+                        }
+                    });
+                } else {
+                    $.each(data, function (i, n) {
+                        if (n.is_check) {
+                            items.push(n);
+                        }
+                    });
+                }
+            }
+            return items;
+        },
+
+        getIds: function (type) {
+            var ids = {}
+            var items = this.getItems(type);
+
+            for (key in items) {
+                ids[key] = [];
+                if (items.hasOwnProperty(key) && items[key].length > 0) {
+                    items[key].forEach(function (element) {
+                        ids[key].push(element.id);
+                    }, this);
+                }
+            }
+            return ids;
+        },
+
+        getNames: function (type) {
+            var names = {};
+            var items = this.getItems(type);
+
+            for (key in items) {
+                names[key] = [];
+                if (items.hasOwnProperty(key) && items[key].length > 0) {
+                    items[key].forEach(function (element) {
+                        names[key].push(element.name);
+                    }, this);
+                }
+            }
+            return names;
+        },
+
+        getItems: function (typeIn) {
+            //0、根据this.options
+            //'all'、全部；
+            //'merge'、合并到节点；
+            //'leaf'、仅叶子；
+            //'node'、仅节点；
+            var type
+            var leaf = [];
+            var node = [];
+            var data = this.data;
+
+            if (!typeIn) {
+                if (this.opt.getType) {
+                    type = this.opt.getType;
+                } else if (this.opt.only_child) {
+                    type = 'leaf';
+                } else if (this.opt.node_merge) {
+                    type = 'merge';
+                } else {
+                    type = 'all';
+                }
+            } else {
+                type = typeIn;
+            }
+
+            switch (type) {
+                case 'node': //仅节点
+                    $.each(data, function (i, n) {
+                        if (n.is_check === true && n.is_node === true) {
+                            node.push(n);
+                        }
+                    });
+                    break;
+
+                case 'leaf': //仅叶子
+                    $.each(data, function (i, n) {
+                        if (n.is_check === true && n.is_node === false) {
+                            leaf.push(n);
+                        }
+                    });
+                    break;
+
+                case 'merge': //合并到节点
+                    var nodeIds = [];
+                    $.each(data, function (i, n) {
+                        if (n.is_check === true && n.is_node === true) {
+                            nodeIds.push(n.id);
+                        }
+                    });
+                    //节点合并
+                    var clone = $.extend(true, [], data); //直接赋值传的是引用
+                    $.each(clone, function (i, n) {
+                        if (($.inArray(n.nodeId, nodeIds) != -1) || !n.is_check) {
+                            clone[i] = null;
+                        }
+                    });
+                    $.each(clone, function (i, n) {
+                        if (n && n.is_node === true) {
+                            node.push(n);
+                        } else if (n && n.is_node === false) {
+                            leaf.push(n);
+                        }
+                    });
+                    break;
+                case 'all':
+                default: //全部
+                    $.each(data, function (i, n) {
+                        if (n.is_check === true && n.is_node === true) {
+                            node.push(n);
+                        } else if (n.is_check === true && n.is_node === false) {
+                            leaf.push(n);
+                        }
+                    });
+                    break;
+            }
+            return {
+                node: node,
+                leaf: leaf
+            };
         },
 
         cancelItem: function (ids, type) {
@@ -302,40 +459,6 @@
                 }
             }
             return items;
-        },
-        _getItems: function (type) {
-            var items = [];
-            var data = this.opt.data;
-            if (!type || type === 0) {
-                for (var k = 0; k < data.length; k++) {
-                    if (data[k].is_check) {
-                        items.push(data[k]);
-                    }
-                }
-
-            } else if (type === 1) {
-                for (var i = 0; i < data.length; i++) {
-                    if (data[i].is_check && !data[i].is_node) {
-                        items.push(data[i]);
-                    }
-                }
-            } else if (type === 2) {
-                this._getItemMerge(this.tree, items);
-            }
-            return items;
-        },
-        _getItemMerge: function (item, items) {
-            if (item.is_check) {
-                items.push(item);
-                return false;
-            }
-            if (item.is_node && item.children && item.children.length) {
-                for (var i = 0; i < item.children.length; i++) {
-                    this._getItemMerge(item.children[i], items);
-                }
-                return false;
-            }
-            return true;
         },
 
         _checkDataRadio: function (data, sel_ids) {
