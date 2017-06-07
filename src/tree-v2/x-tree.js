@@ -78,31 +78,16 @@
                 this.$dom.off('click.xTree');
                 this.$dom.on('click.xTree', function (e) {
                     that.show();
-                    e.stopPropagation();
                 });
-                $(document).on('click.xTree', function () {
-                    that.hide();
+                $(document).on('click.xTree', function (e) {
+                    var exclude = that.$dom;
+                    if ( !exclude.is(e.target) && exclude.has(e.target).length === 0) {
+                        that.hide();
+                    }
                 });
             } else {
                 that.show();
             }
-            // if (this.opt.is_trigger) {
-            //     this.$dom.off('click');
-            //     this.$dom.on('click', function (e) {
-            //         that.show();
-            //         e.stopPropagation();
-            //     });
-            //     $(document).on('click', function (e) {
-            //         var _con = that.$dom; // 设置目标区域
-            //         var a = !_con.is(e.target)
-            //         var b = _con.has(e.target).length === 0
-            //         if ( a && b) { // Mark 1
-            //             that.hide(); // 功能代码
-            //         }
-            //     });
-            // } else {
-            //     that.show();
-            // }
         },
 
         /**
