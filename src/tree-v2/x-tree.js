@@ -68,7 +68,7 @@
                 if (this.opt.is_multi) {
                     this._checkTreeByIds(this.tree, this.opt.sel_ids);
                 } else {
-                    this._checkDataRadio(this.opt.data, this.opt.sel_ids);
+                    this._checkDataRadio(this.data, this.opt.sel_ids);
                 }
             }
 
@@ -287,7 +287,7 @@
             if (!Array.isArray(ids)) {
                 return "checkItem(),参数ids不是数组";
             }
-            var items = this._getItemsByIds(this.opt.data, ids, type);
+            var items = this._getItemsByIds(this.data, ids, type);
             for (var i = 0; i < items.length; i++) {
                 this._changeItem(items[i], false);
             }
@@ -296,19 +296,19 @@
             if (!Array.isArray(ids)) {
                 return "checkItem(),参数ids不是数组";
             }
-            var items = this._getItemsByIds(this.opt.data, ids, type);
+            var items = this._getItemsByIds(this.data, ids, type);
             for (var i = 0; i < items.length; i++) {
                 this._changeItem(items[i], true);
             }
         },
         cancelAll: function () {
-            for (var i = 0; i < this.opt.data.length; i++) {
-                this._changeItem(this.opt.data[i], false);
+            for (var i = 0; i < this.data.length; i++) {
+                this._changeItem(this.data[i], false);
             }
         },
         checkAll: function () {
-            for (var i = 0; i < this.opt.data.length; i++) {
-                this._changeItem(this.opt.data[i], true);
+            for (var i = 0; i < this.data.length; i++) {
+                this._changeItem(this.data[i], true);
             }
         },
 
@@ -319,18 +319,18 @@
                 this.tree.$dom.$children.show();
             } else {
                 this.tree.$dom.$search.empty();
-                for (var i in this.opt.data) {
+                for (var i in this.data) {
                     if (this.opt.searchType == 'all') {
-                        if (this.opt.data[i].name.indexOf(val) != -1) {
-                            this.tree.$dom.$search.append(this._makeItem(this.opt.data[i]));
+                        if (this.data[i].name.indexOf(val) != -1) {
+                            this.tree.$dom.$search.append(this._makeItem(this.data[i]));
                         }
                     } else if (this.opt.searchType == 'node') {
-                        if (this.opt.data[i].is_node && this.opt.data[i].name.indexOf(val) != -1) {
-                            this.tree.$dom.$search.append(this._makeItem(this.opt.data[i]));
+                        if (this.data[i].is_node && this.data[i].name.indexOf(val) != -1) {
+                            this.tree.$dom.$search.append(this._makeItem(this.data[i]));
                         }
                     } else if (this.opt.searchType == 'leaf') {
-                        if (!this.opt.data[i].is_node && this.opt.data[i].name.indexOf(val) != -1) {
-                            this.tree.$dom.$search.append(this._makeItem(this.opt.data[i]));
+                        if (!this.data[i].is_node && this.data[i].name.indexOf(val) != -1) {
+                            this.tree.$dom.$search.append(this._makeItem(this.data[i]));
                         }
                     }
                 }
@@ -438,7 +438,7 @@
         },
         _getItemsByIds: function (data, ids, type) {
             var items = [];
-            var data = this.opt.data;
+            var data = this.data;
             if (!type || type === 0) {
                 for (var i = 0; i < ids.length; i++) {
                     for (var j = 0; j < data.length; j++) {
@@ -495,7 +495,7 @@
             }
             if (this.opt.only_child) {
                 for (var i = 0; i < ids.length; i++) {
-                    if (item.id == ids[i] && !data[i].is_node) {
+                    if (item.id == ids[i] && !item.is_node) {
                         this._changeItem(item, true);
                         ids.splice(i, 1);
                         break;
@@ -533,10 +533,10 @@
             if (!item || !change || item.is_check === change) {
                 return false;
             }
-            for (var i = 0; i < this.opt.data.length; i++) {
-                this.opt.data[i].is_check = false;
-                this.opt.data[i].checkState = false;
-                this._updateCheck(this.opt.data[i]);
+            for (var i = 0; i < this.data.length; i++) {
+                this.data[i].is_check = false;
+                this.data[i].checkState = false;
+                this._updateCheck(this.data[i]);
             }
             item.is_check = true;
             item.checkState = true;

@@ -9,7 +9,7 @@
         position: 'absolute',
         is_trigger: false, //是否需要触发? 否则直接显示
         has_search: false,
-        searchType: 0, //0全部，1节点，2叶子
+        searchType: 'all', //'all'全部，'node'节点，'leaf'叶子
         only_child: false, //是否结果只要 child
         node_merge: false, //结果只显示最上层  比如   中国被选中  四川,成都则不会显示  否则 每个被勾选的节点都显示
         zIndex: 99,
@@ -68,7 +68,7 @@
                 if (this.opt.is_multi) {
                     this._checkTreeByIds(this.tree, this.opt.sel_ids);
                 } else {
-                    this._checkDataRadio(this.opt.data, this.opt.sel_ids);
+                    this._checkDataRadio(this.data, this.opt.sel_ids);
                 }
             }
 
@@ -287,7 +287,7 @@
             if (!Array.isArray(ids)) {
                 return "checkItem(),参数ids不是数组";
             }
-            var items = this._getItemsByIds(this.opt.data, ids, type);
+            var items = this._getItemsByIds(this.data, ids, type);
             for (var i = 0; i < items.length; i++) {
                 this._changeItem(items[i], false);
             }
@@ -296,42 +296,41 @@
             if (!Array.isArray(ids)) {
                 return "checkItem(),参数ids不是数组";
             }
-            var items = this._getItemsByIds(this.opt.data, ids, type);
+            var items = this._getItemsByIds(this.data, ids, type);
             for (var i = 0; i < items.length; i++) {
                 this._changeItem(items[i], true);
             }
         },
         cancelAll: function () {
-            for (var i = 0; i < this.opt.data.length; i++) {
-                this._changeItem(this.opt.data[i], false);
+            for (var i = 0; i < this.data.length; i++) {
+                this._changeItem(this.data[i], false);
             }
         },
         checkAll: function () {
-            for (var i = 0; i < this.opt.data.length; i++) {
-                this._changeItem(this.opt.data[i], true);
+            for (var i = 0; i < this.data.length; i++) {
+                this._changeItem(this.data[i], true);
             }
         },
 
         search: function (val) {
             this.tree.$dom.$children.hide();
-
             if (val === '') {
                 this.tree.$dom.$search.empty();
                 this.tree.$dom.$children.show();
             } else {
                 this.tree.$dom.$search.empty();
-                for (var i in this.opt.data) {
-                    if (this.opt.searchType == 0) {
-                        if (this.opt.data[i].name.indexOf(val) != -1) {
-                            this.tree.$dom.$search.append(this._makeItem(this.opt.data[i]));
+                for (var i in this.data) {
+                    if (this.opt.searchType == 'all') {
+                        if (this.data[i].name.indexOf(val) != -1) {
+                            this.tree.$dom.$search.append(this._makeItem(this.data[i]));
                         }
-                    } else if (this.opt.searchType == 1) {
-                        if (this.opt.data[i].is_node && this.opt.data[i].name.indexOf(val) != -1) {
-                            this.tree.$dom.$search.append(this._makeItem(this.opt.data[i]));
+                    } else if (this.opt.searchType == 'node') {
+                        if (this.data[i].is_node && this.data[i].name.indexOf(val) != -1) {
+                            this.tree.$dom.$search.append(this._makeItem(this.data[i]));
                         }
-                    } else if (this.opt.searchType == 2) {
-                        if (!this.opt.data[i].is_node && this.opt.data[i].name.indexOf(val) != -1) {
-                            this.tree.$dom.$search.append(this._makeItem(this.opt.data[i]));
+                    } else if (this.opt.searchType == 'leaf') {
+                        if (!this.data[i].is_node && this.data[i].name.indexOf(val) != -1) {
+                            this.tree.$dom.$search.append(this._makeItem(this.data[i]));
                         }
                     }
                 }
@@ -439,7 +438,7 @@
         },
         _getItemsByIds: function (data, ids, type) {
             var items = [];
-            var data = this.opt.data;
+            var data = this.data;
             if (!type || type === 0) {
                 for (var i = 0; i < ids.length; i++) {
                     for (var j = 0; j < data.length; j++) {
@@ -496,7 +495,7 @@
             }
             if (this.opt.only_child) {
                 for (var i = 0; i < ids.length; i++) {
-                    if (item.id == ids[i] && !data[i].is_node) {
+                    if (item.id == ids[i] && !item.is_node) {
                         this._changeItem(item, true);
                         ids.splice(i, 1);
                         break;
@@ -534,10 +533,10 @@
             if (!item || !change || item.is_check === change) {
                 return false;
             }
-            for (var i = 0; i < this.opt.data.length; i++) {
-                this.opt.data[i].is_check = false;
-                this.opt.data[i].checkState = false;
-                this._updateCheck(this.opt.data[i]);
+            for (var i = 0; i < this.data.length; i++) {
+                this.data[i].is_check = false;
+                this.data[i].checkState = false;
+                this._updateCheck(this.data[i]);
             }
             item.is_check = true;
             item.checkState = true;
@@ -736,7 +735,7 @@
             return $html;
         },
         _makeSearchInput: function (item) {
-            var $search = $('<input class="x-tree-search" type="text" placeholder="搜索"/></div>');
+            var $search = $('<input class="x-tree-search-input" type="text" placeholder="搜索"/></div>');
             $search.css({
                 'border': 'none',
                 'padding': '4px 0',
@@ -758,7 +757,7 @@
         },
         _makeSearchWrap: function (item) {
             var $searchWrap = $('<div></div>');
-            $searchWrap.addClass('x-tree-search');
+            $searchWrap.addClass('x-tree-search-result');
             return $searchWrap;
         },
         _makeItem: function (item) {
