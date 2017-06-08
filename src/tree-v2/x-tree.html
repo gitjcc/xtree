@@ -36,41 +36,7 @@
         </div>
     </div>
 </div>
-
 <input type="checkbox"/>
-
-<script>
-    var kmnv = ['m', 'n', 'k', 'v'];
-    function wordify(arrayIn) {
-        var len = arrayIn.length;
-        var word = '';
-        var counter = 0;
-        for (var i = 0; i < len; i++) {
-            word = arrayIn[i];
-            for (var j = 0; j < len; j++) {
-                if (i == j) {
-                    continue;
-                }
-                word = arrayIn[i] + arrayIn[j];
-                for (var k = 0; k < len; k++) {
-                    if (i == k || j == k) {
-                        continue;
-                    }
-                    word = arrayIn[i] + arrayIn[j] + arrayIn[k];
-                    for (var m = 0; m < len; m++) {
-                        if (i == m || j == m || k == m) {
-                            continue;
-                        }
-                        word = arrayIn[i] + arrayIn[j] + arrayIn[k] + arrayIn[m];
-                        counter++;
-                        console.log('wordify', counter, word);
-                    }
-                }
-            }
-
-        }
-    }
-</script>
 
 <script>
     var testTree1 = xTree({
@@ -114,23 +80,30 @@
             {id: 33, name: '桂林', nodeId: 29, is_node: false, is_check: false}
         ],
         onInit: function () {
-            this.$dom.find('.tree_input_tip').text(this.getName());
-        },
-        onOpen: function () {
         },
         onBeforeOpen: function () {
         },
-        onClose: function () {
+        onOpen: function () {
             console.log(this.getId());
+            console.log(this.getName());
+            console.log(this.getItem());
+            var type = ['', 'all', 'node', 'leaf', 'merge'];
+            type.forEach(function (element) {
+                console.log('type:' + element, this.getIds(element));
+                console.log('type:' + element, this.getNames(element));
+                console.log('type:' + element, this.getItems(element));
+            }, this);
+        },
+        onClose: function () {
         },
         onCheck: function () {
-
-        },
-        onChange: function () {
-            this.$dom.find('.tree_input_tip').text(this.getName());
         },
         onCancel: function () {
-        }
+        },
+        onChange: function () {
+            
+        },
+
     });
 </script>
 
@@ -173,21 +146,29 @@
         ],
 
         onInit: function () {
-            this.$dom.find('.tree_input_tip').text(this.getName());
+            this.dom.find('.tree_input_tip').text(this.getName());
         },
         onOpen: function () {
         },
         onBeforeOpen: function () {
         },
         onClose: function () {
-            console.log(JSON.stringify(this.getId()) !== JSON.stringify(this._originId));
+            console.log(this.getId());
+            console.log(this.getName());
+            console.log(this.getItem());
+            var type = ['', 'all', 'node', 'leaf', 'merge'];
+            type.forEach(function (element) {
+                console.log(element, this.getIds(element));
+                console.log(element, this.getNames(element));
+                console.log(element, this.getItems(element));
+            }, this);
         },
         onCheck: function () {
         },
         onCancel: function () {
         },
         onChange: function () {
-            this.$dom.find('.tree_input_tip').text(this.getName());
+            this.dom.find('.tree_input_tip').text(this.getName());
         },
 
     });
@@ -232,21 +213,21 @@
         ],
 
         onInit: function () {
-            this.$dom.find('.tree_input_tip').text(this.getName());
+            this.dom.find('.tree_input_tip').text(this.getName());
         },
         onOpen: function () {
         },
         onBeforeOpen: function () {
         },
         onClose: function () {
-            console.log(JSON.stringify(this.getId()) !== JSON.stringify(this._originId));
+            console.log(this.getId());
         },
         onCheck: function () {
         },
         onCancel: function () {
         },
         onChange: function () {
-            this.$dom.find('.tree_input_tip').text(this.getName());
+            this.dom.find('.tree_input_tip').text(this.getName());
         },
     });
 </script>
@@ -295,7 +276,7 @@
             {id: 33, name: '桂林', nodeId: 29, is_node: false, is_check: false}
         ],
         onInit: function () {
-            this.$dom.find('.tree_input_tip').text(this.getName());
+            this.dom.find('.tree_input_tip').text(this.getName());
         },
         onOpen: function () {
         },
@@ -308,7 +289,7 @@
 
         },
         onChange: function () {
-            this.$dom.find('.tree_input_tip').text(this.getName());
+            this.dom.find('.tree_input_tip').text(this.getName());
         },
         onCancel: function () {
         }

@@ -50,17 +50,18 @@
 
             this.opt = $.extend(true, {}, defOpt, opt);
             this.state = $.extend({}, defState);
-            this.tree = this._arrayToTree(this.opt.data);
+            this.data = this.opt.data;
+            this.tree = this._arrayToTree(this.data);
             this.$tree = this._makeTree(this.tree);
 
-            this.$dom = this.opt.dom;
+            this.dom = this.opt.dom;
             if (this.opt.position === 'fixed') {
                 $('body').append(this.$tree);
             } else {
-                this.$dom.css({
+                this.dom.css({
                     'position': 'relative'
                 });
-                this.$dom.append(this.$tree);
+                this.dom.append(this.$tree);
             }
 
             if (this.opt.sel_ids) {
@@ -75,12 +76,12 @@
 
             var that = this;
             if (this.opt.is_trigger) {
-                this.$dom.off('click.xTree');
-                this.$dom.on('click.xTree', function (e) {
+                this.dom.off('click.xTree');
+                this.dom.on('click.xTree', function (e) {
                     that.show();
                 });
                 $(document).on('click.xTree', function (e) {
-                    var exclude = that.$dom;
+                    var exclude = that.dom;
                     if (!exclude.is(e.target) && exclude.has(e.target).length === 0) {
                         that.hide();
                     }
@@ -139,36 +140,34 @@
             var data = this.data;
             if (this.opt.only_child) {
                 $.each(data, function (i, n) {
-                    if (n.is_check && !n.is_node) {
+                    if (n.is_check === true && n.is_node === false) {
+                        items.push(n);
+                    }
+                });
+            } else if (this.opt.node_merge) {
+                var nodeIds = [];
+                $.each(data, function (i, n) {
+                    if (n.is_check && n.is_node) {
+                        nodeIds.push(n.id);
+                    }
+                });
+                var clone = $.extend(false, [], data);
+                $.each(clone, function (i, n) {
+                    if (($.inArray(n.nodeId, nodeIds) != -1) || !n.is_check) {
+                        clone[i] = null;
+                    }
+                });
+                $.each(clone, function (i, n) {
+                    if (n) {
                         items.push(n);
                     }
                 });
             } else {
-                if (this.opt.node_merge) {
-                    var nodeIds = [];
-                    $.each(data, function (i, n) {
-                        if (n.is_check && n.is_node) {
-                            nodeIds.push(n.id);
-                        }
-                    });
-                    var clone = $.extend(true, [], data);
-                    $.each(clone, function (i, n) {
-                        if (($.inArray(n.nodeId, nodeIds) != -1) || !n.is_check) {
-                            clone[i] = null;
-                        }
-                    });
-                    $.each(clone, function (i, n) {
-                        if (n) {
-                            items.push(n);
-                        }
-                    });
-                } else {
-                    $.each(data, function (i, n) {
-                        if (n.is_check) {
-                            items.push(n);
-                        }
-                    });
-                }
+                $.each(data, function (i, n) {
+                    if (n.is_check) {
+                        items.push(n);
+                    }
+                });
             }
             return items;
         },
@@ -253,7 +252,7 @@
                         }
                     });
                     //节点合并
-                    var clone = $.extend(true, [], data); //直接赋值传的是引用
+                    var clone = $.extend(false, [], data); //直接赋值传的是引用
                     $.each(clone, function (i, n) {
                         if (($.inArray(n.nodeId, nodeIds) != -1) || !n.is_check) {
                             clone[i] = null;
@@ -910,8 +909,8 @@
             this.tree.$dom.show();
             if (this.opt.is_trigger) {
                 this.tree.$dom.css({
-                    top: this.$dom.offset().top + this.$dom.outerHeight(),
-                    left: this.$dom.offset().left,
+                    top: this.dom.offset().top + this.dom.outerHeight(),
+                    left: this.dom.offset().left,
                     minWidth: 200
                 });
                 this.tree.$dom.on('click', function (e) {
