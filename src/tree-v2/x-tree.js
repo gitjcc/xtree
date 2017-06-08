@@ -9,7 +9,7 @@
         position: 'absolute',
         is_trigger: false, //是否需要触发? 否则直接显示
         has_search: false,
-        searchType: 0, //0全部，1节点，2叶子
+        searchType: 'all', //'all'全部，'node'节点，'leaf'叶子
         only_child: false, //是否结果只要 child
         node_merge: false, //结果只显示最上层  比如   中国被选中  四川,成都则不会显示  否则 每个被勾选的节点都显示
         zIndex: 99,
@@ -314,22 +314,21 @@
 
         search: function (val) {
             this.tree.$dom.$children.hide();
-
             if (val === '') {
                 this.tree.$dom.$search.empty();
                 this.tree.$dom.$children.show();
             } else {
                 this.tree.$dom.$search.empty();
                 for (var i in this.opt.data) {
-                    if (this.opt.searchType == 0) {
+                    if (this.opt.searchType == 'all') {
                         if (this.opt.data[i].name.indexOf(val) != -1) {
                             this.tree.$dom.$search.append(this._makeItem(this.opt.data[i]));
                         }
-                    } else if (this.opt.searchType == 1) {
+                    } else if (this.opt.searchType == 'node') {
                         if (this.opt.data[i].is_node && this.opt.data[i].name.indexOf(val) != -1) {
                             this.tree.$dom.$search.append(this._makeItem(this.opt.data[i]));
                         }
-                    } else if (this.opt.searchType == 2) {
+                    } else if (this.opt.searchType == 'leaf') {
                         if (!this.opt.data[i].is_node && this.opt.data[i].name.indexOf(val) != -1) {
                             this.tree.$dom.$search.append(this._makeItem(this.opt.data[i]));
                         }
@@ -736,7 +735,7 @@
             return $html;
         },
         _makeSearchInput: function (item) {
-            var $search = $('<input class="x-tree-search" type="text" placeholder="搜索"/></div>');
+            var $search = $('<input class="x-tree-search-input" type="text" placeholder="搜索"/></div>');
             $search.css({
                 'border': 'none',
                 'padding': '4px 0',
@@ -758,7 +757,7 @@
         },
         _makeSearchWrap: function (item) {
             var $searchWrap = $('<div></div>');
-            $searchWrap.addClass('x-tree-search');
+            $searchWrap.addClass('x-tree-search-result');
             return $searchWrap;
         },
         _makeItem: function (item) {
