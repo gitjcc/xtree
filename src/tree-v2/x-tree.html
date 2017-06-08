@@ -146,7 +146,7 @@
         ],
 
         onInit: function () {
-            this.dom.find('.tree_input_tip').text(this.getName());
+            $('#tree2').find('.tree_input_tip').text(this.getName());
         },
         onOpen: function () {
         },
@@ -168,7 +168,7 @@
         onCancel: function () {
         },
         onChange: function () {
-            this.dom.find('.tree_input_tip').text(this.getName());
+            $('#tree2').find('.tree_input_tip').text(this.getName());
         },
 
     });
@@ -213,7 +213,7 @@
         ],
 
         onInit: function () {
-            this.dom.find('.tree_input_tip').text(this.getName());
+            $('#tree3').find('.tree_input_tip').text(this.getName());
         },
         onOpen: function () {
         },
@@ -227,7 +227,7 @@
         onCancel: function () {
         },
         onChange: function () {
-            this.dom.find('.tree_input_tip').text(this.getName());
+            $('#tree3').find('.tree_input_tip').text(this.getName());
         },
     });
 </script>
@@ -276,7 +276,7 @@
             {id: 33, name: '桂林', nodeId: 29, is_node: false, is_check: false}
         ],
         onInit: function () {
-            this.dom.find('.tree_input_tip').text(this.getName());
+            $('#tree-span').find('.tree_input_tip').text(this.getName());
         },
         onOpen: function () {
         },
@@ -286,16 +286,14 @@
             console.log(this.getId());
         },
         onCheck: function () {
-
         },
         onChange: function () {
-            this.dom.find('.tree_input_tip').text(this.getName());
+            $('#tree-span').find('.tree_input_tip').text(this.getName());
         },
         onCancel: function () {
         }
     });
 </script>
-
 
 </body>
 </html>
