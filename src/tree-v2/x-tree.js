@@ -78,7 +78,7 @@
             if (this.opt.is_trigger) {
                 this.dom.off('click.xTree');
                 this.dom.on('click.xTree', function (e) {
-                    if (that.state._is_open) {
+                    if (that.state._is_open && !that.$tree.is(e.target) && that.$tree.has(e.target).length === 0 ) {
                         that.hide();
                     } else {
                         that.show();
