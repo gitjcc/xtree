@@ -78,7 +78,11 @@
             if (this.opt.is_trigger) {
                 this.dom.off('click.xTree');
                 this.dom.on('click.xTree', function (e) {
-                    that.show();
+                    if(that.state._is_open){
+                        that.hide();
+                    }else{
+                        that.show();
+                    }
                 });
                 $(document).on('click.xTree', function (e) {
                     var exclude = that.dom;
