@@ -78,15 +78,16 @@
             if (this.opt.is_trigger) {
                 this.dom.off('click.xTree');
                 this.dom.on('click.xTree', function (e) {
-                    if(that.state._is_open){
+                    if (that.state._is_open) {
                         that.hide();
-                    }else{
+                    } else {
                         that.show();
                     }
                 });
                 $(document).on('click.xTree', function (e) {
-                    var exclude = that.dom;
-                    if (!exclude.is(e.target) && exclude.has(e.target).length === 0) {
+                    var a = that.dom;
+                    var b = that.$tree;
+                    if (!a.is(e.target) && a.has(e.target).length === 0 && !b.is(e.target) && b.has(e.target).length === 0) {
                         that.hide();
                     }
                 });
@@ -912,14 +913,17 @@
             this.tree.$dom.show();
             if (this.opt.is_trigger) {
                 this.tree.$dom.css({
+                    top: this.dom.outerHeight(),
+                    left: 0,
+                });
+                this.tree.$dom.find('.x-tree-search').focus();
+            }
+            if (this.opt.position === 'fixed') {
+                this.tree.$dom.css({
                     top: this.dom.offset().top + this.dom.outerHeight(),
                     left: this.dom.offset().left,
                     minWidth: 200
                 });
-                this.tree.$dom.on('click', function (e) {
-                    e.stopPropagation();
-                });
-                this.tree.$dom.find('.x-tree-search').focus();
             }
         },
         _hideTree: function () {
