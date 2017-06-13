@@ -16,6 +16,7 @@
         is_multi: true, //是否多选
         expand: false, //是否展开，false、true、num, (0、false,都展开ROOT级。true,完全展开。num>=1时，展开到对应级）
         width: null,
+        minWidth: 200,
         maxHeight: 300,
         data: [], //{id:1,name:'xx',nodeId:'0',is_node:true,is_check:false},
         sel_ids: '',
@@ -717,40 +718,25 @@
         },
         _makeTreeWrap: function (item) {
             var $html = $('<div class="x-tree-root"></div>');
-            var style; 
+            var style = {
+                width: this.opt.width ? this.opt.width : this.dom.outerWidth(),
+                minWidth: this.opt.minWidth,
+                maxHeight: this.opt.maxHeight,
+                padding: '0 1%',
+                'font-family': 'Microsoft YaHei',
+                'font-size': '14px',
+                'background': '#fff',
+                'white-space': 'nowrap',
+                'overflow': 'auto',
+                'user-select': 'none',
+                '-ms-user-select': 'none',
+                '-moz-user-select': 'none',
+                '-webkit-user-select': 'none',
+            };
             if (this.opt.is_trigger || this.opt.position === 'fixed') {
-                style = {
-                    position: 'absolute',
-                    width: this.dom.outerWidth(),
-                    minWidth: 200,
-                    border: '1px solid #5d5d5d',
-                    'z-index': this.opt.zIndex,
-                    padding: '0 1%',
-                    maxHeight: this.opt.maxHeight,
-                    'font-family': 'Microsoft YaHei',
-                    'font-size': '14px',
-                    'background': '#fff',
-                    'white-space': 'nowrap',
-                    'overflow': 'auto',
-                    'user-select': 'none',
-                    '-ms-user-select': 'none',
-                    '-moz-user-select': 'none',
-                    '-webkit-user-select': 'none',
-                };
-            } else {
-                style = {
-                    padding: '0 1%',
-                    maxHeight: this.opt.maxHeight,
-                    'font-family': 'Microsoft YaHei',
-                    'font-size': '14px',
-                    'background': '#fff',
-                    'white-space': 'nowrap',
-                    'overflow': 'auto',
-                    'user-select': 'none',
-                    '-ms-user-select': 'none',
-                    '-moz-user-select': 'none',
-                    '-webkit-user-select': 'none',
-                };
+                style['position'] = 'absolute';
+                style['border'] = '1px solid #5d5d5d';
+                style['z-index'] = this.opt.zIndex;
             }
 
             $html.css(style);

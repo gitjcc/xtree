@@ -11,10 +11,9 @@
     <script type="text/javascript" src="x-tree.js"></script>
 </head>
 <body>
-
+<p>666</p>
 <div class="tree-box">
     <div class="tree-wrap">
-        <!--    <input class="test_tree1" placeholder="">-->
         <div id="tree1" class="test_tree"></div>
     </div>
 
@@ -38,6 +37,12 @@
 </div>
 
 <input type="checkbox" />
+
+<div class="tree-wrap">
+    <span id="tree-span" class="tree-span">
+        <span class="tree_input_tip"></span>
+    </span>
+</div>
 
 <div class="tree-wrap">
     <p>666</p>
@@ -130,11 +135,11 @@
     });
 </script>
 
-
 <script>
     var testTree2 = xTree({
         dom: $('#tree2'),
         position: 'fixed',
+        width: '200px',
         only_child: false,
         is_multi: true,
         is_trigger: true,
@@ -197,7 +202,6 @@
     });
 </script>
 
-
 <script>
     var testTree3 = xTree({
         dom: $('#tree3'),
@@ -253,14 +257,6 @@
         },
     });
 </script>
-
-
-<div class="tree-wrap">
-    <span id="tree-span" class="tree-span">
-        <span class="tree_input_tip"></span>
-    </span>
-</div>
-
 
 <script>
     var testTree4 = xTree({
