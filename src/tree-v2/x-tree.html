@@ -77,22 +77,31 @@
             {id: 30, name: '贵阳', nodeId: 29, is_node: false, is_check: false},
             {id: 31, name: '遵义', nodeId: 29, is_node: false, is_check: false},
             {id: 32, name: '南宁', nodeId: 29, is_node: false, is_check: false},
-            {id: 33, name: '桂林', nodeId: 29, is_node: false, is_check: false}
+            {id: 33, name: '桂林', nodeId: 29, is_node: false, is_check: false},
+
+            {id: 1110, name: '上海', nodeId: 111, is_node: false, is_check: false},
+            {id: 1111, name: '南京', nodeId: 111, is_node: false, is_check: false},
+            {id: 111, name: '江苏', nodeId: 666, is_node: true, is_check: false},
+            {id: 1112, name: '徐州', nodeId: 111, is_node: false, is_check: false},
+            {id: 1113, name: '宿迁', nodeId: 111, is_node: false, is_check: false},
+            {id: 1111, name: '成都', nodeId: 222, is_node: false, is_check: false},
+            {id: 222, name: '四川', nodeId: 777, is_node: true, is_check: false},
+            {id: 1112, name: '泸州', nodeId: 222, is_node: false, is_check: false},
         ],
         onInit: function () {
         },
         onBeforeOpen: function () {
         },
         onOpen: function () {
-            console.log(this.getId());
-            console.log(this.getName());
-            console.log(this.getItem());
-            var type = ['', 'all', 'node', 'leaf', 'merge'];
-            type.forEach(function (element) {
-                console.log('type:' + element, this.getIds(element));
-                console.log('type:' + element, this.getNames(element));
-                console.log('type:' + element, this.getItems(element));
-            }, this);
+            // console.log(this.getId());
+            // console.log(this.getName());
+            // console.log(this.getItem());
+            // var type = ['', 'all', 'node', 'leaf', 'merge'];
+            // type.forEach(function (element) {
+            //     console.log('type:' + element, this.getIds(element));
+            //     console.log('type:' + element, this.getNames(element));
+            //     console.log('type:' + element, this.getItems(element));
+            // }, this);
         },
         onClose: function () {
         },
@@ -153,15 +162,15 @@
         onBeforeOpen: function () {
         },
         onClose: function () {
-            console.log(this.getId());
-            console.log(this.getName());
-            console.log(this.getItem());
-            var type = ['', 'all', 'node', 'leaf', 'merge'];
-            type.forEach(function (element) {
-                console.log(element, this.getIds(element));
-                console.log(element, this.getNames(element));
-                console.log(element, this.getItems(element));
-            }, this);
+            // console.log(this.getId());
+            // console.log(this.getName());
+            // console.log(this.getItem());
+            // var type = ['', 'all', 'node', 'leaf', 'merge'];
+            // type.forEach(function (element) {
+            //     console.log(element, this.getIds(element));
+            //     console.log(element, this.getNames(element));
+            //     console.log(element, this.getItems(element));
+            // }, this);
         },
         onCheck: function () {
         },

@@ -356,9 +356,9 @@
         },
 
         _arrayToTree: function (arrayIn) {
-            var rootId = this._getTreeRoot(arrayIn);
+            var rootIds = this._getTreeRoot(arrayIn);
             var treeData = {
-                id: rootId,
+                id: rootIds,
                 name: 'ROOT',
                 nodeId: null,
                 is_node: true,
@@ -369,13 +369,29 @@
                 level: 0,
                 expand: true,
                 amount: arrayIn.length
-
             };
-            treeData.children = this._getSubTree(arrayIn, treeData);
+            var temp = {};
+            for (var i = 0; i < rootIds.length; i++) {
+                for (var j = 0; j < arrayIn.length; j++) {
+                    if (arrayIn[j].nodeId == rootIds[i]) {
+                        temp = arrayIn[j];
+                        temp.checkState = temp.is_check;
+                        temp.parent = treeData;
+                        temp.level = treeData.level + 1;
+                        temp.expand = true;
+                        if (temp.is_node) {
+                            temp.children = this._getSubTree(arrayIn, temp);
+                        } else {
+                            temp.children = [];
+                        }
+                        treeData.children.push(temp);
+                    }
+                }
+            }
             return treeData;
         },
         _getTreeRoot: function (arrayIn) {
-            var rootId = [];
+            var rootIds = [];
             var clone = JSON.parse(JSON.stringify(arrayIn));
             for (var i = 0, len = arrayIn.length; i < len; i++) {
                 for (var j = i; j < len; j++) {
@@ -387,21 +403,20 @@
                     }
                 }
             }
-
             for (var k = 0; k < clone.length; k++) {
                 if (clone[k]) {
-                    rootId.push(clone[k].nodeId);
+                    rootIds.push(clone[k].nodeId);
                 }
             }
-            rootId = this._uniqueArray(rootId);
+            rootIds = this._uniqueArray(rootIds);
 
-            if (rootId.length > 1) {
-                console.log('warning: rootId不唯一', rootId);
-            } else if (rootId.length <= 0) {
-                console.log('warning: 没有rootId', rootId);
+            if (rootIds.length > 1) {
+                console.warn('warning: rootId不唯一', rootIds);
+            } else if (rootIds.length <= 0) {
+                console.warn('warning: 没有rootId', rootIds);
             }
 
-            return rootId[0];
+            return rootIds;
         },
         _uniqueArray: function (arrayIn) {
             var ua = [];
@@ -432,7 +447,6 @@
             }
             return result;
         },
-
         _getItemById: function (data, id) {
             for (var i = 0; i < data.length; i++) {
                 if (data[i].id == id) {
@@ -855,7 +869,7 @@
         },
         _makeCheck: function (item) {
             if (!item) {
-                console.log('_makeCheck失败,item不存在', item);
+                console.warn('_makeCheck失败,item不存在', item);
                 return '';
             }
 
