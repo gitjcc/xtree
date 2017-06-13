@@ -49,12 +49,13 @@
             }
 
             this.opt = $.extend(true, {}, defOpt, opt);
-            this.state = $.extend({}, defState);
+            this.dom = this.opt.dom;
             this.arrayData = this.opt.data;
+            this.state = $.extend({}, defState);
+
             this.treeData = this._arrayToTree(this.arrayData);
             this.tree = this._makeTree(this.treeData);
 
-            this.dom = this.opt.dom;
             if (this.opt.position === 'fixed') {
                 $('body').append(this.tree.$dom);
             } else {
@@ -66,9 +67,9 @@
 
             if (this.opt.sel_ids) {
                 if (this.opt.is_multi) {
-                    this._checkTreeByIds(this.tree, this.opt.sel_ids);
+                    this._checkTreeByIds(this.treeData, this.opt.sel_ids);
                 } else {
-                    this._checkDataRadio(this.data, this.opt.sel_ids);
+                    this._checkDataRadio(this.arrayData, this.opt.sel_ids);
                 }
             }
 
@@ -142,7 +143,7 @@
 
         getItem: function () {
             var items = [];
-            var data = this.data;
+            var data = this.arrayData;
             if (this.opt.only_child) {
                 $.each(data, function (i, n) {
                     if (n.is_check === true && n.is_node === false) {
@@ -216,7 +217,7 @@
             var type
             var leaf = [];
             var node = [];
-            var data = this.data;
+            var data = this.arrayData;
 
             if (!typeIn) {
                 if (this.opt.getType) {
@@ -292,7 +293,7 @@
             if (!Array.isArray(ids)) {
                 return "checkItem(),参数ids不是数组";
             }
-            var items = this._getItemsByIds(this.data, ids, type);
+            var items = this._getItemsByIds(this.arrayData, ids, type);
             for (var i = 0; i < items.length; i++) {
                 this._changeItem(items[i], false);
             }
@@ -301,19 +302,19 @@
             if (!Array.isArray(ids)) {
                 return "checkItem(),参数ids不是数组";
             }
-            var items = this._getItemsByIds(this.data, ids, type);
+            var items = this._getItemsByIds(this.arrayData, ids, type);
             for (var i = 0; i < items.length; i++) {
                 this._changeItem(items[i], true);
             }
         },
         cancelAll: function () {
-            for (var i = 0; i < this.data.length; i++) {
-                this._changeItem(this.data[i], false);
+            for (var i = 0; i < this.arrayData.length; i++) {
+                this._changeItem(this.arrayData[i], false);
             }
         },
         checkAll: function () {
-            for (var i = 0; i < this.data.length; i++) {
-                this._changeItem(this.data[i], true);
+            for (var i = 0; i < this.arrayData.length; i++) {
+                this._changeItem(this.arrayData[i], true);
             }
         },
 
@@ -324,18 +325,18 @@
                 this.tree.$children.show();
             } else {
                 this.tree.$search.empty();
-                for (var i in this.data) {
+                for (var i in this.arrayData) {
                     if (this.opt.searchType == 'all') {
-                        if (this.data[i].name.indexOf(val) != -1) {
-                            this.tree.$search.append(this._makeItem(this.data[i]));
+                        if (this.arrayData[i].name.indexOf(val) != -1) {
+                            this.tree.$search.append(this._makeItem(this.arrayData[i]));
                         }
                     } else if (this.opt.searchType == 'node') {
-                        if (this.data[i].is_node && this.data[i].name.indexOf(val) != -1) {
-                            this.tree.$search.append(this._makeItem(this.data[i]));
+                        if (this.arrayData[i].is_node && this.arrayData[i].name.indexOf(val) != -1) {
+                            this.tree.$search.append(this._makeItem(this.arrayData[i]));
                         }
                     } else if (this.opt.searchType == 'leaf') {
-                        if (!this.data[i].is_node && this.data[i].name.indexOf(val) != -1) {
-                            this.tree.$search.append(this._makeItem(this.data[i]));
+                        if (!this.arrayData[i].is_node && this.arrayData[i].name.indexOf(val) != -1) {
+                            this.tree.$search.append(this._makeItem(this.arrayData[i]));
                         }
                     }
                 }
@@ -457,7 +458,6 @@
         },
         _getItemsByIds: function (data, ids, type) {
             var items = [];
-            var data = this.data;
             if (!type || type === 0) {
                 for (var i = 0; i < ids.length; i++) {
                     for (var j = 0; j < data.length; j++) {
@@ -552,10 +552,10 @@
             if (!item || !change || item.is_check === change) {
                 return false;
             }
-            for (var i = 0; i < this.data.length; i++) {
-                this.data[i].is_check = false;
-                this.data[i].checkState = false;
-                this._updateCheck(this.data[i]);
+            for (var i = 0; i < this.arrayData.length; i++) {
+                this.arrayData[i].is_check = false;
+                this.arrayData[i].checkState = false;
+                this._updateCheck(this.arrayData[i]);
             }
             item.is_check = true;
             item.checkState = true;
@@ -717,37 +717,39 @@
         },
         _makeTreeWrap: function (item) {
             var $html = $('<div class="x-tree-root"></div>');
-            var style;
-            if (this.opt.is_trigger) {
+            var style; 
+            if (this.opt.is_trigger || this.opt.position === 'fixed') {
                 style = {
-                    'font-family': 'Microsoft YaHei',
-                    'z-index': this.opt.zIndex,
-                    border: '1px solid #5d5d5d',
-                    'background': '#fff',
                     position: 'absolute',
-                    maxHeight: this.opt.maxHeight,
+                    width: this.dom.outerWidth(),
+                    minWidth: 200,
+                    border: '1px solid #5d5d5d',
+                    'z-index': this.opt.zIndex,
                     padding: '0 1%',
+                    maxHeight: this.opt.maxHeight,
+                    'font-family': 'Microsoft YaHei',
+                    'font-size': '14px',
+                    'background': '#fff',
                     'white-space': 'nowrap',
                     'overflow': 'auto',
-                    'font-size': '14px',
                     'user-select': 'none',
-                    '-webkit-user-select': 'none',
+                    '-ms-user-select': 'none',
                     '-moz-user-select': 'none',
-                    '-ms-user-select': 'none'
+                    '-webkit-user-select': 'none',
                 };
             } else {
                 style = {
-                    'font-family': 'Microsoft YaHei',
-                    'background': '#fff',
-                    maxHeight: this.opt.maxHeight,
                     padding: '0 1%',
+                    maxHeight: this.opt.maxHeight,
+                    'font-family': 'Microsoft YaHei',
+                    'font-size': '14px',
+                    'background': '#fff',
                     'white-space': 'nowrap',
                     'overflow': 'auto',
-                    'font-size': '14px',
                     'user-select': 'none',
-                    '-webkit-user-select': 'none',
+                    '-ms-user-select': 'none',
                     '-moz-user-select': 'none',
-                    '-ms-user-select': 'none'
+                    '-webkit-user-select': 'none',
                 };
             }
 
@@ -938,7 +940,6 @@
                 this.tree.$dom.css({
                     top: this.dom.offset().top + this.dom.outerHeight(),
                     left: this.dom.offset().left,
-                    minWidth: 200
                 });
             }
         },
