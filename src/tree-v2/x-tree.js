@@ -50,18 +50,18 @@
 
             this.opt = $.extend(true, {}, defOpt, opt);
             this.state = $.extend({}, defState);
-            this.data = this.opt.data;
-            this.tree = this._arrayToTree(this.data);
-            this.$tree = this._makeTree(this.tree);
+            this.arrayData = this.opt.data;
+            this.treeData = this._arrayToTree(this.arrayData);
+            this.tree = this._makeTree(this.treeData);
 
             this.dom = this.opt.dom;
             if (this.opt.position === 'fixed') {
-                $('body').append(this.$tree);
+                $('body').append(this.tree.$dom);
             } else {
                 this.dom.css({
                     'position': 'relative'
                 });
-                this.dom.append(this.$tree);
+                this.dom.append(this.tree.$dom);
             }
 
             if (this.opt.sel_ids) {
@@ -78,7 +78,7 @@
             if (this.opt.is_trigger) {
                 this.dom.off('click.xTree');
                 this.dom.on('click.xTree', function (e) {
-                    if (that.state._is_open && !that.$tree.is(e.target) && that.$tree.has(e.target).length === 0) {
+                    if (that.state._is_open && !that.tree.$dom.is(e.target) && that.tree.$dom.has(e.target).length === 0) {
                         that.hide();
                     } else {
                         that.show();
@@ -86,7 +86,7 @@
                 });
                 $(document).on('click.xTree', function (e) {
                     var a = that.dom;
-                    var b = that.$tree;
+                    var b = that.tree.$dom;
                     if (!a.is(e.target) && a.has(e.target).length === 0 && !b.is(e.target) && b.has(e.target).length === 0) {
                         that.hide();
                     }
@@ -318,24 +318,24 @@
         },
 
         search: function (val) {
-            this.tree.$dom.$children.hide();
+            this.tree.$children.hide();
             if (val === '') {
-                this.tree.$dom.$search.empty();
-                this.tree.$dom.$children.show();
+                this.tree.$search.empty();
+                this.tree.$children.show();
             } else {
-                this.tree.$dom.$search.empty();
+                this.tree.$search.empty();
                 for (var i in this.data) {
                     if (this.opt.searchType == 'all') {
                         if (this.data[i].name.indexOf(val) != -1) {
-                            this.tree.$dom.$search.append(this._makeItem(this.data[i]));
+                            this.tree.$search.append(this._makeItem(this.data[i]));
                         }
                     } else if (this.opt.searchType == 'node') {
                         if (this.data[i].is_node && this.data[i].name.indexOf(val) != -1) {
-                            this.tree.$dom.$search.append(this._makeItem(this.data[i]));
+                            this.tree.$search.append(this._makeItem(this.data[i]));
                         }
                     } else if (this.opt.searchType == 'leaf') {
                         if (!this.data[i].is_node && this.data[i].name.indexOf(val) != -1) {
-                            this.tree.$dom.$search.append(this._makeItem(this.data[i]));
+                            this.tree.$search.append(this._makeItem(this.data[i]));
                         }
                     }
                 }
@@ -672,29 +672,31 @@
          *  视图：构造Tree、 item、 self、 children
          */
 
-        _makeTree: function (tree) {
+        _makeTree: function (treeData) {
+            var tree = treeData;
             tree.$dom = this._makeTreeWrap(tree);
             if (this.opt.has_search) {
-                tree.$dom.$search = this._makeSearchWrap();
-                tree.$dom.append(this._makeSearchInput(), tree.$dom.$search);
+                tree.$input = this._makeSearchInput();
+                tree.$search = this._makeSearchWrap();
+                tree.$dom.append(tree.$input, tree.$search);
             }
-            tree.$dom.$self = this._makeSelfWrap(tree);
-            tree.$dom.$children = this._makeChildrenWrap(tree);
-            tree.$dom.append(tree.$dom.$self, tree.$dom.$children);
+            tree.$self = this._makeSelfWrap(tree);
+            tree.$children = this._makeChildrenWrap(tree);
+            tree.$dom.append(tree.$self, tree.$children);
             if (tree.is_node && tree.children && tree.children.length) {
                 for (var i = 0; i < tree.children.length; i++) {
-                    tree.$dom.$children.append(this._makeTreeFn(tree.children[i]));
+                    tree.$children.append(this._makeTreeFn(tree.children[i]));
                 }
             }
-            tree.$dom.$self.hide();
+            tree.$self.hide();
             tree.$dom.hide();
-            return tree.$dom;
+            return tree;
         },
         _makeTreeFn: function (item) {
             var $item = this._makeItem(item);
             if (item.is_node && item.children && item.children.length) {
                 for (var i = 0; i < item.children.length; i++) {
-                    item.$dom.$children.append(this._makeTreeFn(item.children[i]));
+                    item.$children.append(this._makeTreeFn(item.children[i]));
                 }
             }
             return $item;
@@ -740,8 +742,8 @@
             return $html;
         },
         _makeSearchInput: function (item) {
-            var $search = $('<input class="x-tree-search-input" type="text" placeholder="搜索"/></div>');
-            $search.css({
+            var $input = $('<input class="x-tree-search-input" type="text" placeholder="搜索"/></div>');
+            $input.css({
                 'border': 'none',
                 'padding': '4px 0',
                 'margin': '5px auto 0 auto',
@@ -750,7 +752,7 @@
             });
 
             var that = this;
-            $search.on('keyup paste', function () {
+            $input.on('keyup paste', function () {
                 var input = this;
                 clearTimeout(that.state._searchTimer);
                 that.state._searchTimer = setTimeout(function () {
@@ -758,7 +760,7 @@
                 }, 100);
             });
 
-            return $search;
+            return $input;
         },
         _makeSearchWrap: function (item) {
             var $searchWrap = $('<div></div>');
@@ -784,8 +786,8 @@
             $item.append($self, $children);
 
             item.$dom = $item;
-            item.$dom.$self = $self;
-            item.$dom.$children = $children;
+            item.$self = $self;
+            item.$children = $children;
 
             return $item;
         },
@@ -932,34 +934,34 @@
 
         _showChildren: function (item) {
             item.expand = true;
-            item.$dom.$children.show();
+            item.$children.show();
             this._updateExpand(item);
         },
         _hideChildren: function (item) {
             item.expand = false;
-            item.$dom.$children.hide();
+            item.$children.hide();
             this._updateExpand(item);
         },
 
         _updateExpand: function (item) {
             if (item.expand) {
-                item.$dom.$self.find('.x-tree-expand').removeClass('icon-xiangyou2');
-                item.$dom.$self.find('.x-tree-expand').addClass('icon-xiangxia1');
+                item.$self.find('.x-tree-expand').removeClass('icon-xiangyou2');
+                item.$self.find('.x-tree-expand').addClass('icon-xiangxia1');
             } else {
-                item.$dom.$self.find('.x-tree-expand').removeClass('icon-xiangxia1');
-                item.$dom.$self.find('.x-tree-expand').addClass('icon-xiangyou2');
+                item.$self.find('.x-tree-expand').removeClass('icon-xiangxia1');
+                item.$self.find('.x-tree-expand').addClass('icon-xiangyou2');
             }
         },
         _updateCheck: function (item) {
             if (item.checkState === true) {
-                item.$dom.$self.find('.x-tree-check').removeClass('icon-square icon-square-minus');
-                item.$dom.$self.find('.x-tree-check').addClass('icon-square-check');
+                item.$self.find('.x-tree-check').removeClass('icon-square icon-square-minus');
+                item.$self.find('.x-tree-check').addClass('icon-square-check');
             } else if (item.checkState === false) {
-                item.$dom.$self.find('.x-tree-check').removeClass('icon-square-check icon-square-minus');
-                item.$dom.$self.find('.x-tree-check').addClass('icon-square');
+                item.$self.find('.x-tree-check').removeClass('icon-square-check icon-square-minus');
+                item.$self.find('.x-tree-check').addClass('icon-square');
             } else if (item.checkState === 'z') {
-                item.$dom.$self.find('.x-tree-check').removeClass('icon-square icon-square-check');
-                item.$dom.$self.find('.x-tree-check').addClass('icon-square-minus');
+                item.$self.find('.x-tree-check').removeClass('icon-square icon-square-check');
+                item.$self.find('.x-tree-check').addClass('icon-square-minus');
             }
         },
     };
