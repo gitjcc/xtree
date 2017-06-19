@@ -563,7 +563,7 @@
         this.arrayData[i].checkState = false;
         this._updateCheck(this.arrayData[i]);
       }
-      if (this.opt.radioCancel === false) {
+      if (this.opt.radioCancel === false && change === false) {
         change = true;
       }
       item.is_check = change;
