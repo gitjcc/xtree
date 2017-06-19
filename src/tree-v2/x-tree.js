@@ -563,7 +563,7 @@
         this.arrayData[i].checkState = false;
         this._updateCheck(this.arrayData[i]);
       }
-      if(this.opt.radioCancel === false){
+      if (this.opt.radioCancel === false) {
         change = true;
       }
       item.is_check = change;
@@ -572,7 +572,8 @@
       return false;
     },
     _changeItemMulti: function (item, change) {
-      if (!item || item.is_check === change && change) {
+      //同选中时，不操作；同取消时，操作。原因：自己选中时，孩子一定是选中的；自己未选中时，孩子状态未知。
+      if (!item || (item.is_check === change && change)) {
         return false;
       }
       item.is_check = change;
