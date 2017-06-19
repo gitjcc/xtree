@@ -32,7 +32,7 @@
     onChange: function () {},
   };
   var defState = {
-    _init_done: false, //是否初始化。
+    _initialized: false, //是否初始化。
     _is_open: false, //是否open。
     _originId: {
       nodeId: [],
@@ -79,7 +79,7 @@
       }
 
       this.opt.onInit.call(this);
-      this.state._init_done = true;
+      this.state._initialized = true;
 
       var that = this;
       if (this.opt.is_trigger) {
