@@ -14,22 +14,26 @@
     node_merge: false, //结果只显示最上层  比如   中国被选中  四川,成都则不会显示  否则 每个被勾选的节点都显示
     zIndex: 99,
     is_multi: true, //是否多选
+    radioCancel: false, // 单选，再次点击则取消选中。
     expand: false, //是否展开，false、true、num, (0、false,都展开ROOT级。true,完全展开。num>=1时，展开到对应级）
     width: null,
     minWidth: 200,
     maxHeight: 300,
     data: [], //{id:1,name:'xx',nodeId:'0',is_node:true,is_check:false},
     sel_ids: '',
+    onBeforeInit: function () {},
     onInit: function () {},
     onBeforeOpen: function () {},
     onOpen: function () {},
+    onBeforeClose: function () {},
+    onClose: function () {},
     onCheck: function () {},
     onCancel: function () {},
     onChange: function () {},
-    onClose: function () {},
   };
   var defState = {
-    _is_open: false, //是否open
+    _init_done: false, //是否初始化。
+    _is_open: false, //是否open。
     _originId: {
       nodeId: [],
       id: []
@@ -75,6 +79,7 @@
       }
 
       this.opt.onInit.call(this);
+      this.state._init_done = true;
 
       var that = this;
       if (this.opt.is_trigger) {
@@ -107,10 +112,10 @@
       this._showTree();
       this.state._is_open = true;
       this.opt.onOpen.call(this);
-      return this;
     },
     hide: function () {
       if (this.state._is_open) {
+        this.opt.onBeforeClose.call(this);
         this._hideTree();
         this.state._originId = this.getId();
         this.state._is_open = false;
@@ -550,7 +555,7 @@
       this.opt.onChange.call(this, item);
     },
     _changeItemRadio: function (item, change) {
-      if (!item || !change || item.is_check === change) {
+      if (!item || item.is_check === change) {
         return false;
       }
       for (var i = 0; i < this.arrayData.length; i++) {
@@ -558,8 +563,11 @@
         this.arrayData[i].checkState = false;
         this._updateCheck(this.arrayData[i]);
       }
-      item.is_check = true;
-      item.checkState = true;
+      if(this.opt.radioCancel === false){
+        change = true;
+      }
+      item.is_check = change;
+      item.checkState = change;
       this._updateCheck(item);
       return false;
     },
