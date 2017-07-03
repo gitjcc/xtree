@@ -377,21 +377,10 @@
         expand: true,
         amount: arrayIn.length
       };
-      var temp = {};
       for (var i = 0; i < rootIds.length; i++) {
         for (var j = 0; j < arrayIn.length; j++) {
           if (arrayIn[j].nodeId == rootIds[i]) {
-            temp = arrayIn[j];
-            temp.checkState = temp.is_check;
-            temp.parent = treeData;
-            temp.level = treeData.level + 1;
-            temp.expand = true;
-            if (temp.is_node) {
-              temp.children = this._getSubTree(arrayIn, temp);
-            } else {
-              temp.children = [];
-            }
-            treeData.children.push(temp);
+            treeData.children.push(this.newItem(arrayIn, arrayIn[j], treeData));
           }
         }
       }
@@ -436,23 +425,35 @@
     },
     _getSubTree: function (arrayIn, parent) {
       var result = [];
-      var temp = {};
       for (var i = 0; i < arrayIn.length; i++) {
         if (arrayIn[i].nodeId == parent.id) {
-          temp = arrayIn[i];
-          temp.checkState = temp.is_check;
-          temp.parent = parent;
-          temp.level = parent.level + 1;
-          temp.expand = true;
-          if (temp.is_node) {
-            temp.children = this._getSubTree(arrayIn, temp);
-          } else {
-            temp.children = [];
-          }
-          result.push(temp);
+          result.push(this.newItem(arrayIn, arrayIn[i], parent));
         }
       }
       return result;
+    },
+    newItem: function name(arrayIn, originItem, parent) {
+      const result = originItem;
+      result.checkState = result.is_check;
+      result.parent = parent;
+      result.level = parent.level + 1;
+      result.expand = this.expandLvl(this.opt.expand, result);
+      if (result.is_node) {
+        result.children = this._getSubTree(arrayIn, result);
+      } else {
+        result.children = [];
+      }
+      return result;
+    },
+    expandLvl: function name(expand, item) {
+      if (expand === true) {
+        return true;
+      } else if (expand === false) {
+        return item.level <= 0;
+      } else if (item.level <= expand) {
+        return true;
+      }
+      return false;
     },
     _getItemById: function (data, id) {
       for (var i = 0; i < data.length; i++) {
@@ -828,8 +829,7 @@
       $html.css({
         'margin-left': '16px'
       });
-      if (item.level > this.opt.expand) {
-        item.expand = false;
+      if (item.expand === false) {
         $html.hide();
       }
       return $html;
@@ -838,7 +838,7 @@
     _makeExpand: function (item) {
       var $expand;
       if (item.is_node && item.children && item.children.length) {
-        if (item.level > this.opt.expand) {
+        if (item.expand === false) {
           $expand = $('<i class="x-tree-expand iconfont icon-xiangyou2"></i>');
         } else {
           $expand = $('<i class="x-tree-expand iconfont icon-xiangxia1"></i>');
