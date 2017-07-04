@@ -40,9 +40,9 @@ body {
 }
 
 .tree_input_tip {
-    display: inline-block;
+    display: block;
     width: 298px;
-    height: 18px;
+    min-height: 20px;
     border: 1px solid deepskyblue;
     overflow: hidden;
     text-overflow: ellipsis;

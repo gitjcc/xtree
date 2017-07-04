@@ -30,6 +30,7 @@
     onCheck: function () {},
     onCancel: function () {},
     onChange: function () {},
+    onConfirm : function () {},
   };
   var defState = {
     _initialized: false, //是否初始化。
@@ -324,25 +325,42 @@
       }
     },
 
+    makeTag: function (item) {
+      var $html = $('<span data-id="' + item.id + '" >' + item.name + '<span>');
+      $html.css({
+        padding: '5px',
+        border: '1px solid #666',
+      });
+      $icon = $('<i class="fa fa-times" aria-hidden="true"></i>');
+      var that = this;
+      $icon.on('click', function name(e) {
+        e.stopPropagation();
+        that._changeItem(item, false);
+        $html.remove();
+      });
+      $html.prepend($icon);
+      return $html;
+    },
+
     search: function (val) {
       this.tree.$children.hide();
       if (val === '') {
-        this.tree.$search.empty();
+        this.tree.$result.empty();
         this.tree.$children.show();
       } else {
-        this.tree.$search.empty();
+        this.tree.$result.empty();
         for (var i in this.arrayData) {
           if (this.opt.searchType == 'all') {
             if (this.arrayData[i].name.indexOf(val) != -1) {
-              this.tree.$search.append(this._makeItem(this.arrayData[i]));
+              this.tree.$result.append(this._makeItem(this.arrayData[i]));
             }
           } else if (this.opt.searchType == 'node') {
             if (this.arrayData[i].is_node && this.arrayData[i].name.indexOf(val) != -1) {
-              this.tree.$search.append(this._makeItem(this.arrayData[i]));
+              this.tree.$result.append(this._makeItem(this.arrayData[i]));
             }
           } else if (this.opt.searchType == 'leaf') {
             if (!this.arrayData[i].is_node && this.arrayData[i].name.indexOf(val) != -1) {
-              this.tree.$search.append(this._makeItem(this.arrayData[i]));
+              this.tree.$result.append(this._makeItem(this.arrayData[i]));
             }
           }
         }
@@ -694,50 +712,28 @@
     },
 
     /**
-     *  视图：构造Tree、 item、 self、 children
+     *  视图：构造Tree、header、body、footer
      */
 
     _makeTree: function (treeData) {
       var tree = treeData;
       tree.$dom = this._makeTreeWrap(tree);
-      if (this.opt.has_search) {
-        tree.$input = this._makeSearchInput();
-        tree.$search = this._makeSearchWrap();
-        tree.$dom.append(tree.$input, tree.$search);
-      }
-      tree.$self = this._makeSelfWrap(tree);
-      tree.$children = this._makeChildrenWrap(tree);
-      tree.$dom.append(tree.$self, tree.$children);
-      if (tree.is_node && tree.children && tree.children.length) {
-        for (var i = 0; i < tree.children.length; i++) {
-          tree.$children.append(this._makeTreeFn(tree.children[i]));
-        }
-      }
-      tree.$self.hide();
+      tree.$header = this._makeTreeHeader(tree);
+      tree.$body = this._makeTreeBody(tree);
+      tree.$footer = this._makeTreeFooter(tree);
+      tree.$dom.append(tree.$header, tree.$body, tree.$footer);
       tree.$dom.hide();
       return tree;
     },
-    _makeTreeFn: function (item) {
-      var $item = this._makeItem(item);
-      if (item.is_node && item.children && item.children.length) {
-        for (var i = 0; i < item.children.length; i++) {
-          item.$children.append(this._makeTreeFn(item.children[i]));
-        }
-      }
-      return $item;
-    },
+
     _makeTreeWrap: function (item) {
-      var $html = $('<div class="x-tree-root"></div>');
+      var $html = $('<div class="x-tree-wrap"></div>');
       var style = {
         width: this.opt.width ? this.opt.width : this.dom.outerWidth(),
         minWidth: this.opt.minWidth,
-        maxHeight: this.opt.maxHeight,
-        padding: '0 1%',
         'font-family': 'Microsoft YaHei',
         'font-size': '14px',
         'background': '#fff',
-        'white-space': 'nowrap',
-        'overflow': 'auto',
         'user-select': 'none',
         '-ms-user-select': 'none',
         '-moz-user-select': 'none',
@@ -748,21 +744,92 @@
         style['border'] = '1px solid #5d5d5d';
         style['z-index'] = this.opt.zIndex;
       }
-
       $html.css(style);
-
       return $html;
     },
-    _makeSearchInput: function (item) {
-      var $input = $('<input class="x-tree-search-input" type="text" placeholder="搜索"/></div>');
-      $input.css({
-        'border': 'none',
-        'padding': '4px 0',
-        'margin': '5px auto 0 auto',
-        'width': '98%',
-        'display': 'block'
+    _makeTreeHeader: function (tree) {
+      var $header = {};
+      $header = $('<div class="x-tree-header"></div>');
+      $header.css({
+        padding: '6px',
+      });
+      $header.$input = this._makeSearchInput();
+      $header.append($header.$input);
+      if (!this.opt.has_search) {
+        $header.hide();
+      }
+      return $header;
+    },
+    _makeTreeBody: function (tree) {
+      var $body = {};
+      $body = $('<div class="x-tree-body"></div>');
+      var style = {
+        maxHeight: this.opt.maxHeight,
+        'white-space': 'nowrap',
+        'overflow': 'auto',
+      };
+      $body.css(style);
+
+      $body.$result = this._makeSearchResult();
+      $body.$self = this._makeSelf(tree);
+      $body.$self.hide();
+      $body.$children = this._makeChildrenWrap(tree);
+      if (tree.is_node && tree.children && tree.children.length) {
+        for (var i = 0; i < tree.children.length; i++) {
+          $body.$children.append(this._makeItem(tree.children[i]));
+        }
+      }
+      $body.append($body.$result, $body.$self, $body.$children);
+
+      return $body;
+    },
+    _makeTreeFooter: function (tree) {
+      var $footer = {};
+      $footer = $('<div class="x-tree-footer"></div>');
+
+      $footer.$cancelAll = $('<span class="x-tree-cancel">取消</span>');
+      $footer.$confirm = $('<span class="x-tree-confirm">确定</span>');
+
+      $footer.css({
+        padding: '15px',
+        'text-align': 'center',
+      });
+      $footer.$cancelAll.css({
+        margin: '10px',
+        padding: '5px 10px',
+        cursor: 'pointer',
+        'background-color': '#ADAEB0',
+        'border-radius': '5px',
+      });
+      $footer.$confirm.css({
+        margin: '10px',
+        padding: '5px 10px',
+        cursor: 'pointer',
+        'background-color': '#5AA5E1',
+        'border-radius': '5px',
       });
 
+      var that = this;
+      $footer.$cancelAll.on('click', function name(params) {
+        that.cancelAll();
+      });
+
+      $footer.$confirm.on('click', function name(params) {
+        that.opt.onConfirm.call(this);
+      });
+
+      $footer.append($footer.$cancelAll, $footer.$confirm);
+      return $footer;
+    },
+
+    _makeSearchInput: function (item) {
+      var $input = $('<input class="x-tree-search-input" type="text" placeholder="请输入关键词" >');
+      $input.css({
+        'display': 'block',
+        'width': '100%',
+        'border': 'none',
+        'padding': '5px 0',
+      });
       var that = this;
       $input.on('keyup paste', function () {
         var input = this;
@@ -771,37 +838,41 @@
           that.search(input.value);
         }, 100);
       });
-
       return $input;
     },
-    _makeSearchWrap: function (item) {
-      var $searchWrap = $('<div></div>');
-      $searchWrap.addClass('x-tree-search-result');
-      return $searchWrap;
+    _makeSearchResult: function () {
+      var $searchResult = $('<div></div>');
+      $searchResult.addClass('x-tree-search-result');
+      return $searchResult;
     },
+
     _makeItem: function (item) {
+      var $item = this._makeSelf(item);
+      if (item.is_node && item.children && item.children.length) {
+        for (var i = 0; i < item.children.length; i++) {
+          item.$children.append(this._makeItem(item.children[i]));
+        }
+      }
+      return $item;
+    },
+    _makeSelf: function (item) {
       if (!item) {
         return false;
       }
+      item.$item = this._makeItemWrap(item);
+      item.$self = this._makeSelfWrap(item);
+      item.$children = this._makeChildrenWrap(item);
 
-      var $item = this._makeItemWrap(item);
-      var $self = this._makeSelfWrap(item);
-      var $children = this._makeChildrenWrap(item);
+      item.$expand = this._makeExpand(item);
+      item.$check = this._makeCheck(item);
+      item.$folder = this._makeFolder(item);
+      item.$text = this._makeText(item);
 
-      var $expand = this._makeExpand(item);
-      var $check = this._makeCheck(item);
-      var $folder = this._makeFolder(item);
-      var $text = this._makeText(item);
+      item.$self.append(item.$expand, item.$check, item.$folder, item.$text);
 
-      $self.append($expand, $check, $folder, $text);
+      item.$item.append(item.$self, item.$children);
 
-      $item.append($self, $children);
-
-      item.$dom = $item;
-      item.$self = $self;
-      item.$children = $children;
-
-      return $item;
+      return item.$item;
     },
     _makeItemWrap: function (item) {
       var $itemWrap = $('<div class="x-tree-item" ></div>');
@@ -823,6 +894,16 @@
       var $selfWrap = $('<div></div>');
       $selfWrap.addClass('x-tree-self');
       return $selfWrap;
+    },
+    _makeChildren: function (item) {
+      var $html = $('<div class="x-tree-children"></div>');
+      $html.css({
+        'margin-left': '16px'
+      });
+      if (item.expand === false) {
+        $html.hide();
+      }
+      return $html;
     },
     _makeChildrenWrap: function (item) {
       var $html = $('<div class="x-tree-children"></div>');
@@ -866,10 +947,8 @@
     },
     _makeCheck: function (item) {
       if (!item) {
-        console.warn('_makeCheck失败,item不存在', item);
-        return '';
+        return false;
       }
-
       var $check;
       if (item.is_check) {
         $check = $('<i class="x-tree-check iconfont icon-square-check" /i>');
@@ -884,6 +963,11 @@
         width: '14px',
         height: '14px',
       });
+
+      // 单选只、选叶子，则不显示 Checkbox
+      if (!this.opt.is_multi && this.opt.only_child && item.is_node) {
+        $check.hide();
+      }
 
       var that = this;
       $check.on('click', function () {
@@ -955,23 +1039,23 @@
 
     _updateExpand: function (item) {
       if (item.expand) {
-        item.$self.find('.x-tree-expand').removeClass('icon-xiangyou2');
-        item.$self.find('.x-tree-expand').addClass('icon-xiangxia1');
+        item.$expand.removeClass('icon-xiangyou2');
+        item.$expand.addClass('icon-xiangxia1');
       } else {
-        item.$self.find('.x-tree-expand').removeClass('icon-xiangxia1');
-        item.$self.find('.x-tree-expand').addClass('icon-xiangyou2');
+        item.$expand.removeClass('icon-xiangxia1');
+        item.$expand.addClass('icon-xiangyou2');
       }
     },
     _updateCheck: function (item) {
       if (item.checkState === true) {
-        item.$self.find('.x-tree-check').removeClass('icon-square icon-square-minus');
-        item.$self.find('.x-tree-check').addClass('icon-square-check');
+        item.$check.removeClass('icon-square icon-square-minus');
+        item.$check.addClass('icon-square-check');
       } else if (item.checkState === false) {
-        item.$self.find('.x-tree-check').removeClass('icon-square-check icon-square-minus');
-        item.$self.find('.x-tree-check').addClass('icon-square');
+        item.$check.removeClass('icon-square-check icon-square-minus');
+        item.$check.addClass('icon-square');
       } else if (item.checkState === 'z') {
-        item.$self.find('.x-tree-check').removeClass('icon-square icon-square-check');
-        item.$self.find('.x-tree-check').addClass('icon-square-minus');
+        item.$check.removeClass('icon-square icon-square-check');
+        item.$check.addClass('icon-square-minus');
       }
     },
   };
