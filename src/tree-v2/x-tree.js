@@ -30,7 +30,7 @@
     onCheck: function () {},
     onCancel: function () {},
     onChange: function () {},
-    onConfirm : function () {},
+    onConfirm: function () {},
   };
   var defState = {
     _initialized: false, //是否初始化。
@@ -566,12 +566,14 @@
       } else {
         this._changeItemRadio(item, change);
       }
-      if (change) {
-        this.opt.onCheck.call(this, item);
-      } else {
-        this.opt.onCancel.call(this, item);
+      if (this.state._initialized) {
+        if (change) {
+          this.opt.onCheck.call(this, item);
+        } else {
+          this.opt.onCancel.call(this, item);
+        }
+        this.opt.onChange.call(this, item);
       }
-      this.opt.onChange.call(this, item);
     },
     _changeItemRadio: function (item, change) {
       if (!item || item.is_check === change) {
@@ -798,6 +800,7 @@
         margin: '10px',
         padding: '5px 10px',
         cursor: 'pointer',
+        color: '#f2f2f2',
         'background-color': '#ADAEB0',
         'border-radius': '5px',
       });
@@ -805,6 +808,7 @@
         margin: '10px',
         padding: '5px 10px',
         cursor: 'pointer',
+        color: '#f2f2f2',
         'background-color': '#5AA5E1',
         'border-radius': '5px',
       });
@@ -920,13 +924,13 @@
       var $expand;
       if (item.is_node && item.children && item.children.length) {
         if (item.expand === false) {
-          $expand = $('<i class="x-tree-expand iconfont icon-xiangyou2"></i>');
+          $expand = $('<i class="x-tree-expand iconfont icon-2-add-small"></i>');
         } else {
-          $expand = $('<i class="x-tree-expand iconfont icon-xiangxia1"></i>');
+          $expand = $('<i class="x-tree-expand iconfont icon-2-minus"></i>');
         }
         var that = this;
         $expand.on('click', function (e) {
-          if ($(this).hasClass('icon-xiangyou2')) {
+          if ($(this).hasClass('icon-2-add-small')) {
             that._showChildren(item);
           } else {
             that._hideChildren(item);
@@ -951,9 +955,9 @@
       }
       var $check;
       if (item.is_check) {
-        $check = $('<i class="x-tree-check iconfont icon-square-check" /i>');
+        $check = $('<i class="x-tree-check iconfont icon-2-square-check1" /i>');
       } else {
-        $check = $('<i class="x-tree-check iconfont icon-square" /i>');
+        $check = $('<i class="x-tree-check iconfont icon-2-square-uncheck" /i>');
       }
       $check.css({
         'vertical-align': 'base-line',
@@ -979,7 +983,7 @@
       if (!item || !item.is_node) {
         return '';
       }
-      var $folder = $('<i class="iconfont icon-folder"></i>');
+      var $folder = $('<i class="iconfont icon-2-file"></i>');
       $folder.css({
         'vertical-align': 'base-line',
         'padding-right': '0px',
@@ -1039,23 +1043,23 @@
 
     _updateExpand: function (item) {
       if (item.expand) {
-        item.$expand.removeClass('icon-xiangyou2');
-        item.$expand.addClass('icon-xiangxia1');
+        item.$expand.removeClass('icon-2-add-small');
+        item.$expand.addClass('icon-2-minus');
       } else {
-        item.$expand.removeClass('icon-xiangxia1');
-        item.$expand.addClass('icon-xiangyou2');
+        item.$expand.removeClass('icon-2-minus');
+        item.$expand.addClass('icon-2-add-small');
       }
     },
     _updateCheck: function (item) {
       if (item.checkState === true) {
-        item.$check.removeClass('icon-square icon-square-minus');
-        item.$check.addClass('icon-square-check');
+        item.$check.removeClass('icon-2-square-uncheck icon-2-square-part');
+        item.$check.addClass('icon-2-square-check1');
       } else if (item.checkState === false) {
-        item.$check.removeClass('icon-square-check icon-square-minus');
-        item.$check.addClass('icon-square');
+        item.$check.removeClass('icon-2-square-check1 icon-2-square-part');
+        item.$check.addClass('icon-2-square-uncheck');
       } else if (item.checkState === 'z') {
-        item.$check.removeClass('icon-square icon-square-check');
-        item.$check.addClass('icon-square-minus');
+        item.$check.removeClass('icon-2-square-uncheck icon-2-square-check1');
+        item.$check.addClass('icon-2-square-part');
       }
     },
   };

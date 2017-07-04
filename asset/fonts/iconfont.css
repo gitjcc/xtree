@@ -10,6 +10,8 @@
 .iconfont {
   font-family:"iconfont" !important;
   font-size:16px;
+  width: 16px;
+  padding: 0 5px;
   font-style:normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
