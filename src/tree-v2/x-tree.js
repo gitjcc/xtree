@@ -9,6 +9,7 @@
     position: 'absolute',
     is_trigger: false, //是否需要触发? 否则直接显示
     has_search: false,
+    has_buttons: false,
     searchType: 'all', //'all'全部，'node'节点，'leaf'叶子
     only_child: false, //是否结果只要 child
     node_merge: false, //结果只显示最上层  比如   中国被选中  四川,成都则不会显示  否则 每个被勾选的节点都显示
@@ -33,7 +34,7 @@
     onConfirm: function () {},
   };
   var defState = {
-    _initialized: false, //是否初始化。
+    _initialized: false, //是否初始化完成。
     _is_open: false, //是否open。
     _originId: {
       nodeId: [],
@@ -823,6 +824,9 @@
       });
 
       $footer.append($footer.$cancelAll, $footer.$confirm);
+      if (!this.opt.has_buttons) {
+        $footer.hide();
+      }
       return $footer;
     },
 
@@ -897,22 +901,15 @@
     _makeSelfWrap: function (item) {
       var $selfWrap = $('<div></div>');
       $selfWrap.addClass('x-tree-self');
-      return $selfWrap;
-    },
-    _makeChildren: function (item) {
-      var $html = $('<div class="x-tree-children"></div>');
-      $html.css({
-        'margin-left': '16px'
+      $selfWrap.css({
+        height: '20px',
       });
-      if (item.expand === false) {
-        $html.hide();
-      }
-      return $html;
+      return $selfWrap;
     },
     _makeChildrenWrap: function (item) {
       var $html = $('<div class="x-tree-children"></div>');
       $html.css({
-        'margin-left': '16px'
+        'margin-left': '18px'
       });
       if (item.expand === false) {
         $html.hide();
@@ -942,10 +939,10 @@
       $expand.css({
         display: 'inline-block',
         'vertical-align': 'base-line',
-        'padding-right': '0px',
+        padding: '0 0 0 3px',
         'cursor': 'pointer',
-        width: '14px',
-        height: '14px',
+        width: '16px',
+        height: '16px',
       });
       return $expand;
     },
@@ -960,12 +957,12 @@
         $check = $('<i class="x-tree-check iconfont icon-2-square-uncheck" /i>');
       }
       $check.css({
+        display: 'inline-block',
         'vertical-align': 'base-line',
-        'padding-right': '0px',
+        padding: '0 0 0 3px',
         'cursor': 'pointer',
-        'color': '#333',
-        width: '14px',
-        height: '14px',
+        width: '16px',
+        height: '16px',
       });
 
       // 单选只、选叶子，则不显示 Checkbox
@@ -985,12 +982,12 @@
       }
       var $folder = $('<i class="iconfont icon-2-file"></i>');
       $folder.css({
+        display: 'inline-block',
         'vertical-align': 'base-line',
-        'padding-right': '0px',
+        padding: '0 0 0 3px',
         'cursor': 'pointer',
-        'color': '#333',
-        width: '14px',
-        height: '14px',
+        width: '16px',
+        height: '16px',
       });
       return $folder;
     },

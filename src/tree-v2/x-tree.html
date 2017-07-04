@@ -148,6 +148,7 @@
         is_trigger: true,
         node_merge: false,
         has_search: true,
+        has_buttons: true,
         searchType: 'leaf',
         sel_ids: '3,11,12,13,30,31,32,33',
         expand: 2,
@@ -177,6 +178,11 @@
         ],
 
         onInit: function () {
+          var items = this.getItem()
+          $('#tree2').find('.tree_input_tip').empty();
+          items.forEach(function (element) {
+            $('#tree2').find('.tree_input_tip').append(this.makeTag(element));
+          }, this);
         },
         onOpen: function () {
         },
@@ -220,6 +226,7 @@
     is_trigger: true,
     node_merge: false,
     has_search: true,
+    has_buttons: true,
     searchType: 'all',
     sel_ids: '3,11,12,13,30,31,32,33',
     expand: 2,
