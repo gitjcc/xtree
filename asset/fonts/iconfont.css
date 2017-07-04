@@ -1,10 +1,10 @@
 
 @font-face {font-family: "iconfont";
-  src: url('iconfont.eot?t=1490086668807'); /* IE9*/
-  src: url('iconfont.eot?t=1490086668807#iefix') format('embedded-opentype'), /* IE6-IE8 */
-  url('iconfont.woff?t=1490086668807') format('woff'), /* chrome, firefox */
-  url('iconfont.ttf?t=1490086668807') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
-  url('iconfont.svg?t=1490086668807#iconfont') format('svg'); /* iOS 4.1- */
+  src: url('iconfont.eot?t=1499150509513'); /* IE9*/
+  src: url('iconfont.eot?t=1499150509513#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('iconfont.woff?t=1499150509513') format('woff'), /* chrome, firefox */
+  url('iconfont.ttf?t=1499150509513') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
+  url('iconfont.svg?t=1499150509513#iconfont') format('svg'); /* iOS 4.1- */
 }
 
 .iconfont {
@@ -55,9 +55,9 @@
 
 .icon-sousuo:before { content: "\e613"; }
 
-.icon-jian:before { content: "\e614"; }
+.icon-jian2:before { content: "\e614"; }
 
-.icon-jia:before { content: "\e615"; }
+.icon-jia2:before { content: "\e615"; }
 
 .icon-cuowu:before { content: "\e616"; }
 
@@ -73,9 +73,9 @@
 
 .icon-xiangxia:before { content: "\e61c"; }
 
-.icon-jia1:before { content: "\e61d"; }
+.icon-jia:before { content: "\e61d"; }
 
-.icon-jian1:before { content: "\e61e"; }
+.icon-jian:before { content: "\e61e"; }
 
 .icon-zuoshang:before { content: "\e61f"; }
 
@@ -127,15 +127,21 @@
 
 .icon-circle-unchecked:before { content: "\e644"; }
 
+.icon-wenjianjia1:before { content: "\e650"; }
+
 .icon-check:before { content: "\e645"; }
 
 .icon-close:before { content: "\e646"; }
 
 .icon-edit:before { content: "\e649"; }
 
+.icon-2-hotline:before { content: "\e658"; }
+
 .icon-circle-check:before { content: "\e657"; }
 
 .icon-circle-close:before { content: "\e659"; }
+
+.icon-2-help:before { content: "\e691"; }
 
 .icon-delete:before { content: "\e6b4"; }
 
@@ -147,11 +153,21 @@
 
 .icon-circle-add:before { content: "\e6d9"; }
 
+.icon-mima:before { content: "\e64a"; }
+
+.icon-iconfontdelete:before { content: "\e64b"; }
+
+.icon-2-notice:before { content: "\e70a"; }
+
+.icon-2-new-version:before { content: "\e719"; }
+
 .icon-tupian2222:before { content: "\e636"; }
 
 .icon-jine:before { content: "\e637"; }
 
 .icon-xiaoxi:before { content: "\e638"; }
+
+.icon-down:before { content: "\e656"; }
 
 .icon-jinggao:before { content: "\e639"; }
 
@@ -160,6 +176,20 @@
 .icon-xiangzuo3:before { content: "\e63b"; }
 
 .icon-xiazai:before { content: "\e63c"; }
+
+.icon-zuzhijiegou:before { content: "\e73d"; }
+
+.icon-edit1:before { content: "\e655"; }
+
+.icon-shexiangtou:before { content: "\e654"; }
+
+.icon-2-file:before { content: "\e739"; }
+
+.icon-shang3:before { content: "\e64c"; }
+
+.icon-dui:before { content: "\e647"; }
+
+.icon-folder1:before { content: "\e64d"; }
 
 .icon-gongzuoliuchengtu:before { content: "\e63d"; }
 
@@ -177,9 +207,69 @@
 
 .icon-dengdaiqueren:before { content: "\e642"; }
 
+.icon-x:before { content: "\e648"; }
+
 .icon-folder:before { content: "\e9f6"; }
+
+.icon-xia2:before { content: "\e79b"; }
+
+.icon-shang2:before { content: "\e79c"; }
+
+.icon-shang:before { content: "\e64e"; }
+
+.icon-2-close:before { content: "\e660"; }
+
+.icon-1-copy:before { content: "\e652"; }
+
+.icon-shouyeshouye:before { content: "\e6ee"; }
+
+.icon-laba:before { content: "\e64f"; }
+
+.icon-2-angle-down:before { content: "\e65a"; }
+
+.icon-2-angle-left:before { content: "\e65c"; }
+
+.icon-2-angle-right:before { content: "\e65d"; }
+
+.icon-2-angle-up:before { content: "\e65e"; }
+
+.icon-btn-setting:before { content: "\e65b"; }
+
+.icon-home:before { content: "\e6ac"; }
+
+.icon-user:before { content: "\e730"; }
+
+.icon-2-add-big:before { content: "\e685"; }
+
+.icon-sos:before { content: "\e65f"; }
 
 .icon-scan:before { content: "\e7db"; }
 
 .icon-square-minus:before { content: "\e8e2"; }
+
+.icon-xiangxia11:before { content: "\e6a5"; }
+
+.icon-xia:before { content: "\e66d"; }
+
+.icon-2-add-small:before { content: "\e689"; }
+
+.icon-yonghu:before { content: "\e651"; }
+
+.icon-1:before { content: "\e653"; }
+
+.icon-2-minus:before { content: "\e667"; }
+
+.icon-jia-b-copy:before { content: "\e9f7"; }
+
+.icon-2-square-uncheck:before { content: "\e661"; }
+
+.icon-2-square-check1:before { content: "\e662"; }
+
+.icon-2-square-part:before { content: "\e663"; }
+
+.icon-2-operation:before { content: "\e664"; }
+
+.icon-2-approve:before { content: "\e665"; }
+
+.icon-2-track:before { content: "\e666"; }
 
