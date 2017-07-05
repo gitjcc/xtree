@@ -820,7 +820,7 @@
       });
 
       $footer.$confirm.on('click', function name(params) {
-        that.opt.onConfirm.call(this);
+        that.opt.onConfirm.call(that);
       });
 
       $footer.append($footer.$cancelAll, $footer.$confirm);
