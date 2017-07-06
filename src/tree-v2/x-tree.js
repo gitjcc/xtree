@@ -344,24 +344,24 @@
     },
 
     search: function (val) {
-      this.tree.$children.hide();
+      this.tree.$body.$children.hide();
       if (val === '') {
-        this.tree.$result.empty();
-        this.tree.$children.show();
+        this.tree.$body.$result.empty();
+        this.tree.$body.$children.show();
       } else {
-        this.tree.$result.empty();
+        this.tree.$body.$result.empty();
         for (var i in this.arrayData) {
           if (this.opt.searchType == 'all') {
             if (this.arrayData[i].name.indexOf(val) != -1) {
-              this.tree.$result.append(this._makeItem(this.arrayData[i]));
+              this.tree.$body.$result.append(this._makeSelf(this.arrayData[i]));
             }
           } else if (this.opt.searchType == 'node') {
             if (this.arrayData[i].is_node && this.arrayData[i].name.indexOf(val) != -1) {
-              this.tree.$result.append(this._makeItem(this.arrayData[i]));
+              this.tree.$body.$result.append(this._makeSelf(this.arrayData[i]));
             }
           } else if (this.opt.searchType == 'leaf') {
             if (!this.arrayData[i].is_node && this.arrayData[i].name.indexOf(val) != -1) {
-              this.tree.$result.append(this._makeItem(this.arrayData[i]));
+              this.tree.$body.$result.append(this._makeSelf(this.arrayData[i]));
             }
           }
         }
@@ -736,6 +736,7 @@
         minWidth: this.opt.minWidth,
         'font-family': 'Microsoft YaHei',
         'font-size': '14px',
+        'color': '#7d7d7d',
         'background': '#fff',
         'user-select': 'none',
         '-ms-user-select': 'none',
@@ -744,17 +745,17 @@
       };
       if (this.opt.is_trigger || this.opt.position === 'fixed') {
         style['position'] = 'absolute';
-        style['border'] = '1px solid #5d5d5d';
+        style['border'] = '1px solid #d7d9db';
+        style['border-radius'] = '2px';
         style['z-index'] = this.opt.zIndex;
       }
       $html.css(style);
       return $html;
     },
     _makeTreeHeader: function (tree) {
-      var $header = {};
-      $header = $('<div class="x-tree-header"></div>');
+      var $header = $('<div class="x-tree-header"></div>');
       $header.css({
-        padding: '6px',
+        padding: '10px 10px 3px',
       });
       $header.$input = this._makeSearchInput();
       $header.append($header.$input);
@@ -764,8 +765,7 @@
       return $header;
     },
     _makeTreeBody: function (tree) {
-      var $body = {};
-      $body = $('<div class="x-tree-body"></div>');
+      var $body = $('<div class="x-tree-body"></div>');
       var style = {
         maxHeight: this.opt.maxHeight,
         'white-space': 'nowrap',
@@ -776,14 +776,11 @@
       $body.$result = this._makeSearchResult();
       $body.$self = this._makeSelf(tree);
       $body.$self.hide();
-      $body.$children = this._makeChildrenWrap(tree);
-      if (tree.is_node && tree.children && tree.children.length) {
-        for (var i = 0; i < tree.children.length; i++) {
-          $body.$children.append(this._makeItem(tree.children[i]));
-        }
-      }
+      $body.$children = this._makeChildren(tree);
+      $body.$children.css({
+        'margin-left': '12px',
+      });
       $body.append($body.$result, $body.$self, $body.$children);
-
       return $body;
     },
     _makeTreeFooter: function (tree) {
@@ -794,24 +791,26 @@
       $footer.$confirm = $('<span class="x-tree-confirm">确定</span>');
 
       $footer.css({
-        padding: '15px',
+        'border-top': '1px solid #d7d9db',
+        padding: '10px',
         'text-align': 'center',
       });
       $footer.$cancelAll.css({
-        margin: '10px',
-        padding: '5px 10px',
+        'margin-right': '20px',
+        padding: '2px 6px',
+        'line-height': '24px',
         cursor: 'pointer',
         color: '#f2f2f2',
-        'background-color': '#ADAEB0',
-        'border-radius': '5px',
+        'background-color': '#acaeaf',
+        'border-radius': '2px',
       });
       $footer.$confirm.css({
-        margin: '10px',
-        padding: '5px 10px',
+        padding: '2px 6px',
+        'line-height': '24px',
         cursor: 'pointer',
         color: '#f2f2f2',
-        'background-color': '#5AA5E1',
-        'border-radius': '5px',
+        'background-color': '#66a5e0',
+        'border-radius': '2px',
       });
 
       var that = this;
@@ -835,8 +834,8 @@
       $input.css({
         'display': 'block',
         'width': '100%',
-        'border': 'none',
-        'padding': '5px 0',
+        'line-height': '30px',
+        'border': '1px solid #d7d9db',
       });
       var that = this;
       $input.on('keyup paste', function () {
@@ -851,35 +850,21 @@
     _makeSearchResult: function () {
       var $searchResult = $('<div></div>');
       $searchResult.addClass('x-tree-search-result');
+      $searchResult.css({
+        'margin-left': '12px',
+      });
+
       return $searchResult;
     },
 
     _makeItem: function (item) {
-      var $item = this._makeSelf(item);
-      if (item.is_node && item.children && item.children.length) {
-        for (var i = 0; i < item.children.length; i++) {
-          item.$children.append(this._makeItem(item.children[i]));
-        }
-      }
-      return $item;
-    },
-    _makeSelf: function (item) {
       if (!item) {
         return false;
       }
       item.$item = this._makeItemWrap(item);
-      item.$self = this._makeSelfWrap(item);
-      item.$children = this._makeChildrenWrap(item);
-
-      item.$expand = this._makeExpand(item);
-      item.$check = this._makeCheck(item);
-      item.$folder = this._makeFolder(item);
-      item.$text = this._makeText(item);
-
-      item.$self.append(item.$expand, item.$check, item.$folder, item.$text);
-
+      item.$self = this._makeSelf(item);
+      item.$children = this._makeChildren(item);
       item.$item.append(item.$self, item.$children);
-
       return item.$item;
     },
     _makeItemWrap: function (item) {
@@ -898,18 +883,36 @@
       });
       return $itemWrap;
     },
+    _makeSelf: function (item) {
+      item.$self = this._makeSelfWrap(item);
+      item.$expand = this._makeExpand(item);
+      item.$check = this._makeCheck(item);
+      item.$icon = this._makeIcon(item);
+      item.$text = this._makeText(item);
+      item.$self.append(item.$expand, item.$check, item.$icon, item.$text);
+      return item.$self;
+    },
     _makeSelfWrap: function (item) {
       var $selfWrap = $('<div></div>');
       $selfWrap.addClass('x-tree-self');
       $selfWrap.css({
-        height: '20px',
+        'line-height': '36px',
       });
       return $selfWrap;
+    },
+    _makeChildren: function (item) {
+      var $children = this._makeChildrenWrap(item);
+      if (item.is_node && item.children && item.children.length) {
+        for (var i = 0; i < item.children.length; i++) {
+          $children.append(this._makeItem(item.children[i]));
+        }
+      }
+      return $children;
     },
     _makeChildrenWrap: function (item) {
       var $html = $('<div class="x-tree-children"></div>');
       $html.css({
-        'margin-left': '18px'
+        'margin-left': '20px'
       });
       if (item.expand === false) {
         $html.hide();
@@ -942,7 +945,6 @@
         padding: '0 0 0 3px',
         'cursor': 'pointer',
         width: '16px',
-        height: '16px',
       });
       return $expand;
     },
@@ -958,11 +960,12 @@
       }
       $check.css({
         display: 'inline-block',
-        'vertical-align': 'base-line',
-        padding: '0 0 0 3px',
+        // 'vertical-align': 'bottom',
+        padding: '0 0 0 10px',
         'cursor': 'pointer',
-        width: '16px',
-        height: '16px',
+        'font-size': '18px',
+        // width: '16px',
+        // height: '16px',
       });
 
       // 单选只、选叶子，则不显示 Checkbox
@@ -976,20 +979,23 @@
       });
       return $check;
     },
-    _makeFolder: function (item) {
+    _makeIcon: function (item) {
       if (!item || !item.is_node) {
         return '';
       }
-      var $folder = $('<i class="iconfont icon-2-file"></i>');
-      $folder.css({
+      var $icon = $('<i class="iconfont icon-2-filefolder"></i>');
+      $icon.css({
         display: 'inline-block',
         'vertical-align': 'base-line',
-        padding: '0 0 0 3px',
+        'font-size': '12px',
+        // width: '16px',
+        // height: '16px',
+        padding: '0 0 0 6px',
+        color: '#d8d9db',
         'cursor': 'pointer',
-        width: '16px',
-        height: '16px',
+
       });
-      return $folder;
+      return $icon;
     },
     _makeText: function (item) {
       if (!item) {
@@ -998,7 +1004,7 @@
       var $text = $('<span class="x-tree-item-text"></span>');
       $text.text(item.name);
       $text.css({
-        padding: '0 0 0 5px'
+        padding: '0 0 0 3px'
       });
       return $text;
     },
@@ -1051,12 +1057,21 @@
       if (item.checkState === true) {
         item.$check.removeClass('icon-2-square-uncheck icon-2-square-part');
         item.$check.addClass('icon-2-square-check1');
+        item.$check.css({
+          color: '#5AA4E1'
+        });
       } else if (item.checkState === false) {
         item.$check.removeClass('icon-2-square-check1 icon-2-square-part');
         item.$check.addClass('icon-2-square-uncheck');
+        item.$check.css({
+          color: ''
+        });
       } else if (item.checkState === 'z') {
         item.$check.removeClass('icon-2-square-uncheck icon-2-square-check1');
         item.$check.addClass('icon-2-square-part');
+        item.$check.css({
+          color: '#5AA4E1'
+        });
       }
     },
   };
