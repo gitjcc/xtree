@@ -835,6 +835,8 @@
         'display': 'block',
         'width': '100%',
         'line-height': '30px',
+        'padding-top':'0',
+        'padding-bottom':'0',
         'border': '1px solid #d7d9db',
       });
       var that = this;
