@@ -778,7 +778,7 @@
       $body.$self.hide();
       $body.$children = this._makeChildren(tree);
       $body.$children.css({
-        'margin-left': '12px',
+        'margin-left': '10px',
       });
       $body.append($body.$result, $body.$self, $body.$children);
       return $body;
@@ -851,7 +851,7 @@
       var $searchResult = $('<div></div>');
       $searchResult.addClass('x-tree-search-result');
       $searchResult.css({
-        'margin-left': '12px',
+        'margin-left': '10px',
       });
 
       return $searchResult;
@@ -942,7 +942,7 @@
       $expand.css({
         display: 'inline-block',
         'vertical-align': 'base-line',
-        padding: '0 0 0 3px',
+        padding: '0 4px 0 0',
         'cursor': 'pointer',
         width: '16px',
       });
@@ -961,7 +961,7 @@
       $check.css({
         display: 'inline-block',
         // 'vertical-align': 'bottom',
-        padding: '0 0 0 10px',
+        padding: '0 5px 0 5px',
         color:'#cccccc',
         'cursor': 'pointer',
         'font-size': '18px',
@@ -989,9 +989,7 @@
         display: 'inline-block',
         'vertical-align': 'base-line',
         'font-size': '12px',
-        // width: '16px',
-        // height: '16px',
-        padding: '0 0 0 6px',
+        padding: '0 3px 0 0',
         color: '#d8d9db',
         'cursor': 'pointer',
 
@@ -1004,9 +1002,6 @@
       }
       var $text = $('<span class="x-tree-item-text"></span>');
       $text.text(item.name);
-      $text.css({
-        padding: '0 0 0 3px'
-      });
       return $text;
     },
 
