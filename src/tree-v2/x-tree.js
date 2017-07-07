@@ -962,6 +962,7 @@
         display: 'inline-block',
         // 'vertical-align': 'bottom',
         padding: '0 0 0 10px',
+        color:'#cccccc',
         'cursor': 'pointer',
         'font-size': '18px',
         // width: '16px',
