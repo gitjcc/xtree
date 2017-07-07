@@ -787,7 +787,7 @@
       var $footer = {};
       $footer = $('<div class="x-tree-footer"></div>');
 
-      $footer.$cancelAll = $('<span class="x-tree-cancel">取消</span>');
+      $footer.$cancelAll = $('<span class="x-tree-cancel">清空</span>');
       $footer.$confirm = $('<span class="x-tree-confirm">确定</span>');
 
       $footer.css({
