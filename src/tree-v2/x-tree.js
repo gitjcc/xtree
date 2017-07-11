@@ -442,9 +442,6 @@
       }
       return ua;
     },
-    _isEmpty: function name(element) {
-      return element === undefined || element === null;
-    },
     _getSubTree: function (arrayIn, parent) {
       var result = [];
       for (var i = 0; i < arrayIn.length; i++) {
@@ -456,9 +453,6 @@
     },
     newItem: function name(arrayIn, originItem, parent) {
       const result = originItem;
-      if (this._isEmpty(result.is_radio)) {
-        result.is_radio = !this.opt.is_multi;
-      }
       result.checkState = result.is_check;
       result.parent = parent;
       result.level = parent.level + 1;
@@ -568,10 +562,10 @@
     },
 
     _changeItem: function (item, change) {
-      if (item.is_radio) {
-        this._changeItemRadio(item, change);
-      } else {
+      if (this.opt.is_multi) {
         this._changeItemMulti(item, change);
+      } else {
+        this._changeItemRadio(item, change);
       }
       if (this.state._initialized) {
         if (change) {
@@ -623,7 +617,6 @@
         this._changeParent(item.parent, change);
         this._changeParentState(item.parent, change)
       }
-
     },
     _changeChildren: function (children, change) {
       if (!children) {
