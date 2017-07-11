@@ -442,6 +442,9 @@
       }
       return ua;
     },
+    _isEmpty: function name(element) {
+      return element === undefined || element === null;
+    },
     _getSubTree: function (arrayIn, parent) {
       var result = [];
       for (var i = 0; i < arrayIn.length; i++) {
@@ -453,6 +456,9 @@
     },
     newItem: function name(arrayIn, originItem, parent) {
       const result = originItem;
+      if (this._isEmpty(result.is_radio)) {
+        result.is_radio = !this.opt.is_multi;
+      }
       result.checkState = result.is_check;
       result.parent = parent;
       result.level = parent.level + 1;
@@ -562,10 +568,10 @@
     },
 
     _changeItem: function (item, change) {
-      if (this.opt.is_multi) {
-        this._changeItemMulti(item, change);
-      } else {
+      if (item.is_radio) {
         this._changeItemRadio(item, change);
+      } else {
+        this._changeItemMulti(item, change);
       }
       if (this.state._initialized) {
         if (change) {
@@ -598,6 +604,14 @@
       if (!item || (item.is_check === change && change)) {
         return false;
       }
+      for (var i = 0; i < this.arrayData.length; i++) {
+        var element = this.arrayData[i];
+        if (element.is_radio) {
+          element.is_check = false;
+          element.checkState = false;
+          this._updateCheck(element);
+        }
+      }
       item.is_check = change;
       item.checkState = change;
       this._updateCheck(item);
@@ -609,6 +623,7 @@
         this._changeParent(item.parent, change);
         this._changeParentState(item.parent, change)
       }
+
     },
     _changeChildren: function (children, change) {
       if (!children) {
@@ -962,7 +977,7 @@
         display: 'inline-block',
         // 'vertical-align': 'bottom',
         padding: '0 5px 0 5px',
-        color:'#cccccc',
+        color: '#cccccc',
         'cursor': 'pointer',
         'font-size': '18px',
         // width: '16px',
@@ -976,7 +991,11 @@
 
       var that = this;
       $check.on('click', function () {
-        that._changeItem(item, !item.is_check);
+        if (item.is_radio) {
+          that._changeItemRadio(item, !item.is_check);
+        } else {
+          that._changeItem(item, !item.is_check);
+        }
       });
       return $check;
     },
