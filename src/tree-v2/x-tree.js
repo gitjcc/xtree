@@ -567,14 +567,6 @@
       } else {
         this._changeItemRadio(item, change);
       }
-      if (this.state._initialized) {
-        if (change) {
-          this.opt.onCheck.call(this, item);
-        } else {
-          this.opt.onCancel.call(this, item);
-        }
-        this.opt.onChange.call(this, item);
-      }
     },
     _changeItemRadio: function (item, change) {
       if (!item || item.is_check === change) {
@@ -591,6 +583,7 @@
       item.is_check = change;
       item.checkState = change;
       this._updateCheck(item);
+      this._changeCallback(item, change);
       return false;
     },
     _changeItemMulti: function (item, change) {
@@ -616,6 +609,17 @@
       if (item.parent) {
         this._changeParent(item.parent, change);
         this._changeParentState(item.parent, change)
+      }
+      this._changeCallback(item, change);
+    },
+    _changeCallback: function name(item, change) {
+      if (this.state._initialized) {
+        if (change) {
+          this.opt.onCheck.call(this, item);
+        } else {
+          this.opt.onCancel.call(this, item);
+        }
+        this.opt.onChange.call(this, item);
       }
     },
     _changeChildren: function (children, change) {
