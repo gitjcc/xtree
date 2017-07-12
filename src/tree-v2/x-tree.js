@@ -452,7 +452,7 @@
       return result;
     },
     newItem: function name(arrayIn, originItem, parent) {
-      const result = originItem;
+      var result = originItem;
       result.checkState = result.is_check;
       result.parent = parent;
       result.level = parent.level + 1;
