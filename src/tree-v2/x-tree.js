@@ -1018,6 +1018,17 @@
       }
       var $text = $('<span class="x-tree-item-text"></span>');
       $text.text(item.name);
+      var that = this;
+      $text.on('click', function () {
+        // that._changeItem(item, !item.is_check);
+        if (item.is_node && item.children && item.children.length) {
+          if (item.$expand.hasClass('icon-2-add-small')) {
+            that._showChildren(item);
+          } else {
+            that._hideChildren(item);
+          }
+        }
+      });
       return $text;
     },
 
