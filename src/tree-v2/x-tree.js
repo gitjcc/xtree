@@ -964,28 +964,28 @@
         $expand.on('click', function (e) {
           if ($(this).hasClass('icon-2-add-small')) {
             if (that.opt.lazyLoad && !item.loaded) {
-              $.ajax({
-                type: "POST",
-                url: that.opt.lazyLoadUrl,
-                data: {id: item.id},
-                success: function (response) {
-                  // var data = [{
-                  //   id: item.id + 5399,
-                  //   name: '异步加载' + item.id + 1,
-                  //   nodeId: item.id,
-                  //   is_node: false,
-                  //   is_check: true,
-                  // }, {
-                  //   id: item.id + 5399,
-                  //   name: '异步加载' + item.id + 2,
-                  //   nodeId: item.id,
-                  //   is_node: true,
-                  //   is_check: true,
-                  // }];
-                  if(!response.ok){
-                    return false;
-                  }
-                  var data = response.list;
+              // $.ajax({
+              //   type: "POST",
+              //   url: that.opt.lazyLoadUrl,
+              //   data: {id: item.id},
+              //   success: function (response) {
+                  var data = [{
+                    id: item.id + 5399,
+                    name: '异步加载' + item.id + 1,
+                    nodeId: item.id,
+                    is_node: false,
+                    is_check: false,
+                  }, {
+                    id: item.id + 5399,
+                    name: '异步加载' + item.id + 2,
+                    nodeId: item.id,
+                    is_node: true,
+                    is_check: false,
+                  }];
+                  // if(!response.ok){
+                  //   return false;
+                  // }
+                  // var data = response.list;
                   if (!data || !data.length) {
                     var $blank = $('<span></span>');
                     $blank.css({
@@ -1003,6 +1003,9 @@
                   that.arrayData = that.arrayData.concat(data);
                   // 对象格式
                   for (var i = 0; i < data.length; i++) {
+                    if(item.is_check && that.opt.is_multi){
+                      data[i].is_check = true;
+                    }
                     item.children.push(that.newItem(data[i], item, that.arrayData));
                   }
                   // 视图
@@ -1011,8 +1014,8 @@
                   }
                   item.loaded = true;
                   that._showChildren(item);
-                }
-              });
+              //   }
+              // });
             } else {
               that._showChildren(item);
             }
@@ -1035,21 +1038,23 @@
         return false;
       }
       var $check;
-      if (item.is_check) {
-        $check = $('<i class="x-tree-check iconfont icon-2-square-check1" /i>');
-      } else {
-        $check = $('<i class="x-tree-check iconfont icon-2-square-uncheck" /i>');
-      }
-      $check.css({
+      var style = {
         display: 'inline-block',
         // 'vertical-align': 'bottom',
         padding: '0 5px 0 5px',
-        color: '#cccccc',
         'cursor': 'pointer',
         'font-size': '18px',
         // width: '16px',
         // height: '16px',
-      });
+      }
+      if (item.is_check) {
+        $check = $('<i class="x-tree-check iconfont icon-2-square-check1" /i>');
+        style.color = '#5AA4E1'
+      } else {
+        $check = $('<i class="x-tree-check iconfont icon-2-square-uncheck" /i>');
+        style.color = '#cccccc'
+      }
+      $check.css(style);
 
       // 单选只、选叶子，则不显示 Checkbox
       if (!this.opt.is_multi && this.opt.only_child && item.is_node) {
