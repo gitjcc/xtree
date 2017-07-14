@@ -587,7 +587,7 @@
       }
     },
     _changeItemRadio: function (item, change) {
-      if (!item || item.is_check === change) {
+      if (!item) {
         return false;
       }
       for (var i = 0; i < this.arrayData.length; i++) {
@@ -606,7 +606,7 @@
     },
     _changeItemMulti: function (item, change) {
       //同选中时，不操作；同取消时，操作。原因：自己选中时，孩子一定是选中的；自己未选中时，孩子状态未知。
-      if (!item || (item.is_check === change && change)) {
+      if (!item) {
         return false;
       }
       for (var i = 0; i < this.arrayData.length; i++) {
@@ -974,13 +974,13 @@
                     name: '异步加载' + item.id + 1,
                     nodeId: item.id,
                     is_node: false,
-                    is_check: false,
+                    is_check: true,
                   }, {
                     id: item.id + 5399,
                     name: '异步加载' + item.id + 2,
                     nodeId: item.id,
                     is_node: true,
-                    is_check: false,
+                    is_check: true,
                   }];
                   // if(!response.ok){
                   //   return false;
@@ -1003,10 +1003,10 @@
                   that.arrayData = that.arrayData.concat(data);
                   // 对象格式
                   for (var i = 0; i < data.length; i++) {
-                    if(item.is_check && that.opt.is_multi){
-                      data[i].is_check = true;
-                    }
                     item.children.push(that.newItem(data[i], item, that.arrayData));
+                    if(data[i].is_check || (item.is_check && that.opt.is_multi)){
+                      that._changeItem(data[i], true);
+                    }
                   }
                   // 视图
                   for (var j = 0; j < data.length; j++) {
