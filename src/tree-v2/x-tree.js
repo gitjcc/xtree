@@ -987,14 +987,16 @@
                   }
                   var data = response.list;
                   if (!data || !data.length) {
-                    // item.$expand.replaceWith($('<span></span>'));
-                    // item.$expand.css({
-                    //   display: 'inline-block',
-                    //   'vertical-align': 'base-line',
-                    //   padding: '0 4px 0 0',
-                    //   'cursor': 'pointer',
-                    //   width: '16px',
-                    // });
+                    var $blank = $('<span></span>');
+                    $blank.css({
+                      display: 'inline-block',
+                      'vertical-align': 'base-line',
+                      padding: '0 4px 0 0',
+                      'cursor': 'pointer',
+                      width: '16px',
+                    });
+                    item.$expand.after($blank);
+                    item.$expand.hide();
                     return false;
                   }
                   // 数组格式
@@ -1007,10 +1009,10 @@
                   for (var j = 0; j < data.length; j++) {
                     item.$children.append(that._makeItem(data[j]));
                   }
+                  item.loaded = true;
+                  that._showChildren(item);
                 }
               });
-              item.loaded = true;
-              that._showChildren(item);
             } else {
               that._showChildren(item);
             }
