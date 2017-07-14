@@ -4,6 +4,17 @@
     return new tree(options);
   };
 
+  // if (!Array.prototype.indexOf) {
+  //   Array.prototype.indexOf = function (obj, start) {
+  //     for (var i = (start || 0), j = this.length; i < j; i++) {
+  //       if (this[i] === obj) {
+  //         return i;
+  //       }
+  //     }
+  //     return -1;
+  //   }
+  // }
+
   var defOpt = {
     dom: '', //jqueryDom
     position: 'absolute',
@@ -127,6 +138,8 @@
         this.opt.onClose.call(this);
       }
     },
+    open: this.show,
+    close: this.hide,
 
     getId: function () {
       var ids = [];
@@ -347,12 +360,11 @@
     },
 
     search: function (val) {
-      this.tree.$body.$children.hide();
+      this.tree.$body.$result.empty();
       if (val === '') {
-        this.tree.$body.$result.empty();
         this.tree.$body.$children.show();
       } else {
-        this.tree.$body.$result.empty();
+        this.tree.$body.$children.hide();
         for (var i in this.arrayData) {
           if (this.opt.searchType == 'all') {
             if (this.arrayData[i].name.indexOf(val) != -1) {
@@ -368,6 +380,34 @@
             }
           }
         }
+      }
+    },
+    searchAjax: function (val) {
+      this.tree.$body.$result.empty();
+      if (val === '') {
+        this.tree.$body.$children.show();
+      } else {
+        this.tree.$body.$children.hide();
+        var that = this;
+        $.ajax({
+          type: "POST",
+          url: that.opt.lazyLoadUrl,
+          data: {
+            t_key: val,
+            t_type: that.opt.searchType,
+          },
+          success: function (response) {
+            if (!response.ok) {
+              return false;
+            }
+            var data = response.list;
+            for (var i = 0; i < data.length; i++) {
+              data[i] = that.newItem(data[i], that.tree, []);
+              that.tree.$body.$result.append(that._makeItem(data[i]));
+            }
+          }
+        });
+
       }
     },
 
@@ -469,7 +509,7 @@
       return result;
     },
     expandLvl: function name(expand, item) {
-      if (this.opt.lazyLoad) {
+      if (this.opt.lazyLoad || !item.is_node) {
         return false;
       }
       if (expand === true) {
@@ -777,7 +817,24 @@
         padding: '10px 10px 3px',
       });
       $header.$input = this._makeSearchInput();
-      $header.append($header.$input);
+      var $wrap = $('<div></div>');
+      var $searchIcon = $('<i class="iconfont icon-sousuo"></i>');
+      $wrap.css({
+        position: 'relative'
+      });
+      $searchIcon.css({
+        display: 'inline-block',
+        position: 'absolute',
+        top: '10px',
+        right: '5px',
+        cursor: 'pointer',
+      });
+      var that = this;
+      $searchIcon.on('click', function name(e) {
+        that.searchAjax($header.$input.val());
+      });
+      $wrap.append($header.$input, $searchIcon)
+      $header.append($wrap);
       if (!this.opt.has_search) {
         $header.hide();
       }
@@ -853,16 +910,24 @@
       $input.css({
         'display': 'block',
         'width': '100%',
-        'line-height': '20px',
+        'line-height': '30px',
         'border': '1px solid #d7d9db',
       });
       var that = this;
       $input.on('keyup paste', function () {
         var input = this;
         clearTimeout(that.state._searchTimer);
-        that.state._searchTimer = setTimeout(function () {
-          that.search(input.value);
-        }, 100);
+        if (that.opt.lazyLoad) {
+          that.state._searchTimer = setTimeout(function () {
+            if (input.value === '') {
+              that.searchAjax(input.value);
+            }
+          }, 100);
+        } else {
+          that.state._searchTimer = setTimeout(function () {
+            that.search(input.value);
+          }, 100);
+        }
       });
       return $input;
     },
@@ -956,9 +1021,11 @@
               $.ajax({
                 type: "POST",
                 url: that.opt.lazyLoadUrl,
-                data: {id: item.id},
+                data: {
+                  id: item.id
+                },
                 success: function (response) {
-                  if(!response.ok){
+                  if (!response.ok) {
                     return false;
                   }
                   var data = response.list;
@@ -980,7 +1047,7 @@
                   // 对象格式
                   for (var i = 0; i < data.length; i++) {
                     item.children.push(that.newItem(data[i], item, that.arrayData));
-                    if(data[i].is_check || (item.is_check && that.opt.is_multi)){
+                    if (data[i].is_check || (item.is_check && that.opt.is_multi)) {
                       that._changeItem(data[i], true);
                     }
                   }
