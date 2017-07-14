@@ -411,9 +411,14 @@
         //   return false;
         // }
         // var data = response.list;
+        that.arrayData = that.arrayData.concat(data);
+        that.tree.lazyData = data;
         for (var i in data) {
           data[i] = that.newItem(data[i], that.tree, []);
           that.tree.$body.$result.append(that._makeItem(data[i]));
+          if (data[i].is_check || (item.is_check && that.opt.is_multi)) {
+            that._changeItem(data[i], true);
+          }
         }
         //   }
         // });
@@ -1063,6 +1068,8 @@
                 item.$expand.hide();
                 return false;
               }
+              // 搜索加载的数据 和 展开加载的数据
+
               // 数组格式
               that.arrayData = that.arrayData.concat(data);
               // 对象格式
