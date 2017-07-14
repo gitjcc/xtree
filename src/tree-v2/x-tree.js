@@ -392,7 +392,7 @@
         // $.ajax({
         //   type: "POST",
         //   url: that.opt.lazyLoadUrl,
-        //   data: {key: val, type: that.opt.searchType},
+        //   data: {t_key: val, t_type: that.opt.searchType,},
         //   success: function (response) {
         var data = [{
           id: 5399,
