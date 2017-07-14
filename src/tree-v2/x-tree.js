@@ -4,16 +4,16 @@
     return new tree(options);
   };
 
-  if (!Array.prototype.indexOf) {
-    Array.prototype.indexOf = function (obj, start) {
-      for (var i = (start || 0), j = this.length; i < j; i++) {
-        if (this[i] === obj) {
-          return i;
-        }
-      }
-      return -1;
-    }
-  }
+  // if (!Array.prototype.indexOf) {
+  //   Array.prototype.indexOf = function (obj, start) {
+  //     for (var i = (start || 0), j = this.length; i < j; i++) {
+  //       if (this[i] === obj) {
+  //         return i;
+  //       }
+  //     }
+  //     return -1;
+  //   }
+  // }
 
   var defOpt = {
     dom: '', //jqueryDom
@@ -450,7 +450,7 @@
     _uniqueArray: function (arrayIn) {
       var ua = [];
       for (var i = 0; i < arrayIn.length; i++) {
-        if (ua.indexOf(arrayIn[i]) == -1) {
+        if ($.inArray(arrayIn[i], ua) == -1) {
           ua.push(arrayIn[i]);
         }
       }
