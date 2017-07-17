@@ -395,6 +395,12 @@
         //   data: {t_key: val, t_type: that.opt.searchType,},
         //   success: function (response) {
         var data = [{
+          id: 1,
+          name: '中国',
+          nodeId: 0,
+          is_node: true,
+          is_check: false
+        }, {
           id: 5399,
           name: '异步加载' + 1,
           nodeId: 1000,
@@ -413,23 +419,33 @@
         // var data = response.list;
 
         // 默认选中
-        if (this.opt.sel_ids) {
-          this._checkTreeByIds(data, this.opt.sel_ids);
+        if (that.opt.sel_ids) {
+          that._checkTreeByIds(data, that.opt.sel_ids);
         }
-        // 已有的 searchData
-        that.searchData = data;
-        for (var index = 0; index < array.length; index++) {
-          var element = array[index];
-          
-        }
-        // 已有的 arrayData
-        that.arrayData = that.arrayData.concat(data);
 
-        // 生成 tree 结构, 生成 DOM 结构 ，treed, DOMed
-        for (var i = 0; i < array.length; i++) {
-          data[i] = that.newItem(data[i], that.tree, []);
-          that.tree.$body.$result.append(that._makeItem(data[i]));
-          if (data[i].is_check || (item.is_check && that.opt.is_multi)) {
+        // 已有的 arrayData
+        var arrayData = that.arrayData;
+        var len = arrayData.length;
+
+        for (var j = 0; j < data.length; j++) {
+          data[j].dataState = 'new';
+          for (var i = 0; i < len; i++) {
+            if (arrayData[i].id === data[j].id && arrayData[i].is_node === data[j].is_node) {
+              data[j] = arrayData[i];
+              data[j].dataState = 'array';
+              break;
+            }
+          }
+          if (data[j].dataState === 'new') {
+            data[j] = that.newItem(data[j], that.tree, []);
+            arrayData.push(data[j]);
+          }
+        }
+
+        // 生成 DOM 结构 ，DOMed
+        for (var i = 0; i < data.length; i++) {
+          that.tree.$body.$result.append(that._makeSearchItem(data[i]));
+          if (data[i].is_check && that.opt.is_multi) {
             that._changeItem(data[i], true);
           }
         }
@@ -979,6 +995,21 @@
       return $searchResult;
     },
 
+    _makeSearchItem: function (item) {
+      if (!item) {
+        return false;
+      }
+      item.$self2 = this._makeSelfWrap(item);
+      item.$expand2 = this._makeExpand({
+        is_node: false
+      });
+      item.$check2 = this._makeCheck(item);
+      item.$icon2 = this._makeIcon(item);
+      item.$text2 = this._makeText(item);
+      item.$self2.append(item.$expand2, item.$check2, item.$icon2, item.$text2);
+      return item.$self2;
+    },
+
     _makeItem: function (item) {
       if (!item) {
         return false;
@@ -1093,28 +1124,36 @@
               }
 
               // 默认选中
-              if (this.opt.sel_ids) {
-                this._checkTreeByIds(data, this.opt.sel_ids);
+              if (that.opt.sel_ids) {
+                that._checkTreeByIds(data, that.opt.sel_ids);
               }
-              // 搜索加载的数据 和 展开加载的数据
-              if (this.searchData) {
-
+              // 已有的 arrayData
+              var arrayData = that.arrayData;
+              var len = arrayData.length;
+              for (var j = 0; j < data.length; j++) {
+                data[j].dataState = 'new';
+                for (var i = 0; i < len; i++) {
+                  if (arrayData[i].id === data[j].id && arrayData[i].is_node === data[j].is_node) {
+                    data[j] = arrayData[i];
+                    data[j].dataState = 'array';
+                    break;
+                  }
+                }
+                if (data[j].dataState === 'new') {
+                  data[j] = that.newItem(data[j], item, []);
+                  arrayData.push(data[j]);
+                }
               }
-              // 数组格式
-              that.arrayData = that.arrayData.concat(data);
 
-
-              // 对象格式
+              // 对象格式, 视图
               for (var i = 0; i < data.length; i++) {
-                item.children.push(that.newItem(data[i], item, that.arrayData));
-                if (data[i].is_check || (item.is_check && that.opt.is_multi)) {
+                item.children.push(data[i]);
+                item.$children.append(that._makeItem(data[i]));
+                if (data[i].is_check && that.opt.is_multi) {
                   that._changeItem(data[i], true);
                 }
               }
-              // 视图
-              for (var j = 0; j < data.length; j++) {
-                item.$children.append(that._makeItem(data[j]));
-              }
+              // 完成
               item.loaded = true;
               that._showChildren(item);
               //   }
@@ -1254,27 +1293,54 @@
       }
     },
     _updateCheck: function (item) {
-      if (!item.$check) {
+      if (!item.$check && !item.$check2) {
         return false;
       }
       if (item.checkState === true) {
-        item.$check.removeClass('icon-2-square-uncheck icon-2-square-part');
-        item.$check.addClass('icon-2-square-check1');
-        item.$check.css({
-          color: '#5AA4E1'
-        });
+        if (item.$check) {
+          item.$check.removeClass('icon-2-square-uncheck icon-2-square-part');
+          item.$check.addClass('icon-2-square-check1');
+          item.$check.css({
+            color: '#5AA4E1'
+          });
+        }
+        if (item.$check2) {
+          item.$check2.removeClass('icon-2-square-uncheck icon-2-square-part');
+          item.$check2.addClass('icon-2-square-check1');
+          item.$check2.css({
+            color: '#5AA4E1'
+          });
+        }
       } else if (item.checkState === false) {
-        item.$check.removeClass('icon-2-square-check1 icon-2-square-part');
-        item.$check.addClass('icon-2-square-uncheck');
-        item.$check.css({
-          color: '#cccccc'
-        });
+        if (item.$check) {
+          item.$check.removeClass('icon-2-square-check1 icon-2-square-part');
+          item.$check.addClass('icon-2-square-uncheck');
+          item.$check.css({
+            color: '#cccccc'
+          });
+        }
+        if (item.$check2) {
+          item.$check2.removeClass('icon-2-square-check1 icon-2-square-part');
+          item.$check2.addClass('icon-2-square-uncheck');
+          item.$check2.css({
+            color: '#cccccc'
+          });
+        }
       } else if (item.checkState === 'z') {
-        item.$check.removeClass('icon-2-square-uncheck icon-2-square-check1');
-        item.$check.addClass('icon-2-square-part');
-        item.$check.css({
-          color: '#5AA4E1'
-        });
+        if (item.$check) {
+          item.$check.removeClass('icon-2-square-uncheck icon-2-square-check1');
+          item.$check.addClass('icon-2-square-part');
+          item.$check.css({
+            color: '#5AA4E1'
+          });
+        }
+        if (item.$check2) {
+          item.$check2.removeClass('icon-2-square-uncheck icon-2-square-check1');
+          item.$check2.addClass('icon-2-square-part');
+          item.$check2.css({
+            color: '#5AA4E1'
+          });
+        }
       }
       return true;
     },
