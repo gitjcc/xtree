@@ -411,9 +411,22 @@
         //   return false;
         // }
         // var data = response.list;
+
+        // 默认选中
+        if (this.opt.sel_ids) {
+          this._checkTreeByIds(data, this.opt.sel_ids);
+        }
+        // 已有的 searchData
+        that.searchData = data;
+        for (var index = 0; index < array.length; index++) {
+          var element = array[index];
+          
+        }
+        // 已有的 arrayData
         that.arrayData = that.arrayData.concat(data);
-        that.tree.lazyData = data;
-        for (var i in data) {
+
+        // 生成 tree 结构, 生成 DOM 结构 ，treed, DOMed
+        for (var i = 0; i < array.length; i++) {
           data[i] = that.newItem(data[i], that.tree, []);
           that.tree.$body.$result.append(that._makeItem(data[i]));
           if (data[i].is_check || (item.is_check && that.opt.is_multi)) {
@@ -437,6 +450,16 @@
         }
       }
       return true;
+    },
+
+    _mergeSearchData: function name(array1, array2) {
+      for (var i = 0; i < array.length; i++) {
+        var element = array[i];
+        for (var j = 0; j < array.length; j++) {
+          var element = array[j];
+
+        }
+      }
     },
 
     _arrayToTree: function (arrayIn) {
@@ -1068,10 +1091,19 @@
                 item.$expand.hide();
                 return false;
               }
-              // 搜索加载的数据 和 展开加载的数据
 
+              // 默认选中
+              if (this.opt.sel_ids) {
+                this._checkTreeByIds(data, this.opt.sel_ids);
+              }
+              // 搜索加载的数据 和 展开加载的数据
+              if (this.searchData) {
+
+              }
               // 数组格式
               that.arrayData = that.arrayData.concat(data);
+
+
               // 对象格式
               for (var i = 0; i < data.length; i++) {
                 item.children.push(that.newItem(data[i], item, that.arrayData));
