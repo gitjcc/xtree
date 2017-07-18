@@ -395,24 +395,38 @@
         //   data: {t_key: val, t_type: that.opt.searchType,},
         //   success: function (response) {
         var data = [{
-          id: 1,
-          name: '中国',
-          nodeId: 0,
-          is_node: true,
-          is_check: false
-        }, {
-          id: 5399,
-          name: '异步加载' + 1,
-          nodeId: 1000,
-          is_node: false,
-          is_check: true,
-        }, {
-          id: 4399,
-          name: '异步加载' + 2,
-          nodeId: 1000,
-          is_node: true,
-          is_check: true,
-        }];
+            id: 1,
+            name: '中国',
+            nodeId: 0,
+            is_node: true,
+            is_check: false
+          }, {
+            id: 5311,
+            name: '中国5311',
+            nodeId: 1,
+            is_node: true,
+            is_check: false
+          },
+          {
+            id: 5312,
+            name: '中国5312',
+            nodeId: 1,
+            is_node: true,
+            is_check: false
+          }, {
+            id: 5399,
+            name: '异步加载' + 1,
+            nodeId: 1000,
+            is_node: false,
+            is_check: true,
+          }, {
+            id: 4399,
+            name: '异步加载' + 2,
+            nodeId: 1000,
+            is_node: true,
+            is_check: true,
+          }
+        ];
         // if(!response.ok){
         //   return false;
         // }
@@ -445,8 +459,8 @@
         // 生成 DOM 结构 ，DOMed
         for (var i = 0; i < data.length; i++) {
           that.tree.$body.$result.append(that._makeSearchItem(data[i]));
-          if (data[i].is_check && that.opt.is_multi) {
-            that._changeItem(data[i], true);
+          if (that.opt.is_multi) {
+            that._changeItem(data[i], data[i].is_check);
           }
         }
         //   }
@@ -466,16 +480,6 @@
         }
       }
       return true;
-    },
-
-    _mergeSearchData: function name(array1, array2) {
-      for (var i = 0; i < array.length; i++) {
-        var element = array[i];
-        for (var j = 0; j < array.length; j++) {
-          var element = array[j];
-
-        }
-      }
     },
 
     _arrayToTree: function (arrayIn) {
@@ -540,6 +544,9 @@
       return ua;
     },
     _getSubTree: function (parent, arrayIn) {
+      if (!parent || arrayIn.length) {
+        return [];
+      }
       var result = [];
       for (var i = 0; i < arrayIn.length; i++) {
         if (arrayIn[i].nodeId == parent.id) {
@@ -1105,6 +1112,22 @@
                 is_node: true,
                 is_check: true,
               }];
+              if (item.id === 1) {
+                data.push({
+                  id: 5311,
+                  name: '中国5311',
+                  nodeId: 1,
+                  is_node: true,
+                  is_check: false
+                });
+                data.push({
+                  id: 5312,
+                  name: '中国5312',
+                  nodeId: 1,
+                  is_node: true,
+                  is_check: false
+                });
+              }
               // if(!response.ok){
               //   return false;
               // }
@@ -1143,14 +1166,19 @@
                   data[j] = that.newItem(data[j], item, []);
                   arrayData.push(data[j]);
                 }
+                if (data[j].dataState === 'array') {
+                  data[j].parent = item;
+                  data[j].level = item.level + 1;
+                  data[j].expand = that.expandLvl(that.opt.expand, data[j]);
+                }
               }
 
               // 对象格式, 视图
               for (var i = 0; i < data.length; i++) {
                 item.children.push(data[i]);
                 item.$children.append(that._makeItem(data[i]));
-                if (data[i].is_check && that.opt.is_multi) {
-                  that._changeItem(data[i], true);
+                if (that.opt.is_multi) {
+                  that._changeItem(data[i], data[i].is_check);
                 }
               }
               // 完成

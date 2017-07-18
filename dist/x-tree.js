@@ -418,8 +418,8 @@
             // 生成 DOM 结构 ，DOMed
             for (var i = 0; i < data.length; i++) {
               that.tree.$body.$result.append(that._makeSearchItem(data[i]));
-              if (data[i].is_check && that.opt.is_multi) {
-                that._changeItem(data[i], true);
+              if (that.opt.is_multi) {
+                that._changeItem(data[i], data[i].is_check);
               }
             }
           }
@@ -503,6 +503,9 @@
       return ua;
     },
     _getSubTree: function (parent, arrayIn) {
+      if (!parent || arrayIn.length) {
+        return [];
+      }
       var result = [];
       for (var i = 0; i < arrayIn.length; i++) {
         if (arrayIn[i].nodeId == parent.id) {
@@ -1095,14 +1098,19 @@
                       data[j] = that.newItem(data[j], item, []);
                       arrayData.push(data[j]);
                     }
+                    if (data[j].dataState === 'array') {
+                      data[j].parent = item;
+                      data[j].level = item.level + 1;
+                      data[j].expand = that.expandLvl(that.opt.expand, data[j]);
+                    }
                   }
 
                   // 对象格式, 视图
                   for (var i = 0; i < data.length; i++) {
                     item.children.push(data[i]);
                     item.$children.append(that._makeItem(data[i]));
-                    if (data[i].is_check && that.opt.is_multi) {
-                      that._changeItem(data[i], true);
+                    if (that.opt.is_multi) {
+                      that._changeItem(data[i], data[i].is_check);
                     }
                   }
                   // 完成
