@@ -368,15 +368,15 @@
         for (var i in this.arrayData) {
           if (this.opt.searchType == 'all') {
             if (this.arrayData[i].name.indexOf(val) != -1) {
-              this.tree.$body.$result.append(this._makeSelf(this.arrayData[i]));
+              this.tree.$body.$result.append(this._makeSearchItem(this.arrayData[i]));
             }
           } else if (this.opt.searchType == 'node') {
             if (this.arrayData[i].is_node && this.arrayData[i].name.indexOf(val) != -1) {
-              this.tree.$body.$result.append(this._makeSelf(this.arrayData[i]));
+              this.tree.$body.$result.append(this._makeSearchItem(this.arrayData[i]));
             }
           } else if (this.opt.searchType == 'leaf') {
             if (!this.arrayData[i].is_node && this.arrayData[i].name.indexOf(val) != -1) {
-              this.tree.$body.$result.append(this._makeSelf(this.arrayData[i]));
+              this.tree.$body.$result.append(this._makeSearchItem(this.arrayData[i]));
             }
           }
         }
@@ -544,7 +544,7 @@
       return ua;
     },
     _getSubTree: function (parent, arrayIn) {
-      if (!parent || arrayIn.length) {
+      if (!parent || !arrayIn.length) {
         return [];
       }
       var result = [];
@@ -892,7 +892,9 @@
       });
       var that = this;
       $searchIcon.on('click', function name(e) {
-        that.searchAjax($header.$input.val());
+        if (that.opt.lazyLoad) {
+          that.searchAjax($header.$input.val());
+        }
       });
       $wrap.append($header.$input, $searchIcon)
       $header.append($wrap);
